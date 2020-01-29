@@ -11,7 +11,7 @@ public class CPURegisters {
 	// The 8 basic 8-bit CPU registers.
 	private int a, b, d, h, c, e, l;
 	
-	private int f; // TODO: Defined on its own line as it may get its own class in the future. (Flag Register)
+	private FlagRegister flagRegister = new FlagRegister();
 	
 	// Program counter register, holds address data for next instruction to be executed by the CPU.
 	private int pc;
@@ -33,10 +33,50 @@ public class CPURegisters {
 		}
 	}
 	
-	public int getAF() {
-		return (a << 8) | f;
+	// Getters/setters for virtual 16-bit registers.
+	public int getBC() {
+		// Move the 8 bits of the B register to the far left, which leaves us 0s on the right side.
+		// We then OR the bits from the C register against B, which effectively merges the two into a 16-bit number.
+		return (b << 8) | c;
 	}
-
+	
+	public int getAF() {
+		return (a << 8) | this.flagRegister.flagsAsByte();
+	}
+	
+	public int getDE() {
+		return (d << 8) | e;
+	}
+	
+	public int getHL() {
+		return (h << 8) | l;
+	}
+	
+	public void setBC(int bc) {
+		this.checkIsWord(bc);
+		b = bc >> 8;
+		c = bc & 0xFF;
+	}
+	
+	public void setAF(int af) {
+		this.checkIsWord(af);
+		a = af >> 8;
+		this.flagRegister.flagsFromByte(af & 0xFF);
+	}
+	
+	public void setDE(int de) {
+		this.checkIsWord(de);
+		d = de >> 8;
+		e = de & 0xFF;
+	}
+	
+	public void setHL(int hl) {
+		this.checkIsWord(hl);
+		h = hl >> 8;
+		l = hl & 0xFF;
+	}
+	
+	// Getters/setters for general registers.
 	public int getA() {
 		return a;
 	}
@@ -101,18 +141,20 @@ public class CPURegisters {
 	}
 
 	public int getF() {
-		return f;
+		return this.flagRegister.flagsAsByte();
 	}
 
 	public void setF(int f) {
 		this.checkIsByte(f);
-		this.f = f;
+		this.flagRegister.flagsFromByte(f);
 	}
 
 	public int getPc() {
 		return pc;
 	}
-
+	
+	
+	// Getters/setters for PC and SP registers
 	public void setPc(int pc) {
 		this.checkIsWord(pc);
 		this.pc = pc;

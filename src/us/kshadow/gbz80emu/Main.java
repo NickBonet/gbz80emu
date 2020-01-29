@@ -6,14 +6,19 @@ public class Main {
 	public static void main(String[] args) {
 		CPU cpu = new CPU();
 		
-		cpu.getCpuRegisters().setA(0xFF);
-		cpu.getCpuRegisters().setF(0x10);
-		System.out.println("Value of A << 8:");
+		// I just use this as a testing area until I make actual unit tests.
+		
+		//cpu.getCpuRegisters().setB(0xFF);
+		//cpu.getCpuRegisters().setC(0xD0);
+		cpu.getCpuRegisters().setAF(0xFFFD);
+		System.out.println("Value of AF:");
 		System.out.println(cpu.getCpuRegisters().getAF());
 		
-		cpu.getCpuRegisters().setPc(0xFFFF);
-		System.out.println("Value of PC:");
-		System.out.println(cpu.getCpuRegisters().getPc());
+		System.out.println("Value of F:");
+		System.out.println(cpu.getCpuRegisters().getF());
+		
+		//System.out.println(cpu.getCpuRegisters().getB());
+		//System.out.println(cpu.getCpuRegisters().getC());
 	}
 	
 }
