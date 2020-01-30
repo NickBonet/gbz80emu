@@ -11,7 +11,7 @@ public class CPURegisters {
 	// The 8 basic 8-bit CPU registers.
 	private int a, b, d, h, c, e, l;
 	
-	private FlagRegister flagRegister = new FlagRegister();
+	private final FlagRegister flagRegister = new FlagRegister();
 	
 	// Program counter register, holds address data for next instruction to be executed by the CPU.
 	private int pc;
@@ -142,6 +142,11 @@ public class CPURegisters {
 
 	public int getF() {
 		return this.flagRegister.flagsAsByte();
+	}
+	
+	// return FlagRegister object in special cases
+	public FlagRegister getFR() {
+		return this.flagRegister;
 	}
 
 	public void setF(int f) {

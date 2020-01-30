@@ -49,9 +49,16 @@ public class FlagRegister {
 	public boolean isZ() {
 		return z;
 	}
-
-	public void setZ(boolean z) {
-		this.z = z;
+	
+	// Determines if Z should be set based on argument passed (i.e. result from instruction)
+	public void setZ(int arg) {
+		if (arg == 0) {
+			this.z = true;
+		} 
+		
+		else { 
+			this.z = false;
+		}
 	}
 
 	public boolean isN() {
