@@ -45,7 +45,7 @@ public class ALU {
 		int result = (regVal + 1) & 0xFF; // mask off higher than 8 bits if addition carries that much
 		cpuRegisters.getFR().setZ(result == 0);
 		cpuRegisters.getFR().setN(false);
-		cpuRegisters.getFR().setH(BitUtil.checkHalfCarryAdd(regVal, 1));
+		cpuRegisters.getFR().setH(BitUtil.checkHalfCarryAdd(regVal, 1, false));
 		cpuRegisters.writeToRegister(register, result);
 	}
 	
@@ -55,5 +55,45 @@ public class ALU {
 		cpuRegisters.getFR().setZ(result == 0);
 		cpuRegisters.getFR().setN(true);
 		cpuRegisters.getFR().setH(BitUtil.checkHalfCarrySub(regVal, 1));
+	}
+	
+	// SCF -- Set carry flag, reset N and H
+	public static void instruct_SCF() {
+		cpuRegisters.getFR().setN(false);
+		cpuRegisters.getFR().setH(false);
+		cpuRegisters.getFR().setC(true);
+	}
+	
+	// CPL - flip bits of A
+	public static void instruct_CPL() {
+		int result = cpuRegisters.getA() ^ 0xFF;
+		cpuRegisters.getFR().setN(true);
+		cpuRegisters.getFR().setH(true);
+		cpuRegisters.setA(result);
+	}
+	
+	// CCF - complement carry flag (flip it from current value)
+	public static void instruct_CCF() {
+		cpuRegisters.getFR().setN(false);
+		cpuRegisters.getFR().setH(false);
+		cpuRegisters.getFR().setC(!cpuRegisters.getFR().isC());
+	}
+	
+	public static void instruct_ADD(int arg) {
+		int result = (cpuRegisters.getA() + arg) & 0xFF;
+		cpuRegisters.getFR().setZ(result == 0);
+		cpuRegisters.getFR().setN(false);
+		cpuRegisters.getFR().setH(BitUtil.checkHalfCarryAdd(cpuRegisters.getA(), arg, false));
+		cpuRegisters.getFR().setC(BitUtil.checkCarryAdd(cpuRegisters.getA(), arg, false));
+		cpuRegisters.setA(result);
+	}
+	
+	public static void instruct_ADC(int arg) {
+		int result = (cpuRegisters.getA() + arg + (cpuRegisters.getFR().isC() ? 1 : 0)) & 0xFF;
+		cpuRegisters.getFR().setZ(result == 0);
+		cpuRegisters.getFR().setN(false);
+		cpuRegisters.getFR().setH(BitUtil.checkHalfCarryAdd(cpuRegisters.getA(), arg, cpuRegisters.getFR().isC()));
+		cpuRegisters.getFR().setC(BitUtil.checkCarryAdd(cpuRegisters.getA(), arg, cpuRegisters.getFR().isC()));
+		cpuRegisters.setA(result);
 	}
 }

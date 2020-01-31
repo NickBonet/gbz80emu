@@ -8,8 +8,6 @@ public class Main {
 		CPU cpu = new CPU();
 		
 		// I just use this as a testing area until I make actual unit tests.
-		
-		System.out.println(BitUtil.checkHalfCarryAdd(0x0F, 1));
 	}
 	
 }
