@@ -14,7 +14,7 @@ public class ALU {
 	
 	public static void instruct_OR(int arg) {
 		int result = cpuRegisters.getA() | arg;
-		cpuRegisters.getFR().setZ(result);
+		cpuRegisters.getFR().setZ(result == 0);
 		cpuRegisters.getFR().setC(false);
 		cpuRegisters.getFR().setN(false);
 		cpuRegisters.getFR().setH(false);
@@ -23,7 +23,7 @@ public class ALU {
 	
 	public static void instruct_XOR(int arg) {
 		int result = cpuRegisters.getA() ^ arg;
-		cpuRegisters.getFR().setZ(result);
+		cpuRegisters.getFR().setZ(result == 0);
 		cpuRegisters.getFR().setC(false);
 		cpuRegisters.getFR().setN(false);
 		cpuRegisters.getFR().setH(false);
@@ -32,14 +32,14 @@ public class ALU {
 	
 	public static void instruct_AND(int arg) {
 		int result = cpuRegisters.getA() & arg;
-		cpuRegisters.getFR().setZ(result);
+		cpuRegisters.getFR().setZ(result == 0);
 		cpuRegisters.getFR().setC(false);
 		cpuRegisters.getFR().setN(false);
 		cpuRegisters.getFR().setH(true);
 		cpuRegisters.setA(result);
 	}
 	
-	public static void instruct_INC(int arg) {
+	public static void instruct_INC(String register) {
 		
 	}
 	

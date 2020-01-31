@@ -15,7 +15,7 @@ public class CPU {
 	// For swapping upper/lower halves in 8-bit registers.
 	public int instruct_SWAP(int register) {
 		int result = ((register & 0x0F) << 4 | (register & 0xF0) >> 4);
-		cpuRegisters.getFR().setZ(result);
+		cpuRegisters.getFR().setZ(result == 0);
 		cpuRegisters.getFR().setC(false);
 		cpuRegisters.getFR().setN(false);
 		cpuRegisters.getFR().setH(false);

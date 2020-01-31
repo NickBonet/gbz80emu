@@ -29,6 +29,111 @@ public class CPURegisters {
 		return instance;
 	}
 	
+	/**
+	 * Method to abstract the individual setters for registers, will be useful when mapping opcodes for similar instructions. (less duplication in those moments)
+	 * @param register - String of register to write value to
+	 * @param value - Data to be written to register
+	 */
+	public void writeToRegister(String register, int value) {
+		switch(register) 
+		{
+			case "A":
+				setA(value);
+				break;
+			case "B":
+				setB(value);
+				break;
+			case "C":
+				setC(value);
+				break;
+			case "D":
+				setD(value);
+				break;
+			case "H":
+				setH(value);
+				break;
+			case "E":
+				setE(value);
+				break;
+			case "F":
+				setF(value);
+				break;
+			case "L":
+				setL(value);
+				break;
+			case "PC":
+				setPc(value);
+				break;
+			case "SP":
+				setSp(value);
+				break;
+			case "AF":
+				setAF(value);
+				break;
+			case "BC":
+				setBC(value);
+				break;
+			case "DE":
+				setDE(value);
+				break;
+			case "HL":
+				setHL(value);
+				break;
+		}
+	}
+	
+	/**
+	 * Method to abstract the individual getters for registers, will be useful when mapping opcodes for similar instructions. (less duplication in those moments)
+	 * @param register - String of register to write value to
+	 */
+	public void getRegister(String register) {
+		switch(register) 
+		{
+			case "A":
+				getA();
+				break;
+			case "B":
+				getB();
+				break;
+			case "C":
+				getC();
+				break;
+			case "D":
+				getD();
+				break;
+			case "H":
+				getH();
+				break;
+			case "E":
+				getE();
+				break;
+			case "F":
+				getF();
+				break;
+			case "L":
+				getL();
+				break;
+			case "PC":
+				getPc();
+				break;
+			case "SP":
+				getSp();
+				break;
+			case "AF":
+				getAF();
+				break;
+			case "BC":
+				getBC();
+				break;
+			case "DE":
+				getDE();
+				break;
+			case "HL":
+				getHL();
+				break;
+		}
+	}
+	
 	// Getters/setters for virtual 16-bit registers.
 	public int getBC() {
 		// Move the 8 bits of the B register to the far left, which leaves us 0s on the right side.

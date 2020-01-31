@@ -13,7 +13,7 @@ class FlagRegisterTest {
 	
 	@BeforeEach
 	public void resetFR() {
-		FR.setZ(1); // any number besides 0 = Z  flag set to false.
+		FR.setZ(false); 
 		FR.setC(false);
 		FR.setN(false);
 		FR.setH(false);
@@ -21,11 +21,11 @@ class FlagRegisterTest {
 
 	@Test
 	public void checkFlagAsByte() {
-		FR.setZ(0); 
+		FR.setZ(true); 
 		FR.setC(true);
 		assertEquals(0b10010000, FR.flagsAsByte()); // Verify correct bits for zero/carry flags are set
 		
-		FR.setZ(1);
+		FR.setZ(false);
 		FR.setC(false);
 		
 		FR.setN(true);
