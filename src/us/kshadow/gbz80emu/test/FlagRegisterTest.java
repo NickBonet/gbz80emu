@@ -2,16 +2,16 @@ package us.kshadow.gbz80emu.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.After;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import us.kshadow.gbz80emu.processor.FlagRegister;
 
 class FlagRegisterTest {
 	
-	private final FlagRegister FR = new FlagRegister();
+	private FlagRegister FR = FlagRegister.getInstance();
 	
-	@After
+	@BeforeEach
 	public void resetFR() {
 		FR.setZ(1); // any number besides 0 = Z  flag set to false.
 		FR.setC(false);

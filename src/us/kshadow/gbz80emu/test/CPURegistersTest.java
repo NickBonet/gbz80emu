@@ -8,7 +8,7 @@ import us.kshadow.gbz80emu.processor.CPURegisters;
 
 class CPURegistersTest {
 	
-	private final CPURegisters registers = new CPURegisters();
+	private CPURegisters registers = CPURegisters.getInstance();
 
 	@Test
 	public void checkRegisterASizeLimit() {

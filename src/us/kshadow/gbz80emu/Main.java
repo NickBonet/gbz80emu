@@ -10,7 +10,7 @@ public class Main {
 		
 		//cpu.getCpuRegisters().setB(0xFF);
 		//cpu.getCpuRegisters().setC(0xD0);
-		cpu.getCpuRegisters().setAF(0xFFFD);
+		//cpu.getCpuRegisters().setAF(0xFFFD);
 		System.out.println("Value of AF:");
 		System.out.println(cpu.getCpuRegisters().getAF());
 		

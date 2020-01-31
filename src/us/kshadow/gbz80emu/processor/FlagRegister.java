@@ -1,13 +1,26 @@
 package us.kshadow.gbz80emu.processor;
 
+/*
+ * Abstraction for the flag register used in the CPU, flags set via boolean or by byte input. Flags can be read by boolean or converted to byte output.
+ * @author Nicholas Bonet
+ */
+
 public class FlagRegister {
 	
-	private boolean z, n, h, c;
+	private static final FlagRegister instance = new FlagRegister();
+	
+	private boolean z, n, h, c = false;
 	
 	private int z_position = 7;
 	private int n_position = 6;
 	private int h_position = 5;
 	private int c_position = 4;
+	
+	private FlagRegister() { }
+	
+	public static FlagRegister getInstance() {
+		return instance;
+	}
 	
 	public int flagsAsByte() {
 		int flagRegister = 0;

@@ -8,16 +8,24 @@ package us.kshadow.gbz80emu.processor;
 
 public class CPURegisters {
 	
+	private static final CPURegisters instance = new CPURegisters();
+	
 	// The 8 basic 8-bit CPU registers.
 	private int a, b, d, h, c, e, l;
 	
-	private final FlagRegister flagRegister = new FlagRegister();
+	private FlagRegister flagRegister = FlagRegister.getInstance();
 	
 	// Program counter register, holds address data for next instruction to be executed by the CPU.
 	private int pc;
 	
 	// Stack pointer, holds starting addr. of the stack area in memory.
 	private int sp;
+	
+	private CPURegisters() { }
+	
+	public static CPURegisters getInstance() {
+		return instance;
+	}
 	
 	// Verification method to check if a value is 8-bit before placing into a register.
 	public void checkIsByte(int arg) {

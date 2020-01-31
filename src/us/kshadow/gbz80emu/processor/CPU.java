@@ -1,53 +1,24 @@
 package us.kshadow.gbz80emu.processor;
 
-/* Main logic for modified Z80 implementation from the original Gameboy.
+/* Main logic for modified Z80/8080 implementation from the original Gameboy.
  * @author Nicholas Bonet
  */
 
 public class CPU {
 
-	private final CPURegisters cpuRegisters;
+	private CPURegisters cpuRegisters = CPURegisters.getInstance();
 	
 	public CPU() {
-		this.cpuRegisters = new CPURegisters();
-	}
-	
-	// Base instruction implementations. Will be mapped to opcodes later on.
-	
-	public void instruct_OR(int arg) {
-		int result = this.cpuRegisters.getA() | arg;
-		this.cpuRegisters.getFR().setZ(result);
-		this.cpuRegisters.getFR().setC(false);
-		this.cpuRegisters.getFR().setN(false);
-		this.cpuRegisters.getFR().setH(false);
-		this.cpuRegisters.setA(result);
-	}
-	
-	public void instruct_XOR(int arg) {
-		int result = this.cpuRegisters.getA() ^ arg;
-		this.cpuRegisters.getFR().setZ(result);
-		this.cpuRegisters.getFR().setC(false);
-		this.cpuRegisters.getFR().setN(false);
-		this.cpuRegisters.getFR().setH(false);
-		this.cpuRegisters.setA(result);
-	}
-	
-	public void instruct_AND(int arg) {
-		int result = this.cpuRegisters.getA() & arg;
-		this.cpuRegisters.getFR().setZ(result);
-		this.cpuRegisters.getFR().setC(false);
-		this.cpuRegisters.getFR().setN(false);
-		this.cpuRegisters.getFR().setH(true);
-		this.cpuRegisters.setA(result);
+
 	}
 	
 	// For swapping upper/lower halves in 8-bit registers.
 	public int instruct_SWAP(int register) {
 		int result = ((register & 0x0F) << 4 | (register & 0xF0) >> 4);
-		this.cpuRegisters.getFR().setZ(result);
-		this.cpuRegisters.getFR().setC(false);
-		this.cpuRegisters.getFR().setN(false);
-		this.cpuRegisters.getFR().setH(false);
+		cpuRegisters.getFR().setZ(result);
+		cpuRegisters.getFR().setC(false);
+		cpuRegisters.getFR().setN(false);
+		cpuRegisters.getFR().setH(false);
 		return result;
 	}
 	
