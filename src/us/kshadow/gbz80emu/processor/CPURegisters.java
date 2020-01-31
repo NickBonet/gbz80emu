@@ -1,5 +1,7 @@
 package us.kshadow.gbz80emu.processor;
 
+import us.kshadow.gbz80emu.util.BitUtil;
+
 /*
  * Represents the 8 8-bit registers and the 4 16-bit "virtual" registers implemented in the Gameboy Z80.
  * Also represents the program counter and stack pointer registers.
@@ -27,20 +29,6 @@ public class CPURegisters {
 		return instance;
 	}
 	
-	// Verification method to check if a value is 8-bit before placing into a register.
-	public void checkIsByte(int arg) {
-		if (!(arg >= 0 && arg <= 0xFF)) {
-			throw new IllegalArgumentException("Argument is not a valid byte.");
-		}
-	}
-	
-	// Same as above, but for 16-bit numbers.
-	public void checkIsWord(int arg) {
-		if (!(arg >= 0 && arg <= 0xFFFF)) {
-			throw new IllegalArgumentException("Argument is not a valid word.");
-		}
-	}
-	
 	// Getters/setters for virtual 16-bit registers.
 	public int getBC() {
 		// Move the 8 bits of the B register to the far left, which leaves us 0s on the right side.
@@ -61,25 +49,25 @@ public class CPURegisters {
 	}
 	
 	public void setBC(int bc) {
-		this.checkIsWord(bc);
+		BitUtil.checkIsWord(bc);
 		b = bc >> 8;
 		c = bc & 0xFF;
 	}
 	
 	public void setAF(int af) {
-		this.checkIsWord(af);
+		BitUtil.checkIsWord(af);
 		a = af >> 8;
 		this.flagRegister.flagsFromByte(af & 0xFF);
 	}
 	
 	public void setDE(int de) {
-		this.checkIsWord(de);
+		BitUtil.checkIsWord(de);
 		d = de >> 8;
 		e = de & 0xFF;
 	}
 	
 	public void setHL(int hl) {
-		this.checkIsWord(hl);
+		BitUtil.checkIsWord(hl);
 		h = hl >> 8;
 		l = hl & 0xFF;
 	}
@@ -90,7 +78,7 @@ public class CPURegisters {
 	}
 
 	public void setA(int a) {
-		this.checkIsByte(a);
+		BitUtil.checkIsByte(a);
 		this.a = a;
 	}
 
@@ -99,7 +87,7 @@ public class CPURegisters {
 	}
 
 	public void setB(int b) {
-		this.checkIsByte(b);
+		BitUtil.checkIsByte(b);
 		this.b = b;
 	}
 
@@ -108,7 +96,7 @@ public class CPURegisters {
 	}
 
 	public void setD(int d) {
-		this.checkIsByte(d);
+		BitUtil.checkIsByte(d);
 		this.d = d;
 	}
 
@@ -117,7 +105,7 @@ public class CPURegisters {
 	}
 
 	public void setH(int h) {
-		this.checkIsByte(h);
+		BitUtil.checkIsByte(h);
 		this.h = h;
 	}
 
@@ -126,7 +114,7 @@ public class CPURegisters {
 	}
 
 	public void setC(int c) {
-		this.checkIsByte(c);
+		BitUtil.checkIsByte(c);
 		this.c = c;
 	}
 
@@ -135,7 +123,7 @@ public class CPURegisters {
 	}
 
 	public void setE(int e) {
-		this.checkIsByte(e);
+		BitUtil.checkIsByte(e);
 		this.e = e;
 	}
 
@@ -144,7 +132,7 @@ public class CPURegisters {
 	}
 
 	public void setL(int l) {
-		this.checkIsByte(l);
+		BitUtil.checkIsByte(l);
 		this.l = l;
 	}
 
@@ -158,7 +146,7 @@ public class CPURegisters {
 	}
 
 	public void setF(int f) {
-		this.checkIsByte(f);
+		BitUtil.checkIsByte(f);
 		this.flagRegister.flagsFromByte(f);
 	}
 
@@ -169,7 +157,7 @@ public class CPURegisters {
 	
 	// Getters/setters for PC and SP registers
 	public void setPc(int pc) {
-		this.checkIsWord(pc);
+		BitUtil.checkIsWord(pc);
 		this.pc = pc;
 	}
 
@@ -178,7 +166,7 @@ public class CPURegisters {
 	}
 
 	public void setSp(int sp) {
-		this.checkIsWord(sp);
+		BitUtil.checkIsWord(sp);
 		this.sp = sp;
 	}
 	

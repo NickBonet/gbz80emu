@@ -39,4 +39,8 @@ public class ALU {
 		cpuRegisters.setA(result);
 	}
 	
+	public static void instruct_INC(int arg) {
+		
+	}
+	
 }
