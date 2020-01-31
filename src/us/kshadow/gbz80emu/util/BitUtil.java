@@ -29,21 +29,26 @@ public class BitUtil {
 		return false;
 	}
 	
-	// @param carryFlag - For ADC/SBC: If carry flag is 1, set true, false if 0
+	// @param carryFlag - For ADC: If carry flag is 1, set true, false if 0
 	public static boolean checkHalfCarryAdd(int a, int b, boolean carryFlag) {
 		int innerExp = (a & 0xF) + (b & 0xF) + (carryFlag ? 1 : 0); // mask off upper halves of bytes as we're really only interested in 4 bit addition for this
 		return (innerExp & 0x10) == 0x10; // AND the sum above against 0x10 (which in short checks if the 4th bit (0-7) was set,
 											// and return whether the result equals 0x10 or not
 	}
 
-	
-	public static boolean checkHalfCarrySub(int a, int b) {
-		return ((a & 0xF) < (b & 0xF)); // very basic carry check, if lower half of first number if less than lower half of second, a half carry will be required.
+	// @param carryFlag - For SBC: If carry flag is 1, set true, false if 0
+	public static boolean checkHalfCarrySub(int a, int b, boolean carryFlag) {
+		return ((a & 0xF) < ((b & 0xF) + (carryFlag ? 1 : 0))); // very basic carry check, if lower half of first number if less than lower half of second, a half carry will be required.
 	}
 	
-	// @param carryFlag - For ADC/SBC: If carry flag is 1, set true, false if 0
+	// @param carryFlag - For ADC: If carry flag is 1, set true, false if 0
 	public static boolean checkCarryAdd(int a, int b, boolean carryFlag) {
 		return ((a + b + (carryFlag ? 1 : 0)) > 0xFF);
+	}
+	
+	// @param carryFlag - For SBC: If carry flag is 1, set true, false if 0
+	public static boolean checkCarrySub(int a, int b, boolean carryFlag) {
+		return (b - (carryFlag ? 1 : 0) > a);
 	}
 	
 }
