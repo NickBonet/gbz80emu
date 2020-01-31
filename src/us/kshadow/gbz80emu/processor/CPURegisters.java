@@ -85,53 +85,56 @@ public class CPURegisters {
 	/**
 	 * Method to abstract the individual getters for registers, will be useful when mapping opcodes for similar instructions. (less duplication in those moments)
 	 * @param register - String of register to write value to
+	 * @return Value of the register.
 	 */
-	public void getRegister(String register) {
+	public int getRegister(String register) {
+		int regValue = 0;
 		switch(register) 
 		{
 			case "A":
-				getA();
+				regValue = getA();
 				break;
 			case "B":
-				getB();
+				regValue = getB();
 				break;
 			case "C":
-				getC();
+				regValue = getC();
 				break;
 			case "D":
-				getD();
+				regValue = getD();
 				break;
 			case "H":
-				getH();
+				regValue = getH();
 				break;
 			case "E":
-				getE();
+				regValue = getE();
 				break;
 			case "F":
-				getF();
+				regValue = getF();
 				break;
 			case "L":
-				getL();
+				regValue = getL();
 				break;
 			case "PC":
-				getPc();
+				regValue = getPc();
 				break;
 			case "SP":
-				getSp();
+				regValue = getSp();
 				break;
 			case "AF":
-				getAF();
+				regValue = getAF();
 				break;
 			case "BC":
-				getBC();
+				regValue = getBC();
 				break;
 			case "DE":
-				getDE();
+				regValue = getDE();
 				break;
 			case "HL":
-				getHL();
+				regValue = getHL();
 				break;
 		}
+		return regValue;
 	}
 	
 	// Getters/setters for virtual 16-bit registers.

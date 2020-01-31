@@ -28,5 +28,15 @@ public class BitUtil {
 		
 		return false;
 	}
+	
+	public static boolean checkHalfCarryAdd(int a, int b) {
+		int innerExp = (a & 0xF) + (b & 0xF); // mask off upper halves of bytes as we're really only interested in 4 bit addition for this
+		return (innerExp & 0x10) == 0x10; // AND the sum above against 0x10 (which in short checks if the 4th bit (0-7) was set,
+											// and return whether the result equals 0x10 or not
+	}
 
+	
+	public static boolean checkHalfCarrySub(int a, int b) {
+		return ((a & 0xF) < (b & 0xF)); // very basic carry check, if lower half of first number if less than lower half of second, a half carry will be required.
+	}
 }

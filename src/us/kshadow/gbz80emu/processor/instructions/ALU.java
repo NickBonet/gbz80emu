@@ -1,6 +1,7 @@
 package us.kshadow.gbz80emu.processor.instructions;
 
 import us.kshadow.gbz80emu.processor.CPURegisters;
+import us.kshadow.gbz80emu.util.BitUtil;
 
 /*
  * Instructions pertaining to the Arithmetic Logic Unit for the CPU.
@@ -39,8 +40,20 @@ public class ALU {
 		cpuRegisters.setA(result);
 	}
 	
-	public static void instruct_INC(String register) {
-		
+	public static void instruct_INC_u8(String register) {
+		int regVal = cpuRegisters.getRegister(register);
+		int result = (regVal + 1) & 0xFF; // mask off higher than 8 bits if addition carries that much
+		cpuRegisters.getFR().setZ(result == 0);
+		cpuRegisters.getFR().setN(false);
+		cpuRegisters.getFR().setH(BitUtil.checkHalfCarryAdd(regVal, 1));
+		cpuRegisters.writeToRegister(register, result);
 	}
 	
+	public static void instruct_DEC_u8(String register) {
+		int regVal = cpuRegisters.getRegister(register);
+		int result = (regVal - 1) & 0xFF; // two's complement if number reaches negative
+		cpuRegisters.getFR().setZ(result == 0);
+		cpuRegisters.getFR().setN(true);
+		cpuRegisters.getFR().setH(BitUtil.checkHalfCarrySub(regVal, 1));
+	}
 }
