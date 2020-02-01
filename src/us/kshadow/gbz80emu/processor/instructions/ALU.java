@@ -2,7 +2,7 @@ package us.kshadow.gbz80emu.processor.instructions;
 
 import us.kshadow.gbz80emu.processor.CPURegisters;
 import us.kshadow.gbz80emu.processor.FlagRegister;
-import us.kshadow.gbz80emu.util.BitUtil;
+import static us.kshadow.gbz80emu.util.BitUtil.*;
 
 /**
  * Instructions pertaining to the Arithmetic Logic Unit for the CPU.
@@ -47,7 +47,7 @@ public class ALU {
 		int result = (regVal + 1) & 0xFF; // mask off higher than 8 bits if addition carries that much
 		FR.setZ(result == 0);
 		FR.setN(false);
-		FR.setH(BitUtil.checkHalfCarryAdd(regVal, 1, false));
+		FR.setH(checkHalfCarryAdd(regVal, 1, false));
 		cpuReg.writeReg(register, result, false);
 	}
 	
@@ -68,7 +68,7 @@ public class ALU {
 		int result = (regVal - 1) & 0xFF; // two's complement if number reaches negative
 		FR.setZ(result == 0);
 		FR.setN(true);
-		FR.setH(BitUtil.checkHalfCarrySub(regVal, 1, false));
+		FR.setH(checkHalfCarrySub(regVal, 1, false));
 		cpuReg.writeReg(register, result, false);
 	}
 	
@@ -98,8 +98,8 @@ public class ALU {
 		int result = (cpuReg.getReg("A") + arg) & 0xFF;
 		FR.setZ(result == 0);
 		FR.setN(false);
-		FR.setH(BitUtil.checkHalfCarryAdd(cpuReg.getReg("A"), arg, false));
-		FR.setC(BitUtil.checkCarryAdd(cpuReg.getReg("A"), arg, false));
+		FR.setH(checkHalfCarryAdd(cpuReg.getReg("A"), arg, false));
+		FR.setC(checkCarryAdd(cpuReg.getReg("A"), arg, false));
 		cpuReg.writeReg("A", result, false);
 	}
 	
@@ -107,8 +107,8 @@ public class ALU {
 		int result = (cpuReg.getReg("A") + arg + (FR.isC() ? 1 : 0)) & 0xFF;
 		FR.setZ(result == 0);
 		FR.setN(false);
-		FR.setH(BitUtil.checkHalfCarryAdd(cpuReg.getReg("A"), arg, FR.isC()));
-		FR.setC(BitUtil.checkCarryAdd(cpuReg.getReg("A"), arg, FR.isC()));
+		FR.setH(checkHalfCarryAdd(cpuReg.getReg("A"), arg, FR.isC()));
+		FR.setC(checkCarryAdd(cpuReg.getReg("A"), arg, FR.isC()));
 		cpuReg.writeReg("A", result, false);
 	}
 	
@@ -119,8 +119,8 @@ public class ALU {
 		int result = (cpuReg.getReg("A") - arg) & 0xFF;
 		FR.setZ(result == 0);
 		FR.setN(true);
-		FR.setH(BitUtil.checkHalfCarrySub(cpuReg.getReg("A"), arg, false));
-		FR.setC(BitUtil.checkCarrySub(cpuReg.getReg("A"), arg, false));
+		FR.setH(checkHalfCarrySub(cpuReg.getReg("A"), arg, false));
+		FR.setC(checkCarrySub(cpuReg.getReg("A"), arg, false));
 		if (!CP) { cpuReg.writeReg("A", result, false); }
 	}
 	
@@ -128,8 +128,8 @@ public class ALU {
 		int result = (cpuReg.getReg("A") - arg - (FR.isC() ? 1 : 0)) & 0xFF;
 		FR.setZ(result == 0);
 		FR.setN(true);
-		FR.setH(BitUtil.checkHalfCarrySub(cpuReg.getReg("A"), arg, FR.isC()));
-		FR.setC(BitUtil.checkCarrySub(cpuReg.getReg("A"), arg, FR.isC()));
+		FR.setH(checkHalfCarrySub(cpuReg.getReg("A"), arg, FR.isC()));
+		FR.setC(checkCarrySub(cpuReg.getReg("A"), arg, FR.isC()));
 		cpuReg.writeReg("A", result, false);
 	}
 }

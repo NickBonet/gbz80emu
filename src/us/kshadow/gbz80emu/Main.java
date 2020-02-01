@@ -1,7 +1,6 @@
 package us.kshadow.gbz80emu;
 import us.kshadow.gbz80emu.processor.CPU;
 import us.kshadow.gbz80emu.processor.instructions.BitShift;
-import us.kshadow.gbz80emu.util.BitUtil;
 
 public class Main {
 
@@ -26,7 +25,22 @@ public class Main {
 		cpu.getCpuReg().getFR().setC(true);
 		cpu.getCpuReg().writeReg("A", 0x95, false);
 		BitShift.instruct_RLA();
+		System.out.println("instruct_RLA");
 		System.out.println("Value in A: " + cpu.getCpuReg().getReg("A"));
+		System.out.println(cpu.getCpuReg().getFR().isC());
+		
+		System.out.println("-----------------------------------");
+		
+		cpu.getCpuReg().getFR().flagsFromByte(0x00);
+		cpu.getCpuReg().writeReg("B", 0x85, false);
+		BitShift.instruct_RLC("B");
+		System.out.println("instruct_RLC");
+		System.out.println("Value in B: " + cpu.getCpuReg().getReg("B"));
+		System.out.println(cpu.getCpuReg().getFR().isC());
+		cpu.getCpuReg().getFR().flagsFromByte(0x00);
+		cpu.getCpuReg().writeReg("H", 0x00, false);
+		BitShift.instruct_RLC("H");
+		System.out.println("Value in H: " + cpu.getCpuReg().getReg("H"));
 		System.out.println(cpu.getCpuReg().getFR().isC());
 	}
 	
