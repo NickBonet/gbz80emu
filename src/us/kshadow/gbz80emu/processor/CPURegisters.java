@@ -2,7 +2,7 @@ package us.kshadow.gbz80emu.processor;
 
 import us.kshadow.gbz80emu.util.BitUtil;
 
-/*
+/**
  * Represents the 8 8-bit registers and the 4 16-bit "virtual" registers implemented in the Gameboy Z80.
  * Also represents the program counter and stack pointer registers.
  * @author Nicholas Bonet
@@ -31,251 +31,123 @@ public class CPURegisters {
 	
 	/**
 	 * Method to abstract the individual setters for registers, will be useful when mapping opcodes for similar instructions. (less duplication in those moments)
-	 * @param register - String of register to write value to
-	 * @param value - Data to be written to register
+	 * @param register - String of register to write value to.
+	 * @param value - Data to be written to register.
+	 * @param word - True if register and value are 16-bit, false if 8-bit register and value.
 	 */
-	public void writeToRegister(String register, int value) {
+	public void writeReg(String register, int value, boolean word) {
+		if (word) { BitUtil.checkIsWord(value); }
+		else { BitUtil.checkIsByte(value); }
 		switch(register) 
 		{
 			case "A":
-				setA(value);
+				this.a = value;
 				break;
 			case "B":
-				setB(value);
+				this.b = value;
 				break;
 			case "C":
-				setC(value);
+				this.c = value;
 				break;
 			case "D":
-				setD(value);
+				this.d = value;
 				break;
 			case "H":
-				setH(value);
+				this.h = value;
 				break;
 			case "E":
-				setE(value);
+				this.e = value;
 				break;
 			case "F":
-				setF(value);
+				flagRegister.flagsFromByte(value);
 				break;
 			case "L":
-				setL(value);
+				this.l = value;
 				break;
 			case "PC":
-				setPc(value);
+				this.pc = value;
 				break;
 			case "SP":
-				setSp(value);
+				this.sp = value;
 				break;
 			case "AF":
-				setAF(value);
+				a = value >> 8;
+				flagRegister.flagsFromByte(value & 0xFF);
 				break;
 			case "BC":
-				setBC(value);
+				b = value >> 8;
+				c = value & 0xFF;
 				break;
 			case "DE":
-				setDE(value);
+				d = value >> 8;
+				e = value & 0xFF;
 				break;
 			case "HL":
-				setHL(value);
+				h = value >> 8;
+				l = value & 0xFF;
 				break;
 		}
 	}
 	
 	/**
 	 * Method to abstract the individual getters for registers, will be useful when mapping opcodes for similar instructions. (less duplication in those moments)
-	 * @param register - String of register to write value to
+	 * @param register - String of register to read value from.
 	 * @return Value of the register.
 	 */
-	public int getRegister(String register) {
+	public int getReg(String register) {
 		int regValue = 0;
 		switch(register) 
 		{
 			case "A":
-				regValue = getA();
+				regValue = this.a;
 				break;
 			case "B":
-				regValue = getB();
+				regValue = this.b;
 				break;
 			case "C":
-				regValue = getC();
+				regValue = this.c;
 				break;
 			case "D":
-				regValue = getD();
+				regValue = this.d;
 				break;
 			case "H":
-				regValue = getH();
+				regValue = this.h;
 				break;
 			case "E":
-				regValue = getE();
+				regValue = this.e;
 				break;
 			case "F":
-				regValue = getF();
+				regValue = flagRegister.flagsAsByte();
 				break;
 			case "L":
-				regValue = getL();
+				regValue = this.l;
 				break;
 			case "PC":
-				regValue = getPc();
+				regValue = this.pc;
 				break;
 			case "SP":
-				regValue = getSp();
+				regValue = this.sp;
 				break;
 			case "AF":
-				regValue = getAF();
+				// Move the 8 bits of the B register to the far left, which leaves us 0s on the right side.
+				// We then OR the bits from the C register against B, which effectively merges the two into a 16-bit number.
+				regValue = (a << 8) | flagRegister.flagsAsByte();
 				break;
 			case "BC":
-				regValue = getBC();
+				regValue = (b << 8) | c;
 				break;
 			case "DE":
-				regValue = getDE();
+				regValue = (d << 8) | e;
 				break;
 			case "HL":
-				regValue = getHL();
+				regValue = (h << 8) | l;
 				break;
 		}
 		return regValue;
 	}
 	
-	// Getters/setters for virtual 16-bit registers.
-	public int getBC() {
-		// Move the 8 bits of the B register to the far left, which leaves us 0s on the right side.
-		// We then OR the bits from the C register against B, which effectively merges the two into a 16-bit number.
-		return (b << 8) | c;
-	}
-	
-	public int getAF() {
-		return (a << 8) | this.flagRegister.flagsAsByte();
-	}
-	
-	public int getDE() {
-		return (d << 8) | e;
-	}
-	
-	public int getHL() {
-		return (h << 8) | l;
-	}
-	
-	public void setBC(int bc) {
-		BitUtil.checkIsWord(bc);
-		b = bc >> 8;
-		c = bc & 0xFF;
-	}
-	
-	public void setAF(int af) {
-		BitUtil.checkIsWord(af);
-		a = af >> 8;
-		this.flagRegister.flagsFromByte(af & 0xFF);
-	}
-	
-	public void setDE(int de) {
-		BitUtil.checkIsWord(de);
-		d = de >> 8;
-		e = de & 0xFF;
-	}
-	
-	public void setHL(int hl) {
-		BitUtil.checkIsWord(hl);
-		h = hl >> 8;
-		l = hl & 0xFF;
-	}
-	
-	// Getters/setters for general registers.
-	public int getA() {
-		return a;
-	}
-
-	public void setA(int a) {
-		BitUtil.checkIsByte(a);
-		this.a = a;
-	}
-
-	public int getB() {
-		return b;
-	}
-
-	public void setB(int b) {
-		BitUtil.checkIsByte(b);
-		this.b = b;
-	}
-
-	public int getD() {
-		return d;
-	}
-
-	public void setD(int d) {
-		BitUtil.checkIsByte(d);
-		this.d = d;
-	}
-
-	public int getH() {
-		return h;
-	}
-
-	public void setH(int h) {
-		BitUtil.checkIsByte(h);
-		this.h = h;
-	}
-
-	public int getC() {
-		return c;
-	}
-
-	public void setC(int c) {
-		BitUtil.checkIsByte(c);
-		this.c = c;
-	}
-
-	public int getE() {
-		return e;
-	}
-
-	public void setE(int e) {
-		BitUtil.checkIsByte(e);
-		this.e = e;
-	}
-
-	public int getL() {
-		return l;
-	}
-
-	public void setL(int l) {
-		BitUtil.checkIsByte(l);
-		this.l = l;
-	}
-
-	public int getF() {
-		return this.flagRegister.flagsAsByte();
-	}
-	
 	// return FlagRegister object in special cases
 	public FlagRegister getFR() {
-		return this.flagRegister;
+		return flagRegister;
 	}
-
-	public void setF(int f) {
-		BitUtil.checkIsByte(f);
-		this.flagRegister.flagsFromByte(f);
-	}
-
-	public int getPc() {
-		return pc;
-	}
-	
-	
-	// Getters/setters for PC and SP registers
-	public void setPc(int pc) {
-		BitUtil.checkIsWord(pc);
-		this.pc = pc;
-	}
-
-	public int getSp() {
-		return sp;
-	}
-
-	public void setSp(int sp) {
-		BitUtil.checkIsWord(sp);
-		this.sp = sp;
-	}
-	
 }

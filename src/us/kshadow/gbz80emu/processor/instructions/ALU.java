@@ -1,131 +1,135 @@
 package us.kshadow.gbz80emu.processor.instructions;
 
 import us.kshadow.gbz80emu.processor.CPURegisters;
+import us.kshadow.gbz80emu.processor.FlagRegister;
 import us.kshadow.gbz80emu.util.BitUtil;
 
-/*
+/**
  * Instructions pertaining to the Arithmetic Logic Unit for the CPU.
  * @author Nicholas Bonet
  */
 
 public class ALU {	
-	private static CPURegisters cpuRegisters = CPURegisters.getInstance();
+	private static CPURegisters cpuReg = CPURegisters.getInstance();
+	private static FlagRegister FR = cpuReg.getFR();
 	
 	// Base instruction implementations. Will be mapped to opcodes later on.
 	
 	public static void instruct_OR(int arg) {
-		int result = cpuRegisters.getA() | arg;
-		cpuRegisters.getFR().setZ(result == 0);
-		cpuRegisters.getFR().setC(false);
-		cpuRegisters.getFR().setN(false);
-		cpuRegisters.getFR().setH(false);
-		cpuRegisters.setA(result);
+		int result = cpuReg.getReg("A") | arg;
+		FR.setZ(result == 0);
+		FR.setC(false);
+		FR.setN(false);
+		FR.setH(false);
+		cpuReg.writeReg("A", result, false);
 	}
 	
 	public static void instruct_XOR(int arg) {
-		int result = cpuRegisters.getA() ^ arg;
-		cpuRegisters.getFR().setZ(result == 0);
-		cpuRegisters.getFR().setC(false);
-		cpuRegisters.getFR().setN(false);
-		cpuRegisters.getFR().setH(false);
-		cpuRegisters.setA(result);
+		int result = cpuReg.getReg("A") ^ arg;
+		FR.setZ(result == 0);
+		FR.setC(false);
+		FR.setN(false);
+		FR.setH(false);
+		cpuReg.writeReg("A", result, false);
 	}
 	
 	public static void instruct_AND(int arg) {
-		int result = cpuRegisters.getA() & arg;
-		cpuRegisters.getFR().setZ(result == 0);
-		cpuRegisters.getFR().setC(false);
-		cpuRegisters.getFR().setN(false);
-		cpuRegisters.getFR().setH(true);
-		cpuRegisters.setA(result);
+		int result = cpuReg.getReg("A") & arg;
+		FR.setZ(result == 0);
+		FR.setC(false);
+		FR.setN(false);
+		FR.setH(true);
+		cpuReg.writeReg("A", result, false);
 	}
 	
 	public static void instruct_INC_u8(String register) {
-		int regVal = cpuRegisters.getRegister(register);
+		int regVal = cpuReg.getReg(register);
 		int result = (regVal + 1) & 0xFF; // mask off higher than 8 bits if addition carries that much
-		cpuRegisters.getFR().setZ(result == 0);
-		cpuRegisters.getFR().setN(false);
-		cpuRegisters.getFR().setH(BitUtil.checkHalfCarryAdd(regVal, 1, false));
-		cpuRegisters.writeToRegister(register, result);
+		FR.setZ(result == 0);
+		FR.setN(false);
+		FR.setH(BitUtil.checkHalfCarryAdd(regVal, 1, false));
+		cpuReg.writeReg(register, result, false);
 	}
 	
 	public static void instruct_INC_u16(String register) {
-		int regVal = cpuRegisters.getRegister(register);
+		int regVal = cpuReg.getReg(register);
 		int result = (regVal + 1) & 0xFFFF;
-		cpuRegisters.writeToRegister(register, result);
+		cpuReg.writeReg(register, result, true);
 	}
 	
 	public static void instruct_DEC_u16(String register) {
-		int regVal = cpuRegisters.getRegister(register);
+		int regVal = cpuReg.getReg(register);
 		int result = (regVal - 1) & 0xFFFF;
-		cpuRegisters.writeToRegister(register, result);
+		cpuReg.writeReg(register, result, true);
 	}
 	
 	public static void instruct_DEC_u8(String register) {
-		int regVal = cpuRegisters.getRegister(register);
+		int regVal = cpuReg.getReg(register);
 		int result = (regVal - 1) & 0xFF; // two's complement if number reaches negative
-		cpuRegisters.getFR().setZ(result == 0);
-		cpuRegisters.getFR().setN(true);
-		cpuRegisters.getFR().setH(BitUtil.checkHalfCarrySub(regVal, 1, false));
-		cpuRegisters.writeToRegister(register, result);
+		FR.setZ(result == 0);
+		FR.setN(true);
+		FR.setH(BitUtil.checkHalfCarrySub(regVal, 1, false));
+		cpuReg.writeReg(register, result, false);
 	}
 	
 	// SCF -- Set carry flag, reset N and H
 	public static void instruct_SCF() {
-		cpuRegisters.getFR().setN(false);
-		cpuRegisters.getFR().setH(false);
-		cpuRegisters.getFR().setC(true);
+		FR.setN(false);
+		FR.setH(false);
+		FR.setC(true);
 	}
 	
 	// CPL - flip bits of A
 	public static void instruct_CPL() {
-		int result = cpuRegisters.getA() ^ 0xFF;
-		cpuRegisters.getFR().setN(true);
-		cpuRegisters.getFR().setH(true);
-		cpuRegisters.setA(result);
+		int result = cpuReg.getReg("A") ^ 0xFF;
+		FR.setN(true);
+		FR.setH(true);
+		cpuReg.writeReg("A", result, false);
 	}
 	
 	// CCF - complement carry flag (flip it from current value)
 	public static void instruct_CCF() {
-		cpuRegisters.getFR().setN(false);
-		cpuRegisters.getFR().setH(false);
-		cpuRegisters.getFR().setC(!cpuRegisters.getFR().isC());
+		FR.setN(false);
+		FR.setH(false);
+		FR.setC(!FR.isC());
 	}
 	
 	public static void instruct_ADD(int arg) {
-		int result = (cpuRegisters.getA() + arg) & 0xFF;
-		cpuRegisters.getFR().setZ(result == 0);
-		cpuRegisters.getFR().setN(false);
-		cpuRegisters.getFR().setH(BitUtil.checkHalfCarryAdd(cpuRegisters.getA(), arg, false));
-		cpuRegisters.getFR().setC(BitUtil.checkCarryAdd(cpuRegisters.getA(), arg, false));
-		cpuRegisters.setA(result);
+		int result = (cpuReg.getReg("A") + arg) & 0xFF;
+		FR.setZ(result == 0);
+		FR.setN(false);
+		FR.setH(BitUtil.checkHalfCarryAdd(cpuReg.getReg("A"), arg, false));
+		FR.setC(BitUtil.checkCarryAdd(cpuReg.getReg("A"), arg, false));
+		cpuReg.writeReg("A", result, false);
 	}
 	
 	public static void instruct_ADC(int arg) {
-		int result = (cpuRegisters.getA() + arg + (cpuRegisters.getFR().isC() ? 1 : 0)) & 0xFF;
-		cpuRegisters.getFR().setZ(result == 0);
-		cpuRegisters.getFR().setN(false);
-		cpuRegisters.getFR().setH(BitUtil.checkHalfCarryAdd(cpuRegisters.getA(), arg, cpuRegisters.getFR().isC()));
-		cpuRegisters.getFR().setC(BitUtil.checkCarryAdd(cpuRegisters.getA(), arg, cpuRegisters.getFR().isC()));
-		cpuRegisters.setA(result);
+		int result = (cpuReg.getReg("A") + arg + (FR.isC() ? 1 : 0)) & 0xFF;
+		FR.setZ(result == 0);
+		FR.setN(false);
+		FR.setH(BitUtil.checkHalfCarryAdd(cpuReg.getReg("A"), arg, FR.isC()));
+		FR.setC(BitUtil.checkCarryAdd(cpuReg.getReg("A"), arg, FR.isC()));
+		cpuReg.writeReg("A", result, false);
 	}
 	
-	// @param CP - If true, treat instruction as CP and don't save result in A. (Only different between SUB and CP)
+	/**
+	 *  @param CP - If true, treat instruction as CP and don't save result in A. (Only different between SUB and CP)
+	 */
 	public static void instruct_SUB(int arg, boolean CP) {
-		int result = (cpuRegisters.getA() - arg) & 0xFF;
-		cpuRegisters.getFR().setZ(result == 0);
-		cpuRegisters.getFR().setN(true);
-		cpuRegisters.getFR().setH(BitUtil.checkHalfCarrySub(cpuRegisters.getA(), arg, false));
-		cpuRegisters.getFR().setC(BitUtil.checkCarrySub(cpuRegisters.getA(), arg, false));
-		if (!CP) { cpuRegisters.setA(result); }
+		int result = (cpuReg.getReg("A") - arg) & 0xFF;
+		FR.setZ(result == 0);
+		FR.setN(true);
+		FR.setH(BitUtil.checkHalfCarrySub(cpuReg.getReg("A"), arg, false));
+		FR.setC(BitUtil.checkCarrySub(cpuReg.getReg("A"), arg, false));
+		if (!CP) { cpuReg.writeReg("A", result, false); }
 	}
 	
 	public static void instruct_SBC(int arg) {
-		int result = (cpuRegisters.getA() - arg - (cpuRegisters.getFR().isC() ? 1 : 0)) & 0xFF;
-		cpuRegisters.getFR().setZ(result == 0);
-		cpuRegisters.getFR().setN(true);
-		cpuRegisters.getFR().setH(BitUtil.checkHalfCarrySub(cpuRegisters.getA(), arg, cpuRegisters.getFR().isC()));
-		cpuRegisters.getFR().setC(BitUtil.checkCarrySub(cpuRegisters.getA(), arg, cpuRegisters.getFR().isC()));
-		cpuRegisters.setA(result);
+		int result = (cpuReg.getReg("A") - arg - (FR.isC() ? 1 : 0)) & 0xFF;
+		FR.setZ(result == 0);
+		FR.setN(true);
+		FR.setH(BitUtil.checkHalfCarrySub(cpuReg.getReg("A"), arg, FR.isC()));
+		FR.setC(BitUtil.checkCarrySub(cpuReg.getReg("A"), arg, FR.isC()));
+		cpuReg.writeReg("A", result, false);
 	}
 }

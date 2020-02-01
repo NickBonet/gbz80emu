@@ -2,7 +2,7 @@ package us.kshadow.gbz80emu.processor;
 
 import us.kshadow.gbz80emu.util.BitUtil;
 
-/*
+/**
  * Abstraction for the flag register used in the CPU, flags set via boolean or by byte input. Flags can be read by boolean or converted to byte output.
  * @author Nicholas Bonet
  */
@@ -57,7 +57,6 @@ public class FlagRegister {
 		return z;
 	}
 	
-	// Determines if Z should be set based on argument passed (i.e. result from instruction)
 	public void setZ(boolean z) {
 		this.z = z;
 	}
