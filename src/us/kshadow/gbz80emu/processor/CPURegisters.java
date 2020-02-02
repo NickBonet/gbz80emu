@@ -29,6 +29,12 @@ public class CPURegisters {
 		return instance;
 	}
 	
+	// Simply reset all registers to 0x00.
+	public void clearRegs() {
+		a = b = d = h = c = e = l = pc = sp = 0;
+		flagRegister.flagsFromByte(0x00);
+	}
+	
 	/**
 	 * Method to abstract the individual setters for registers, will be useful when mapping opcodes for similar instructions. (less duplication in those moments)
 	 * @param register - String of register to write value to.

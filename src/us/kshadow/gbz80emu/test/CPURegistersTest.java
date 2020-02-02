@@ -2,6 +2,7 @@ package us.kshadow.gbz80emu.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import us.kshadow.gbz80emu.processor.CPURegisters;
@@ -9,6 +10,11 @@ import us.kshadow.gbz80emu.processor.CPURegisters;
 class CPURegistersTest {
 	
 	private CPURegisters reg = CPURegisters.getInstance();
+	
+	@BeforeEach
+	public void cleanup() {
+		reg.clearRegs();
+	}
 
 	@Test
 	public void checkRegisterASizeLimit() {
