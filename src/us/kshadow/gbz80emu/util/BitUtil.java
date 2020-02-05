@@ -29,6 +29,12 @@ public class BitUtil {
 		return false;
 	}
 	
+	public static int setBit(int arg, int bitPos) {
+		if (checkBitSet(arg, bitPos)) {
+			return arg &= ~(1 << bitPos);
+		} else { return arg | (1 << bitPos); }
+	}
+	
 	/**
 	 * @param carryFlag - For ADC: If carry flag is 1, set true, false if 0
 	 */

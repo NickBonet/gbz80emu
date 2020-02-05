@@ -27,7 +27,7 @@ public class Main {
 		BitShift.instruct_RLA();
 		System.out.println("instruct_RLA");
 		System.out.println("Value in A: " + cpu.getCpuReg().getReg("A"));
-		System.out.println(cpu.getCpuReg().getFR().isC());
+		System.out.println("FR: " + cpu.getCpuReg().getFR().flagsAsByte());
 		
 		System.out.println("-----------------------------------");
 		
@@ -36,12 +36,42 @@ public class Main {
 		BitShift.instruct_RLC("B");
 		System.out.println("instruct_RLC");
 		System.out.println("Value in B: " + cpu.getCpuReg().getReg("B"));
-		System.out.println(cpu.getCpuReg().getFR().isC());
+		System.out.println("FR: " + cpu.getCpuReg().getFR().flagsAsByte());
 		cpu.getCpuReg().getFR().flagsFromByte(0x00);
 		cpu.getCpuReg().writeReg("H", 0x00, false);
 		BitShift.instruct_RLC("H");
 		System.out.println("Value in H: " + cpu.getCpuReg().getReg("H"));
-		System.out.println(cpu.getCpuReg().getFR().isC());
+		System.out.println("FR: " + cpu.getCpuReg().getFR().flagsAsByte());
+		
+		cpu.getCpuReg().clearRegs();
+		System.out.println("\ninstruct_RR");
+		cpu.getCpuReg().writeReg("A", 0x1, false);
+		cpu.getCpuReg().writeReg("H", 0x8A, false);
+		BitShift.instruct_RR("A");
+		System.out.println("Value in A: " + cpu.getCpuReg().getReg("A"));
+		System.out.println("FR: " + cpu.getCpuReg().getFR().flagsAsByte());
+		cpu.getCpuReg().getFR().flagsFromByte(0x00);
+		BitShift.instruct_RR("H");
+		System.out.println("Value in H: " + cpu.getCpuReg().getReg("H"));
+		System.out.println("FR: " + cpu.getCpuReg().getFR().flagsAsByte());
+		
+		cpu.getCpuReg().clearRegs();
+		System.out.println("\ninstruct_RRA");
+		cpu.getCpuReg().writeReg("A", 0x81, false);
+		BitShift.instruct_RRA();
+		System.out.println("Value in A: " + cpu.getCpuReg().getReg("A"));
+		System.out.println("FR: " + cpu.getCpuReg().getFR().flagsAsByte());
+		
+		cpu.getCpuReg().clearRegs();
+		System.out.println("\ninstruct_RRC");
+		cpu.getCpuReg().writeReg("A", 0x1, false);
+		cpu.getCpuReg().writeReg("H", 0x0, false);
+		BitShift.instruct_RRC("A");
+		System.out.println("Value in A: " + cpu.getCpuReg().getReg("A"));
+		System.out.println("FR: " + cpu.getCpuReg().getFR().flagsAsByte());
+		cpu.getCpuReg().getFR().flagsFromByte(0x00);
+		BitShift.instruct_RRC("H");
+		System.out.println("Value in H: " + cpu.getCpuReg().getReg("H"));
+		System.out.println("FR: " + cpu.getCpuReg().getFR().flagsAsByte());
 	}
-	
 }
