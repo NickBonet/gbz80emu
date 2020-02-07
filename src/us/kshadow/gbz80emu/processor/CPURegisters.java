@@ -35,6 +35,12 @@ public class CPURegisters {
 		flagRegister.flagsFromByte(0x00);
 	}
 	
+	// Simple method for printing register values to console.
+	public void printReg() {
+		System.out.println(String.format("A: 0x%x  B: 0x%x  D: 0x%x  H: 0x%x  C: 0x%x  E: 0x%x  L: 0x%x  PC: 0x%x  SP: 0x%x  FR: 0x%x", 
+				a, b, d, h, c, e, l, pc, sp, flagRegister.flagsAsByte()));
+	}
+	
 	/**
 	 * Method to abstract the individual setters for registers, will be useful when mapping opcodes for similar instructions. (less duplication in those moments)
 	 * @param register - String of register to write value to.
