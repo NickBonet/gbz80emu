@@ -11,125 +11,127 @@ import static us.kshadow.gbz80emu.util.BitUtil.*;
 
 public class ALU {	
 	private static CPURegisters cpuReg = CPURegisters.getInstance();
-	private static FlagRegister FR = cpuReg.getFR();
+	private static FlagRegister fr = cpuReg.getFR();
+	
+	private ALU() {}
 	
 	// Base instruction implementations. Will be mapped to opcodes later on.
 	
-	public static void instruct_OR(int arg) {
+	public static void instructOR(int arg) {
 		int result = cpuReg.getReg("A") | arg;
-		FR.setZ(result == 0);
-		FR.setC(false);
-		FR.setN(false);
-		FR.setH(false);
+		fr.setZ(result == 0);
+		fr.setC(false);
+		fr.setN(false);
+		fr.setH(false);
 		cpuReg.writeReg("A", result, false);
 	}
 	
-	public static void instruct_XOR(int arg) {
+	public static void instructXOR(int arg) {
 		int result = cpuReg.getReg("A") ^ arg;
-		FR.setZ(result == 0);
-		FR.setC(false);
-		FR.setN(false);
-		FR.setH(false);
+		fr.setZ(result == 0);
+		fr.setC(false);
+		fr.setN(false);
+		fr.setH(false);
 		cpuReg.writeReg("A", result, false);
 	}
 	
-	public static void instruct_AND(int arg) {
+	public static void instructAND(int arg) {
 		int result = cpuReg.getReg("A") & arg;
-		FR.setZ(result == 0);
-		FR.setC(false);
-		FR.setN(false);
-		FR.setH(true);
+		fr.setZ(result == 0);
+		fr.setC(false);
+		fr.setN(false);
+		fr.setH(true);
 		cpuReg.writeReg("A", result, false);
 	}
 	
-	public static void instruct_INC_u8(String register) {
+	public static void instructINCu8(String register) {
 		int regVal = cpuReg.getReg(register);
 		int result = (regVal + 1) & 0xFF; // mask off higher than 8 bits if addition carries that much
-		FR.setZ(result == 0);
-		FR.setN(false);
-		FR.setH(checkHalfCarryAdd(regVal, 1, false));
+		fr.setZ(result == 0);
+		fr.setN(false);
+		fr.setH(checkHalfCarryAdd(regVal, 1, false));
 		cpuReg.writeReg(register, result, false);
 	}
 	
-	public static void instruct_INC_u16(String register) {
+	public static void instructINCu16(String register) {
 		int regVal = cpuReg.getReg(register);
 		int result = (regVal + 1) & 0xFFFF;
 		cpuReg.writeReg(register, result, true);
 	}
 	
-	public static void instruct_DEC_u16(String register) {
+	public static void instructDECu16(String register) {
 		int regVal = cpuReg.getReg(register);
 		int result = (regVal - 1) & 0xFFFF;
 		cpuReg.writeReg(register, result, true);
 	}
 	
-	public static void instruct_DEC_u8(String register) {
+	public static void instructDECu8(String register) {
 		int regVal = cpuReg.getReg(register);
 		int result = (regVal - 1) & 0xFF; // two's complement if number reaches negative
-		FR.setZ(result == 0);
-		FR.setN(true);
-		FR.setH(checkHalfCarrySub(regVal, 1, false));
+		fr.setZ(result == 0);
+		fr.setN(true);
+		fr.setH(checkHalfCarrySub(regVal, 1, false));
 		cpuReg.writeReg(register, result, false);
 	}
 	
 	// SCF -- Set carry flag, reset N and H
-	public static void instruct_SCF() {
-		FR.setN(false);
-		FR.setH(false);
-		FR.setC(true);
+	public static void instructSCF() {
+		fr.setN(false);
+		fr.setH(false);
+		fr.setC(true);
 	}
 	
 	// CPL - flip bits of A
-	public static void instruct_CPL() {
+	public static void instructCPL() {
 		int result = cpuReg.getReg("A") ^ 0xFF;
-		FR.setN(true);
-		FR.setH(true);
+		fr.setN(true);
+		fr.setH(true);
 		cpuReg.writeReg("A", result, false);
 	}
 	
 	// CCF - complement carry flag (flip it from current value)
-	public static void instruct_CCF() {
-		FR.setN(false);
-		FR.setH(false);
-		FR.setC(!FR.isC());
+	public static void instructCCF() {
+		fr.setN(false);
+		fr.setH(false);
+		fr.setC(!fr.isC());
 	}
 	
-	public static void instruct_ADD(int arg) {
+	public static void instructADD(int arg) {
 		int result = (cpuReg.getReg("A") + arg) & 0xFF;
-		FR.setZ(result == 0);
-		FR.setN(false);
-		FR.setH(checkHalfCarryAdd(cpuReg.getReg("A"), arg, false));
-		FR.setC(checkCarryAdd(cpuReg.getReg("A"), arg, false));
+		fr.setZ(result == 0);
+		fr.setN(false);
+		fr.setH(checkHalfCarryAdd(cpuReg.getReg("A"), arg, false));
+		fr.setC(checkCarryAdd(cpuReg.getReg("A"), arg, false));
 		cpuReg.writeReg("A", result, false);
 	}
 	
-	public static void instruct_ADC(int arg) {
-		int result = (cpuReg.getReg("A") + arg + (FR.isC() ? 1 : 0)) & 0xFF;
-		FR.setZ(result == 0);
-		FR.setN(false);
-		FR.setH(checkHalfCarryAdd(cpuReg.getReg("A"), arg, FR.isC()));
-		FR.setC(checkCarryAdd(cpuReg.getReg("A"), arg, FR.isC()));
+	public static void instructADC(int arg) {
+		int result = (cpuReg.getReg("A") + arg + (fr.isC() ? 1 : 0)) & 0xFF;
+		fr.setZ(result == 0);
+		fr.setN(false);
+		fr.setH(checkHalfCarryAdd(cpuReg.getReg("A"), arg, fr.isC()));
+		fr.setC(checkCarryAdd(cpuReg.getReg("A"), arg, fr.isC()));
 		cpuReg.writeReg("A", result, false);
 	}
 	
 	/**
-	 *  @param CP - If true, treat instruction as CP and don't save result in A. (Only different between SUB and CP)
+	 *  @param cp - If true, treat instruction as CP and don't save result in A. (Only different between SUB and CP)
 	 */
-	public static void instruct_SUB(int arg, boolean CP) {
+	public static void instructSUB(int arg, boolean cp) {
 		int result = (cpuReg.getReg("A") - arg) & 0xFF;
-		FR.setZ(result == 0);
-		FR.setN(true);
-		FR.setH(checkHalfCarrySub(cpuReg.getReg("A"), arg, false));
-		FR.setC(checkCarrySub(cpuReg.getReg("A"), arg, false));
-		if (!CP) { cpuReg.writeReg("A", result, false); }
+		fr.setZ(result == 0);
+		fr.setN(true);
+		fr.setH(checkHalfCarrySub(cpuReg.getReg("A"), arg, false));
+		fr.setC(checkCarrySub(cpuReg.getReg("A"), arg, false));
+		if (!cp) { cpuReg.writeReg("A", result, false); }
 	}
 	
-	public static void instruct_SBC(int arg) {
-		int result = (cpuReg.getReg("A") - arg - (FR.isC() ? 1 : 0)) & 0xFF;
-		FR.setZ(result == 0);
-		FR.setN(true);
-		FR.setH(checkHalfCarrySub(cpuReg.getReg("A"), arg, FR.isC()));
-		FR.setC(checkCarrySub(cpuReg.getReg("A"), arg, FR.isC()));
+	public static void instructSBC(int arg) {
+		int result = (cpuReg.getReg("A") - arg - (fr.isC() ? 1 : 0)) & 0xFF;
+		fr.setZ(result == 0);
+		fr.setN(true);
+		fr.setH(checkHalfCarrySub(cpuReg.getReg("A"), arg, fr.isC()));
+		fr.setC(checkCarrySub(cpuReg.getReg("A"), arg, fr.isC()));
 		cpuReg.writeReg("A", result, false);
 	}
 }

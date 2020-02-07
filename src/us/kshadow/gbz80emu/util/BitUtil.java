@@ -6,6 +6,8 @@ package us.kshadow.gbz80emu.util;
  */
 
 public class BitUtil {
+	
+	private BitUtil() { }
 
 	// Verification method to check if a value is 8-bit before placing into a register.
 	public static void checkIsByte(int arg) {
@@ -22,16 +24,13 @@ public class BitUtil {
 	}
 
 	public static boolean checkBitSet(int arg, int bitPos) {
-		if (((arg >> bitPos) & 1) != 0) {
-			return true;
-		}
-		
-		return false;
+		return (((arg >> bitPos) & 1) != 0);
 	}
 	
 	public static int setBit(int arg, int bitPos) {
 		if (checkBitSet(arg, bitPos)) {
-			return arg &= ~(1 << bitPos);
+			arg &= ~(1 << bitPos);
+			return arg;
 		} else { return arg | (1 << bitPos); }
 	}
 	

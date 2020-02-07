@@ -10,7 +10,7 @@ public class CPU {
 	private CPURegisters cpuReg = CPURegisters.getInstance();
 	
 	public CPU() {
-
+		// TODO: To be implemented later in the project.
 	}
 	
 	public CPURegisters getCpuReg() {

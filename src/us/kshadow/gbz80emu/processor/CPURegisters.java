@@ -50,7 +50,7 @@ public class CPURegisters {
 	public void writeReg(String register, int value, boolean word) {
 		if (word) { BitUtil.checkIsWord(value); }
 		else { BitUtil.checkIsByte(value); }
-		switch(register) 
+		switch(register.toUpperCase()) 
 		{
 			case "A":
 				this.a = value;
@@ -98,6 +98,8 @@ public class CPURegisters {
 				h = value >> 8;
 				l = value & 0xFF;
 				break;
+			default:
+				throw new IllegalArgumentException("Register write: Invalid register " + register);
 		}
 	}
 	
@@ -108,7 +110,7 @@ public class CPURegisters {
 	 */
 	public int getReg(String register) {
 		int regValue = 0;
-		switch(register) 
+		switch(register.toUpperCase()) 
 		{
 			case "A":
 				regValue = this.a;
@@ -154,6 +156,8 @@ public class CPURegisters {
 			case "HL":
 				regValue = (h << 8) | l;
 				break;
+			default:
+				throw new IllegalArgumentException("Register read: Invalid register " + register);
 		}
 		return regValue;
 	}
