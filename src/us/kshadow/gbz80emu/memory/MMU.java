@@ -1,5 +1,7 @@
 package us.kshadow.gbz80emu.memory;
 
+import java.util.Arrays;
+
 import us.kshadow.gbz80emu.util.BitUtil;
 
 /**
@@ -13,35 +15,35 @@ public class MMU {
 	
 	// TODO: Address space for boot ROM when implemented.
 	// Gets switched out at end of actual Gameboy boot up, when $FF50 is written to.
-	private static int[] bootRom = new int[0xFF];
+	private int[] bootRom = new int[0x100];
 	
 	// 0x0000 - 0x3FFF - ROM Bank 0
 	// This section of memory is mapped to the first 16kb of a GB ROM.
-	private static int[] romBank0 = new int[0x3FFF];
+	private int[] romBank0 = new int[0x4000];
 	
 	// 0x4000 - 0x7FFF - ROM Bank 1
 	// This section can be dynamically switched to another section of a GB ROM if it's > 32kb.
 	// Else, this is just the 2nd bank of a 32kb ROM.
-	private static int[] romBank1 = new int[0x3FFF];
+	private int[] romBank1 = new int[0x4000];
 	
 	// 0x8000 - 0x9FFF - VRAM (will be properly segmented later on)
-	private static int[] videoRam = new int[0x1FFF];
+	private int[] videoRam = new int[0x2000];
 	
 	// 0xA000 - 0xBFFF - External Cart RAM
-	private static int[] extRam = new int[0x1FFF];
+	private int[] extRam = new int[0x2000];
 	
 	// 0xC000 - 0xDFFF - Working RAM
 	// 0xE000 - 0xFDFF - Shadow of working RAM (last 512 bytes aren't shadowed)
-	private static int[] workRam = new int[0x1FFF];
+	private int[] workRam = new int[0x2000];
 	
 	// 0xFE00 - 0xFE9F - Sprite Attribute Table (OAM)
-	private static int[] oam = new int[0x9F];
+	private int[] oam = new int[0xA0];
 	
 	// 0xFEA0 - 0xFEFF - unused range
 	// TODO: 0xFF00 - 0xFF7F - I/O registers
 	
 	// 0xFF80 - 0xFFFE - Zero Page RAM
-	private static int[] zeroPage = new int[0x7E];
+	private int[] zeroPage = new int[0x7F];
 	
 	// TODO: 0xFFFF - Interrupt Enabled Register
 	
@@ -111,7 +113,7 @@ public class MMU {
 	 * @param address - Location of where to store value.
 	 * @param value - Value to store.
 	 */
-	public static void writeByte(int address, int value) {
+	public void writeByte(int address, int value) {
 		BitUtil.checkIsByte(value);
 		switch(address & 0xF000)
 		{
@@ -161,5 +163,10 @@ public class MMU {
 		BitUtil.checkIsWord(value);
 		writeByte(address, value & 0xFF); // least significant bit written first
 		writeByte(address + 1, value >> 8);
+	}
+	
+	public void loadROM(int[] romArray) {
+		romBank0 = Arrays.copyOfRange(romArray, 0x0000, 0x4000);
+		romBank1 = Arrays.copyOfRange(romArray, 0x4000, 0x8000);
 	}
 }

@@ -1,5 +1,7 @@
 package us.kshadow.gbz80emu.processor;
 
+import us.kshadow.gbz80emu.memory.MMU;
+
 /** 
  * Main logic for modified Z80/8080 implementation from the original Gameboy.
  * @author Nicholas Bonet
@@ -8,6 +10,7 @@ package us.kshadow.gbz80emu.processor;
 public class CPU {
 
 	private static CPURegisters cpuReg = CPURegisters.getInstance();
+	private static MMU mmu = MMU.getInstance();
 	
 	public CPU() {
 		// TODO: To be implemented later in the project.
