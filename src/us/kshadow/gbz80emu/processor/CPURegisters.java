@@ -15,7 +15,7 @@ public class CPURegisters {
 	// The 8 basic 8-bit CPU registers.
 	private int a, b, d, h, c, e, l;
 	
-	private FlagRegister flagRegister = FlagRegister.getInstance();
+	private static FlagRegister flagRegister = FlagRegister.getInstance();
 	
 	// Program counter register, holds address data for next instruction to be executed by the CPU.
 	private int pc;

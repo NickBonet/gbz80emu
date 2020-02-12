@@ -7,7 +7,7 @@ package us.kshadow.gbz80emu.processor;
 
 public class CPU {
 
-	private CPURegisters cpuReg = CPURegisters.getInstance();
+	private static CPURegisters cpuReg = CPURegisters.getInstance();
 	
 	public CPU() {
 		// TODO: To be implemented later in the project.
