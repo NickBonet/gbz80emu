@@ -165,8 +165,12 @@ public class MMU {
 		writeByte(address + 1, value >> 8);
 	}
 	
+	/**
+	 * Initial load of ROM into bank arrays.
+	 * @param romArray - ROM banks as array.
+	 */
 	public void loadROM(int[] romArray) {
-		romBank0 = Arrays.copyOfRange(romArray, 0x0000, 0x4000);
-		romBank1 = Arrays.copyOfRange(romArray, 0x4000, 0x8000);
+		romBank0 = Arrays.copyOfRange(romArray, 0x0000, 0x4000); // 0x0000 - 0x3FFF
+		romBank1 = Arrays.copyOfRange(romArray, 0x4000, 0x8000); // 0x4000 - 0x7FFF
 	}
 }
