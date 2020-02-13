@@ -173,4 +173,17 @@ public class MMU {
 		romBank0 = Arrays.copyOfRange(romArray, 0x0000, 0x4000); // 0x0000 - 0x3FFF
 		romBank1 = Arrays.copyOfRange(romArray, 0x4000, 0x8000); // 0x4000 - 0x7FFF
 	}
+	
+	/**
+	 * Fills all of the memory region arrays with 0, effectively resetting them.
+	 */
+	public void clearMemory() {
+		Arrays.fill(romBank0, 0);
+		Arrays.fill(romBank1, 0);
+		Arrays.fill(videoRam, 0);
+		Arrays.fill(extRam, 0);
+		Arrays.fill(workRam, 0);
+		Arrays.fill(oam, 0);
+		Arrays.fill(zeroPage, 0);
+	}
 }

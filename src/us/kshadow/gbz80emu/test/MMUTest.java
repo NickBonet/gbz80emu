@@ -15,7 +15,13 @@ class MMUTest {
 	private MMU mmu = MMU.getInstance();
 	ROMParser testROM = new ROMParser("tetris.gb");
 	
+	@BeforeEach
+	public void cleanup() {
+		mmu.clearMemory();
+	}
+	
 	@Test
+	// Tests reading/writing properly to ROM bank arrays.
 	public void testWriteThenReadROM() {
 		mmu.loadROM(testROM.getRomAsArray());
 		
@@ -31,4 +37,20 @@ class MMUTest {
 		assertEquals(true, Arrays.equals(Arrays.copyOfRange(testROM.getRomAsArray(), 0x4000, 0x8000), readBank1));
 	}
 
+	public void testWriteByteROMFails() {
+		for (int i = 0; i < testROM.getRomAsArray().length; i++) {
+			mmu.writeByte(i, testROM.getRomAsArray()[i]);
+		}
+		
+		int[] readROMTest = new int[0x8000];
+		int[] emptyArr = new int[0x8000];
+		Arrays.fill(emptyArr, 0);
+		
+		for (int i = 0; i < readROMTest.length; i++) {
+			readROMTest[i] = mmu.readByte(i);
+		}
+		
+		assertEquals(false, Arrays.equals(readROMTest, testROM.getRomAsArray()));
+		assertEquals(true, Arrays.equals(emptyArr, readROMTest));
+	}
 }
