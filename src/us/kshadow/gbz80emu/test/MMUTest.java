@@ -2,8 +2,10 @@ package us.kshadow.gbz80emu.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +15,16 @@ import us.kshadow.gbz80emu.memory.ROMParser;
 class MMUTest {
 	
 	private MMU mmu = MMU.getInstance();
-	ROMParser testROM = new ROMParser("tetris.gb");
+	private static ROMParser testROM = new ROMParser();
+	
+	@BeforeAll
+	public static void setup() {
+		try {
+			testROM.loadROM("tetris.gb");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@BeforeEach
 	public void cleanup() {
@@ -37,6 +48,7 @@ class MMUTest {
 		assertEquals(true, Arrays.equals(Arrays.copyOfRange(testROM.getRomAsArray(), 0x4000, 0x8000), readBank1));
 	}
 
+	@Test
 	public void testWriteByteROMFails() {
 		for (int i = 0; i < testROM.getRomAsArray().length; i++) {
 			mmu.writeByte(i, testROM.getRomAsArray()[i]);
