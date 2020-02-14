@@ -59,6 +59,7 @@ public class MMU {
 	 * @return - The byte from memory.
 	 */
 	public int readByte(int address) {
+		BitUtil.checkIsWord(address);
 		switch(address & 0xF000) 
 		{
 			case 0x0000: // will change later for boot ROM implementation
@@ -89,13 +90,13 @@ public class MMU {
 			case 0xF000:
 				if (address < 0xFE00) { return workRam[address & 0x1FFF]; }
 				else if (address >= 0xFE00 && address < 0xFEA0) { return oam[address & 0x9F]; }
-				else if (address >= 0xFF80 && address < 0xFFFF) { return zeroPage[address & 0x7E]; }
+				else if (address >= 0xFF80 && address < 0xFFFF) { return zeroPage[address & 0x7F]; }
 				
 				// If address = unused range, I/O registers, or interrupt register, return 0 for now.
 				return 0;
 			
 			default:
-				throw new IllegalArgumentException("Unhandled memory address: " + address);
+				throw new IllegalArgumentException("Unhandled memory read at address: " + address);
 		}
 	}
 	
@@ -114,6 +115,7 @@ public class MMU {
 	 * @param value - Value to store.
 	 */
 	public void writeByte(int address, int value) {
+		BitUtil.checkIsWord(address);
 		BitUtil.checkIsByte(value);
 		switch(address & 0xF000)
 		{
@@ -146,11 +148,11 @@ public class MMU {
 			case 0xF000:
 				if (address < 0xFE00) { workRam[address & 0x1FFF] = value; }
 				else if (address >= 0xFE00 && address < 0xFEA0) { oam[address & 0x9F] = value; }
-				else if (address >= 0xFF80 && address < 0xFFFF) { zeroPage[address & 0x7E] = value; }
+				else if (address >= 0xFF80 && address < 0xFFFF) { zeroPage[address & 0x7F] = value; }
 				break;
 				
 			default:
-				throw new IllegalArgumentException("Unhandled memory address: " + address);
+				throw new IllegalArgumentException("Unhandled memory write at address: " + address);
 		}
 	}
 	
