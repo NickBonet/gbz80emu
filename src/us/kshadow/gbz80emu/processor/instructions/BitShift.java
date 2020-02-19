@@ -103,6 +103,17 @@ public class BitShift {
 		cpuReg.writeReg(register, result, false);
 	}
 	
+	// Similar to SRA, except bit 7 is zeroed.
+	public static void instructSRL(String register) {
+		int result = ((cpuReg.getReg(register) >> 1) & 0xFF);
+		if (!checkBitSet(result, 7)) { setBit(result, 7); } // set bit 7 to 0 if it's not already.
+		fr.setN(false);
+		fr.setH(false);
+		fr.setZ(result == 0);
+		fr.setC(checkBitSet(cpuReg.getReg(register), 0));
+		cpuReg.writeReg(register, result, false);
+	}
+	
 	// Rotate A right through carry.
 	public static void instructRRA() {
 		int result = ((cpuReg.getReg("A") >> 1) & 0xFF);
