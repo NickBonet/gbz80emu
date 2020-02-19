@@ -146,4 +146,13 @@ public class BitShift {
 		fr.setZ(false);
 		cpuReg.writeReg("A", result, false);
 	}
+	
+	// Tests specified bit in register, sets zero flag to 0 if bit tested is 0.
+	public static void instructBIT(String register, int bitPos) {
+		if (bitPos < 8) {
+			if (!checkBitSet(cpuReg.getReg(register), bitPos)) { fr.setZ(true); }
+			fr.setN(false);
+			fr.setH(true);
+		}
+	}
 }
