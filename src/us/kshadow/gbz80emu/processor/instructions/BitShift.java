@@ -164,4 +164,13 @@ public class BitShift {
 			cpuReg.writeReg(register, result, false);
 		}
 	}
+	
+	// Sets specified bit in byte to 0.
+	public static void instructRES(String register, int bitPos) {
+		if (bitPos < 8) {
+			int result = cpuReg.getReg(register);
+			if (checkBitSet(result, bitPos)) { setBit(result, bitPos); }
+			cpuReg.writeReg(register, result, false);
+		}
+	}
 }

@@ -26,7 +26,7 @@ public class BitUtil {
 	/**
 	 * Checks if position in a given byte is 1 or 0.
 	 * @param arg - Byte used for checking.
-	 * @param bitPo - Specific position in byte to check if 0 or 1.
+	 * @param bitPos - Specific position in byte to check if 0 or 1.
 	 * @return - True or false depending if bit is 1 or 0, respectively.
 	 */
 	public static boolean checkBitSet(int arg, int bitPos) {
