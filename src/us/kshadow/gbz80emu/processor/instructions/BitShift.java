@@ -38,6 +38,16 @@ public class BitShift {
 		cpuReg.writeReg(register, result, false);
 	}
 	
+	// Similar to RL, except bit 0 is set to 0.
+	public static void instructSLA(String register) {
+		int result = ((cpuReg.getReg(register) << 1) & 0xFF);
+		if (!checkBitSet(result, 0)) { setBit(result, 0); } // set bit 0 to 0 if it's not already.
+		fr.setC(checkBitSet(cpuReg.getReg(register), 7));
+		fr.setH(false);
+		fr.setN(false);
+		fr.setZ(result == 0);
+		cpuReg.writeReg(register, result, false);
+	}
 	
 	// Rotate A register left through carry flag
 	public static void instructRLA() {

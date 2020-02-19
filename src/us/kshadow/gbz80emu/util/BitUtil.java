@@ -23,10 +23,22 @@ public class BitUtil {
 		}
 	}
 
+	/**
+	 * Checks if position in a given byte is 1 or 0.
+	 * @param arg - Byte used for checking.
+	 * @param bitPo - Specific position in byte to check if 0 or 1.
+	 * @return - True or false depending if bit is 1 or 0, respectively.
+	 */
 	public static boolean checkBitSet(int arg, int bitPos) {
 		return (((arg >> bitPos) & 1) != 0);
 	}
 	
+	/**
+	 * Sets/resets a bit in a byte at a given position.
+	 * @param arg - Byte that is being processed.
+	 * @param bitPos - Bit to set/reset in the byte.
+	 * @return - Byte with bit at position set/reset to 0.
+	 */
 	public static int setBit(int arg, int bitPos) {
 		if (checkBitSet(arg, bitPos)) {
 			arg &= ~(1 << bitPos);
