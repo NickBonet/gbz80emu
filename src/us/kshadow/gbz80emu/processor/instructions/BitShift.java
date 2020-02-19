@@ -155,4 +155,13 @@ public class BitShift {
 			fr.setH(true);
 		}
 	}
+	
+	// Sets specified bit in byte to 1.
+	public static void instructSET(String register, int bitPos) {
+		if (bitPos < 8) {
+			int result = cpuReg.getReg(register);
+			if (!checkBitSet(result, bitPos)) { setBit(result, bitPos); }
+			cpuReg.writeReg(register, result, false);
+		}
+	}
 }
