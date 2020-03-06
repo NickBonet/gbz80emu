@@ -9,7 +9,7 @@ import us.kshadow.gbz80emu.processor.FlagRegister;
 
 class FlagRegisterTest {
 	
-	private FlagRegister fr = FlagRegister.getInstance();
+	private static final FlagRegister fr = FlagRegister.getInstance();
 	
 	@BeforeEach
 	public void resetFR() {

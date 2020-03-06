@@ -12,8 +12,8 @@ import static us.kshadow.gbz80emu.util.BitUtil.setBit;
 
 public class BitShift {
 
-	private static CPURegisters cpuReg = CPURegisters.getInstance();
-	private static FlagRegister fr = cpuReg.getFR();
+	private static final CPURegisters cpuReg = CPURegisters.getInstance();
+	private static final FlagRegister fr = cpuReg.getFR();
 	
 	private BitShift() { }
 	

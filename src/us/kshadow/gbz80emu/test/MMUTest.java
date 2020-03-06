@@ -13,10 +13,10 @@ import us.kshadow.gbz80emu.memory.ROMParser;
 
 class MMUTest {
 	
-	private MMU mmu = MMU.getInstance();
-	private static ROMParser testROM = new ROMParser();
+	private static final MMU mmu = MMU.getInstance();
+	private ROMParser testROM = new ROMParser();
 	
-	public static void setup() {
+	public void setup() {
 		try {
 			testROM.loadROM("tetris.gb");
 		} catch (IOException e) {

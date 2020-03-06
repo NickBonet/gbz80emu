@@ -9,8 +9,8 @@ import us.kshadow.gbz80emu.memory.MMU;
 
 public class CPU {
 
-	private static CPURegisters cpuReg = CPURegisters.getInstance();
-	private static MMU mmu = MMU.getInstance();
+	private static final CPURegisters cpuReg = CPURegisters.getInstance();
+	private static final MMU mmu = MMU.getInstance();
 	
 	public CPU() {
 		// TODO: To be implemented later in the project.

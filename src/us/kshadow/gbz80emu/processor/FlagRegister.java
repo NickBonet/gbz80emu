@@ -13,10 +13,10 @@ public class FlagRegister {
 	
 	private boolean z, n, h, c = false;
 	
-	private static int zPos = 7;
-	private static int nPos = 6;
-	private static int hPos = 5;
-	private static int cPos = 4;
+	private static final int zPos = 7;
+	private static final int nPos = 6;
+	private static final int hPos = 5;
+	private static final int cPos = 4;
 	
 	private FlagRegister() { }
 	

@@ -9,7 +9,7 @@ import us.kshadow.gbz80emu.processor.CPURegisters;
 
 class CPURegistersTest {
 	
-	private CPURegisters reg = CPURegisters.getInstance();
+	private static final CPURegisters reg = CPURegisters.getInstance();
 	
 	@BeforeEach
 	public void cleanup() {
