@@ -32,13 +32,13 @@ public class CPURegisters {
 	// Simply reset all registers to 0x00.
 	public void clearRegs() {
 		a = b = d = h = c = e = l = pc = sp = 0;
-		flagRegister.flagsFromByte(0x00);
+		flagRegister.setFlagsFromByte(0x00);
 	}
 	
 	// Simple method for printing register values to console.
 	public void printReg() {
 		System.out.println(String.format("A: 0x%x  B: 0x%x  D: 0x%x  H: 0x%x  C: 0x%x  E: 0x%x  L: 0x%x  PC: 0x%x  SP: 0x%x  FR: 0x%x", 
-				a, b, d, h, c, e, l, pc, sp, flagRegister.flagsAsByte()));
+				a, b, d, h, c, e, l, pc, sp, flagRegister.getFlagsAsByte()));
 	}
 	
 	/**
@@ -71,7 +71,7 @@ public class CPURegisters {
 				this.e = value;
 				break;
 			case "F":
-				flagRegister.flagsFromByte(value);
+				flagRegister.setFlagsFromByte(value);
 				break;
 			case "L":
 				this.l = value;
@@ -84,7 +84,7 @@ public class CPURegisters {
 				break;
 			case "AF":
 				a = value >> 8;
-				flagRegister.flagsFromByte(value & 0xFF);
+				flagRegister.setFlagsFromByte(value & 0xFF);
 				break;
 			case "BC":
 				b = value >> 8;
@@ -131,7 +131,7 @@ public class CPURegisters {
 				regValue = this.e;
 				break;
 			case "F":
-				regValue = flagRegister.flagsAsByte();
+				regValue = flagRegister.getFlagsAsByte();
 				break;
 			case "L":
 				regValue = this.l;
@@ -145,7 +145,7 @@ public class CPURegisters {
 			case "AF":
 				// Move the 8 bits of the B register to the far left, which leaves us 0s on the right side.
 				// We then OR the bits from the C register against B, which effectively merges the two into a 16-bit number.
-				regValue = (a << 8) | flagRegister.flagsAsByte();
+				regValue = (a << 8) | flagRegister.getFlagsAsByte();
 				break;
 			case "BC":
 				regValue = (b << 8) | c;

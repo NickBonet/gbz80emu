@@ -27,12 +27,12 @@ public class Main {
 		System.out.println("instruct_RLA");
 		cpu.getCpuReg().printReg();	
 		
-		cpu.getCpuReg().getFR().flagsFromByte(0x00);
+		cpu.getCpuReg().getFR().setFlagsFromByte(0x00);
 		cpu.getCpuReg().writeReg("B", 0x85, false);
 		BitShift.instructRLC("B");
 		System.out.println("\ninstruct_RLC");
 		cpu.getCpuReg().printReg();	
-		cpu.getCpuReg().getFR().flagsFromByte(0x00);
+		cpu.getCpuReg().getFR().setFlagsFromByte(0x00);
 		cpu.getCpuReg().writeReg("H", 0x00, false);
 		BitShift.instructRLC("H");
 		cpu.getCpuReg().printReg();	
@@ -43,7 +43,7 @@ public class Main {
 		cpu.getCpuReg().writeReg("H", 0x8A, false);
 		BitShift.instructRR("A");
 		cpu.getCpuReg().printReg();	
-		cpu.getCpuReg().getFR().flagsFromByte(0x00);
+		cpu.getCpuReg().getFR().setFlagsFromByte(0x00);
 		BitShift.instructRR("H");
 		cpu.getCpuReg().printReg();	
 		
@@ -59,7 +59,7 @@ public class Main {
 		cpu.getCpuReg().writeReg("H", 0x0, false);
 		BitShift.instructRRC("A");
 		cpu.getCpuReg().printReg();	
-		cpu.getCpuReg().getFR().flagsFromByte(0x00);
+		cpu.getCpuReg().getFR().setFlagsFromByte(0x00);
 		BitShift.instructRRC("H");
 		cpu.getCpuReg().printReg();	
 	}

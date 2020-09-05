@@ -24,7 +24,7 @@ public class FlagRegister {
 		return instance;
 	}
 	
-	public int flagsAsByte() {
+	public int getFlagsAsByte() {
 		int flagRegister = 0;
 		
 		if (z) {
@@ -46,7 +46,7 @@ public class FlagRegister {
 		return flagRegister;
 	}
 	
-	public void flagsFromByte(int flags) {
+	public void setFlagsFromByte(int flags) {
 		z = BitUtil.checkBitSet(flags, zPos);
 		n = BitUtil.checkBitSet(flags, nPos);
 		h = BitUtil.checkBitSet(flags, hPos);
