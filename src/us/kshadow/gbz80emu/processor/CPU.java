@@ -19,4 +19,8 @@ public class CPU {
 	public CPURegisters getCpuReg() {
 		return cpuReg;
 	}
+	
+	public MMU getMMU() {
+		return mmu;
+	}
 }

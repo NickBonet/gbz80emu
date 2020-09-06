@@ -1,14 +1,26 @@
 package us.kshadow.gbz80emu;
+import java.io.IOException;
+
+import us.kshadow.gbz80emu.memory.ROMParser;
 import us.kshadow.gbz80emu.processor.CPU;
-import us.kshadow.gbz80emu.processor.instructions.BitShift;
 
 public class Main {
 
 	public static void main(String[] args) {
+		// Initialize CPU, load a ROM into MMU to prepare for execution loop.
+		
 		CPU cpu = new CPU();
+		ROMParser testROM = new ROMParser();
 		
-		// I just use this as a testing area until I make actual unit tests.
+		try {
+			testROM.loadROM("cpu_instrs.gb");
+			cpu.getMMU().loadROM(testROM.getRomAsArray());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
+		cpu.getCpuReg().setInitValues();
+		cpu.getCpuReg().printReg();
 		
 		// Beginning of the actual fetch/decode/execute cycle
 		while(true) {

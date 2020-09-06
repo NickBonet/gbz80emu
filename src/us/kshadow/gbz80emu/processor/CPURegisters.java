@@ -162,6 +162,17 @@ public class CPURegisters {
 		return regValue;
 	}
 	
+	
+	// Sets the initial values of the registers as if the firmware has executed on the GB.
+	public void setInitValues() {
+		this.writeReg("AF", 0x01B0, true);
+		this.writeReg("BC", 0x0013, true);
+		this.writeReg("DE", 0x00D8, true);
+		this.writeReg("HL", 0x014D, true);
+		this.writeReg("SP", 0xFFFE, true);
+		this.writeReg("PC", 0x100, true);
+	}
+	
 	// return FlagRegister object in special cases
 	public FlagRegister getFR() {
 		return flagRegister;
