@@ -13,7 +13,7 @@ public class Main {
 		ROMParser testROM = new ROMParser();
 		
 		try {
-			testROM.loadROM("cpu_instrs.gb");
+			testROM.loadROM("tetris.gb");
 			cpu.getMMU().loadROM(testROM.getRomAsArray());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -22,9 +22,10 @@ public class Main {
 		cpu.getCpuReg().setInitValues();
 		cpu.getCpuReg().printReg();
 		
+		/*
 		// Beginning of the actual fetch/decode/execute cycle
 		while(true) {
 			
-		}
+		}*/
 	}
 }

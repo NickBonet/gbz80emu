@@ -15,8 +15,36 @@ public class ControlFlow {
 	
 	private ControlFlow() { }
 	
-	// Handles conditional jump/absolute jump instruction.
-	public static void instructJP() {
-		//TODO: Need to finish implementing
+	// Handles absolute jump function.
+	public static void instructJP(int address) {
+		cpuReg.writeReg("PC", address, false);
+	}
+	
+	// Handles conditional jumps.
+	public static void instructCondJP(int opcode, int address) {
+		switch(opcode) {
+		case 0xC2:
+			if (!fr.isZ()) {
+				instructJP(address);
+			}
+			break;
+		case 0xCA:
+			if (fr.isZ()) {
+				instructJP(address);
+			}
+			break;
+		case 0xD2:
+			if (!fr.isC()) {
+				instructJP(address);
+			}
+			break;
+		case 0xDA:
+			if (fr.isC()) {
+				instructJP(address);
+			}
+			break;
+		default:
+			break;
+		}
 	}
 }
