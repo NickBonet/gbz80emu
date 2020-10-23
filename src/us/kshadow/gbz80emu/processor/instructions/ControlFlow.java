@@ -17,7 +17,7 @@ public class ControlFlow {
 	
 	// Handles absolute jump function.
 	public static void instructJP(int address) {
-		cpuReg.writeReg("PC", address, false);
+		cpuReg.writeReg("PC", address, true);
 	}
 	
 	// Handles conditional jumps.
@@ -41,6 +41,38 @@ public class ControlFlow {
 		case 0xDA:
 			if (fr.isC()) {
 				instructJP(address);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	
+	// Handles relative jump, based on next byte in memory (signed).
+	public static void instructJR(byte value) {
+		cpuReg.writeReg("PC", cpuReg.getReg("PC") + value, false);
+	}
+	
+	public static void instructCondJR(int opcode, byte value) {
+		switch(opcode) {
+		case 0x20:
+			if (!fr.isZ()) {
+				instructJR(value);
+			}
+			break;
+		case 0x28:
+			if (fr.isZ()) {
+				instructJR(value);
+			}
+			break;
+		case 0x30:
+			if (!fr.isC()) {
+				instructJR(value);
+			}
+			break;
+		case 0x38:
+			if (fr.isC()) {
+				instructJR(value);
 			}
 			break;
 		default:
