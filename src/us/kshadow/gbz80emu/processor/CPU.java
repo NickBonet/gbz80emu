@@ -17,16 +17,26 @@ public class CPU {
 	}
 	
 	public void fetchInstruction() {
-		int instruction = mmu.readByte(cpuReg.getReg("PC"));
-		cpuReg.incPC();
+		int instruction = fetchNextByte();
 		switch (instruction) {
 		case 0x31: // LD SP, d16
-			cpuReg.writeReg("SP", mmu.readWord(cpuReg.getPC()), true);
-			cpuReg.incPC();
-			cpuReg.incPC();
+			cpuReg.writeReg("SP", fetchNextWord(), true);
+			break;
 		default:
 			break;
 		}
+	}
+
+	public int fetchNextByte() {
+		int result = mmu.readByte(cpuReg.getPC());
+		cpuReg.incPC();
+		return result;
+	}
+	
+	public int fetchNextWord() {
+		int result = mmu.readWord(cpuReg.getPC());
+		cpuReg.writeReg("PC", cpuReg.getPC() + 2, false);;
+		return result;
 	}
 	
 	public CPURegisters getCpuReg() {

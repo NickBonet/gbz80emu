@@ -50,7 +50,7 @@ public class CPURegisters {
 	 * Method to abstract the individual setters for registers, will be useful when mapping opcodes for similar instructions. (less duplication in those moments)
 	 * @param register - String of register to write value to.
 	 * @param value - Data to be written to register.
-	 * @param word - True if register and value are 16-bit, false if 8-bit register and value.
+	 * @param word - True if register/value are 16-bit, false if 8-bit register/value.
 	 */
 	public void writeReg(String register, int value, boolean word) {
 		if (word) { BitUtil.checkIsWord(value); }
