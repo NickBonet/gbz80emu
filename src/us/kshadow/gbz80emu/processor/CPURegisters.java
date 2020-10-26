@@ -178,6 +178,14 @@ public class CPURegisters {
 		this.writeReg("PC", 0x100, true);
 	}
 	
+	public void incPC() {
+		this.pc++;
+	}
+	
+	public int getPC() {
+		return pc;
+	}
+	
 	// return FlagRegister object in special cases
 	public FlagRegister getFR() {
 		return flagRegister;

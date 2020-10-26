@@ -1,5 +1,6 @@
 package us.kshadow.gbz80emu.memory;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import us.kshadow.gbz80emu.util.BitUtil;
@@ -15,7 +16,8 @@ public class MMU {
 	
 	// TODO: Address space for boot ROM when implemented.
 	// Gets switched out at end of actual Gameboy boot up, when $FF50 is written to.
-	private int[] bootRom = new int[0x100];
+	private int[] bootRom = new int[0xFF];
+	private boolean bootRomEnabled = true;
 	
 	// 0x0000 - 0x3FFF - ROM Bank 0
 	// This section of memory is mapped to the first 16kb of a GB ROM.
@@ -47,7 +49,15 @@ public class MMU {
 	
 	// TODO: 0xFFFF - Interrupt Enabled Register
 	
-	private MMU() { }
+	private MMU() { 
+		ROMParser bootROM = new ROMParser();
+		try {
+			bootROM.loadROM("dmg_boot.bin");
+			loadBootROM(bootROM.getRomAsArray());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static MMU getInstance() {
 		return instance;
@@ -63,6 +73,11 @@ public class MMU {
 		switch(address & 0xF000) 
 		{
 			case 0x0000: // will change later for boot ROM implementation
+				if (address < 0x100 && bootRomEnabled) {
+					return bootRom[address];
+				} else {
+					return romBank0[address];
+				}
 			case 0x1000:
 			case 0x2000:
 			case 0x3000:
@@ -174,6 +189,10 @@ public class MMU {
 	public void loadROM(int[] romArray) {
 		romBank0 = Arrays.copyOfRange(romArray, 0x0000, 0x4000); // 0x0000 - 0x3FFF
 		romBank1 = Arrays.copyOfRange(romArray, 0x4000, 0x8000); // 0x4000 - 0x7FFF
+	}
+	
+	private void loadBootROM(int[] boot) {
+		bootRom = Arrays.copyOfRange(boot, 0x00, 0x100);
 	}
 	
 	/**

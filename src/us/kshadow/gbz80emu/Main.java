@@ -13,19 +13,19 @@ public class Main {
 		ROMParser testROM = new ROMParser();
 		
 		try {
-			testROM.loadROM("tetris.gb");
+			testROM.loadROM("tetris.gb");		
 			cpu.getMMU().loadROM(testROM.getRomAsArray());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		cpu.getCpuReg().setInitValues();
+		//cpu.getCpuReg().setInitValues();
 		cpu.getCpuReg().printReg();
 		
-		/*
 		// Beginning of the actual fetch/decode/execute cycle
 		while(true) {
-			
-		}*/
+			cpu.fetchInstruction();
+			cpu.getCpuReg().printReg();
+		}
 	}
 }
