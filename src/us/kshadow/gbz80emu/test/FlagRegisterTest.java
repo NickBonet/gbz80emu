@@ -2,60 +2,60 @@ package us.kshadow.gbz80emu.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.After;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import us.kshadow.gbz80emu.processor.FlagRegister;
 
 class FlagRegisterTest {
 	
-	private final FlagRegister FR = new FlagRegister();
+	private static final FlagRegister fr = FlagRegister.getInstance();
 	
-	@After
+	@BeforeEach
 	public void resetFR() {
-		FR.setZ(1); // any number besides 0 = Z  flag set to false.
-		FR.setC(false);
-		FR.setN(false);
-		FR.setH(false);
+		fr.setZ(false); 
+		fr.setC(false);
+		fr.setN(false);
+		fr.setH(false);
 	}
 
 	@Test
 	public void checkFlagAsByte() {
-		FR.setZ(0); 
-		FR.setC(true);
-		assertEquals(0b10010000, FR.flagsAsByte()); // Verify correct bits for zero/carry flags are set
+		fr.setZ(true); 
+		fr.setC(true);
+		assertEquals(0b10010000, fr.getFlagsAsByte()); // Verify correct bits for zero/carry flags are set
 		
-		FR.setZ(1);
-		FR.setC(false);
+		fr.setZ(false);
+		fr.setC(false);
 		
-		FR.setN(true);
-		assertEquals(0b01000000, FR.flagsAsByte()); // sane as above for subtract flag
-		FR.setH(true);
-		assertEquals(0b01100000, FR.flagsAsByte()); // and half carry
+		fr.setN(true);
+		assertEquals(0b01000000, fr.getFlagsAsByte()); // sane as above for subtract flag
+		fr.setH(true);
+		assertEquals(0b01100000, fr.getFlagsAsByte()); // and half carry
 	}
 	
 	@Test
 	public void checkFlagFromByte() {
-		FR.flagsFromByte(0xBF);
-		assertEquals(0xB0, FR.flagsAsByte());
-		assertEquals(true, FR.isZ());
-		assertEquals(false, FR.isN());
-		assertEquals(true, FR.isH());
-		assertEquals(true, FR.isC());
+		fr.setFlagsFromByte(0xBF);
+		assertEquals(0xB0, fr.getFlagsAsByte());
+		assertEquals(true, fr.isZ());
+		assertEquals(false, fr.isN());
+		assertEquals(true, fr.isH());
+		assertEquals(true, fr.isC());
 		
-		FR.flagsFromByte(0x0F);
-		assertEquals(0x00, FR.flagsAsByte());
-		assertEquals(false, FR.isZ());
-		assertEquals(false, FR.isN());
-		assertEquals(false, FR.isH());
-		assertEquals(false, FR.isC());
+		fr.setFlagsFromByte(0x0F);
+		assertEquals(0x00, fr.getFlagsAsByte());
+		assertEquals(false, fr.isZ());
+		assertEquals(false, fr.isN());
+		assertEquals(false, fr.isH());
+		assertEquals(false, fr.isC());
 		
-		FR.flagsFromByte(0xDD);
-		assertEquals(0xD0, FR.flagsAsByte());
-		assertEquals(true, FR.isZ());
-		assertEquals(true, FR.isN());
-		assertEquals(false, FR.isH());
-		assertEquals(true, FR.isC());
+		fr.setFlagsFromByte(0xDD);
+		assertEquals(0xD0, fr.getFlagsAsByte());
+		assertEquals(true, fr.isZ());
+		assertEquals(true, fr.isN());
+		assertEquals(false, fr.isH());
+		assertEquals(true, fr.isC());
 	}
 
 }

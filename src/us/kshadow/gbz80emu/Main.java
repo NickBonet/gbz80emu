@@ -1,24 +1,31 @@
 package us.kshadow.gbz80emu;
+import java.io.IOException;
+
+import us.kshadow.gbz80emu.memory.ROMParser;
 import us.kshadow.gbz80emu.processor.CPU;
 
 public class Main {
 
 	public static void main(String[] args) {
+		// Initialize CPU, load a ROM into MMU to prepare for execution loop.
+		
 		CPU cpu = new CPU();
+		ROMParser testROM = new ROMParser();
 		
-		// I just use this as a testing area until I make actual unit tests.
+		try {
+			testROM.loadROM("tetris.gb");
+			cpu.getMMU().loadROM(testROM.getRomAsArray());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
-		//cpu.getCpuRegisters().setB(0xFF);
-		//cpu.getCpuRegisters().setC(0xD0);
-		cpu.getCpuRegisters().setAF(0xFFFD);
-		System.out.println("Value of AF:");
-		System.out.println(cpu.getCpuRegisters().getAF());
+		cpu.getCpuReg().setInitValues();
+		cpu.getCpuReg().printReg();
 		
-		System.out.println("Value of F:");
-		System.out.println(cpu.getCpuRegisters().getF());
-		
-		//System.out.println(cpu.getCpuRegisters().getB());
-		//System.out.println(cpu.getCpuRegisters().getC());
+		/*
+		// Beginning of the actual fetch/decode/execute cycle
+		while(true) {
+			
+		}*/
 	}
-	
 }

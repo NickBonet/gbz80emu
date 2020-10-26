@@ -2,267 +2,273 @@ package us.kshadow.gbz80emu.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import us.kshadow.gbz80emu.processor.CPURegisters;
 
 class CPURegistersTest {
 	
-	private final CPURegisters registers = new CPURegisters();
+	private static final CPURegisters reg = CPURegisters.getInstance();
+	
+	@BeforeEach
+	public void cleanup() {
+		reg.clearRegs();
+	}
 
 	@Test
 	public void checkRegisterASizeLimit() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setA(0x100);
-		}); // check that we can't set above 0xFF
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("A", 0x100, false)
+		); // check that we can't set above 0xFF
 		
-		registers.setA(0xFF);
-		assertEquals(255, registers.getA()); // just double checking our boundaries with next two tests
+		reg.writeReg("A", 0xFF, false);
+		assertEquals(255, reg.getReg("A")); // just double checking our boundaries with next two tests
 		
-		registers.setA(0x00);
-		assertEquals(0, registers.getA());
+		reg.writeReg("A", 0x00, false);
+		assertEquals(0, reg.getReg("A"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setA(-1);
-		}); // check that we can't go below 0x00
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("A", -1, false)
+		); // check that we can't go below 0x00
 	}
 
 	@Test
 	public void checkRegisterBSizeLimit() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setB(0x100);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("B", 0x100, false)
+		); 
 		
-		registers.setB(0xFF);
-		assertEquals(255, registers.getB());
+		reg.writeReg("B", 0xFF, false);
+		assertEquals(255, reg.getReg("B"));
 		
-		registers.setB(0x00);
-		assertEquals(0, registers.getB());
+		reg.writeReg("B", 0x00, false);
+		assertEquals(0, reg.getReg("B"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setB(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("B", -1, false)
+		);
 	}
 	
 	@Test
 	public void checkRegisterDSizeLimit() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setD(0x100);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("D", 0x100, false)
+		); 
 		
-		registers.setD(0xFF);
-		assertEquals(255, registers.getD());
+		reg.writeReg("D", 0xFF, false);
+		assertEquals(255, reg.getReg("D"));
 		
-		registers.setD(0x00);
-		assertEquals(0, registers.getD());
+		reg.writeReg("D", 0x00, false);
+		assertEquals(0, reg.getReg("D"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setD(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("D", -1, false)
+		);
 	}
 	
 	@Test
 	public void checkRegisterHSizeLimit() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setH(0x100);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("H", 0x100, false)
+		); 
 		
-		registers.setH(0xFF);
-		assertEquals(255, registers.getH());
+		reg.writeReg("H", 0xFF, false);
+		assertEquals(255, reg.getReg("H"));
 		
-		registers.setH(0x00);
-		assertEquals(0, registers.getH());
+		reg.writeReg("H", 0x00, false);
+		assertEquals(0, reg.getReg("H"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setH(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("H", -1, false)
+		);
 	}
 	
 	@Test
 	public void checkRegisterFSizeLimit() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setF(0x100);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("F", 0x100, false)
+		); 
 		
-		registers.setF(0xFF);
-		assertEquals(240, registers.getF()); // won't be 0xFF, as the lower byte is discarded/all zeroes
+		reg.writeReg("F", 0xFF, false);
+		assertEquals(240, reg.getReg("F")); // won't be 0xFF, as the lower byte is discarded/all zeroes
 		
-		registers.setF(0x00);
-		assertEquals(0, registers.getF());
+		reg.writeReg("F", 0x00, false);
+		assertEquals(0, reg.getReg("F"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setF(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("F", -1, false)
+		);
 	}
 	
 	@Test
 	public void checkRegisterCSizeLimit() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setC(0x100);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("C", 0x100, false)
+		); 
 		
-		registers.setC(0xFF);
-		assertEquals(255, registers.getC());
+		reg.writeReg("C", 0xFF, false);
+		assertEquals(255, reg.getReg("C"));
 		
-		registers.setC(0x00);
-		assertEquals(0, registers.getC());
+		reg.writeReg("C", 0x00, false);
+		assertEquals(0, reg.getReg("C"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setC(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("C", -1, false)
+		);
 	}
 	
 	@Test
 	public void checkRegisterESizeLimit() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setE(0x100);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("E", 0x100, false)
+		); 
 		
-		registers.setE(0xFF);
-		assertEquals(255, registers.getE());
+		reg.writeReg("E", 0xFF, false);
+		assertEquals(255, reg.getReg("E"));
 		
-		registers.setE(0x00);
-		assertEquals(0, registers.getE());
+		reg.writeReg("E", 0x00, false);
+		assertEquals(0, reg.getReg("E"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setE(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("E", -1, false)
+		);
 	}
 	
 	@Test
 	public void checkRegisterLSizeLimit() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setL(0x100);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("L", 0x100, false)
+		); 
 		
-		registers.setL(0xFF);
-		assertEquals(255, registers.getL());
+		reg.writeReg("L", 0xFF, false);
+		assertEquals(255, reg.getReg("L"));
 		
-		registers.setL(0x00);
-		assertEquals(0, registers.getL());
+		reg.writeReg("L", 0x00, false);
+		assertEquals(0, reg.getReg("L"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setL(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("L", -1, false)
+		);
 	}
 	
 	// 16-bit register tests now
 	@Test
 	public void checkRegisterPcSizeLimit() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setPc(0x10000);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("PC", 0x10000, true)
+		); 
 		
-		registers.setPc(0xFFFF);
-		assertEquals(65535, registers.getPc());
+		reg.writeReg("PC", 0xFFFE, true);
+		assertEquals(65534, reg.getReg("PC"));
 		
-		registers.setPc(0x00);
-		assertEquals(0, registers.getPc());
+		reg.writeReg("PC", 0x00, true);
+		assertEquals(0, reg.getReg("PC"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setPc(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("PC", -1, true)
+		);
 	}
 	
 	@Test
 	public void checkRegisterSpSizeLimit() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setSp(0x10000);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("SP", 0x10000, true)
+		); 
 		
-		registers.setSp(0xFFFF);
-		assertEquals(65535, registers.getSp());
+		reg.writeReg("SP", 0xFFFE, true);
+		assertEquals(65534, reg.getReg("SP"));
 		
-		registers.setSp(0x00);
-		assertEquals(0, registers.getSp());
+		reg.writeReg("SP", 0x00, true);
+		assertEquals(0, reg.getReg("SP"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setSp(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("SP", -1, true)
+		);
 	}
-	
+
 	// Testing size limits on our virtual 16-bit registers, in addition to values of individual registers.
 	@Test
 	public void checkRegisterAFSizeAndValues() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setAF(0x10000);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("AF", 0x10000, true)
+		); 
 		
-		registers.setAF(0xFFFF);
-		assertEquals(65520, registers.getAF()); // should be stored as 0xFFF0, F register drops right-most 4 bits.
-		assertEquals(0xFF, registers.getA());
-		assertEquals(0xF0, registers.getF());
+		reg.writeReg("AF", 0xFFFE, true);
+		assertEquals(65520, reg.getReg("AF")); // should be stored as 0xFFF0, F register drops right-most 4 bits.
+		assertEquals(0xFF, reg.getReg("A"));
+		assertEquals(0xF0, reg.getReg("F"));
 		
-		registers.setAF(0x00);
-		assertEquals(0, registers.getAF());
-		assertEquals(0, registers.getA());
-		assertEquals(0, registers.getF());
+		reg.writeReg("AF", 0x00, true);
+		assertEquals(0, reg.getReg("AF"));
+		assertEquals(0, reg.getReg("A"));
+		assertEquals(0, reg.getReg("F"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setAF(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("AF", -1, true)
+		);
 	}
 	
 	@Test
 	public void checkRegisterBCSizeAndValues() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setBC(0x10000);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("BC", 0x10000, true)
+		); 
 		
-		registers.setBC(0xFFFF);
-		assertEquals(65535, registers.getBC());
-		assertEquals(0xFF, registers.getB());
-		assertEquals(0xFF, registers.getC());
+		reg.writeReg("BC", 0xFFFE, true);
+		assertEquals(65534, reg.getReg("BC"));
+		assertEquals(0xFF, reg.getReg("B"));
+		assertEquals(0xFE, reg.getReg("C"));
 		
-		registers.setBC(0x00);
-		assertEquals(0, registers.getBC());
-		assertEquals(0, registers.getB());
-		assertEquals(0, registers.getC());
+		reg.writeReg("BC", 0x00, true);
+		assertEquals(0, reg.getReg("BC"));
+		assertEquals(0, reg.getReg("B"));
+		assertEquals(0, reg.getReg("C"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setBC(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("BC", -1, true)
+		);
 	}
 	
 	@Test
 	public void checkRegisterDESizeAndValues() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setDE(0x10000);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("DE", 0x10000, true)
+		); 
 		
-		registers.setDE(0xFFFF);
-		assertEquals(65535, registers.getDE());
-		assertEquals(0xFF, registers.getD());
-		assertEquals(0xFF, registers.getE());
+		reg.writeReg("DE", 0xFFFE, true);
+		assertEquals(65534, reg.getReg("DE"));
+		assertEquals(0xFF, reg.getReg("D"));
+		assertEquals(0xFE, reg.getReg("E"));
 		
-		registers.setDE(0x00);
-		assertEquals(0, registers.getDE());
-		assertEquals(0, registers.getD());
-		assertEquals(0, registers.getE());
+		reg.writeReg("DE", 0x00, true);
+		assertEquals(0, reg.getReg("DE"));
+		assertEquals(0, reg.getReg("D"));
+		assertEquals(0, reg.getReg("E"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setDE(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("DE", -1, true)
+		);
 	}
 	
 	@Test
 	public void checkRegisterHLSizeAndValues() {
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setHL(0x10000);
-		}); 
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("HL", 0x10000, true)
+		); 
 		
-		registers.setHL(0xFFFF);
-		assertEquals(65535, registers.getHL());
-		assertEquals(0xFF, registers.getH());
-		assertEquals(0xFF, registers.getL());
+		reg.writeReg("HL", 0xFFFE, true);
+		assertEquals(65534, reg.getReg("HL"));
+		assertEquals(0xFF, reg.getReg("H"));
+		assertEquals(0xFE, reg.getReg("L"));
 		
-		registers.setHL(0x00);
-		assertEquals(0, registers.getHL());
-		assertEquals(0, registers.getH());
-		assertEquals(0, registers.getL());
+		reg.writeReg("HL", 0x00, true);
+		assertEquals(0, reg.getReg("HL"));
+		assertEquals(0, reg.getReg("H"));
+		assertEquals(0, reg.getReg("L"));
 		
-		assertThrows(IllegalArgumentException.class, ()->{
-			registers.setHL(-1);
-		});
+		assertThrows(IllegalArgumentException.class, ()->
+			reg.writeReg("HL", -1, true)
+		);
 	}
 }

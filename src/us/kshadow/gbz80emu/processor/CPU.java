@@ -1,47 +1,26 @@
 package us.kshadow.gbz80emu.processor;
 
-/* Main logic for modified Z80 implementation from the original Gameboy.
+import us.kshadow.gbz80emu.memory.MMU;
+
+/** 
+ * Takes care of the actual fetch-decode-execute logic for the emulator.
  * @author Nicholas Bonet
  */
 
 public class CPU {
 
-	private final CPURegisters cpuRegisters;
+	private static final CPURegisters cpuReg = CPURegisters.getInstance();
+	private static final MMU mmu = MMU.getInstance();
 	
 	public CPU() {
-		this.cpuRegisters = new CPURegisters();
+		// TODO: To be implemented later in the project.
 	}
 	
-	// Base instruction implementations. Will be mapped to opcodes later on.
-	
-	public void instruct_OR(int arg) {
-		int result = this.cpuRegisters.getA() | arg;
-		this.cpuRegisters.getFR().setZ(result);
-		this.cpuRegisters.getFR().setC(false);
-		this.cpuRegisters.getFR().setN(false);
-		this.cpuRegisters.getFR().setH(false);
-		this.cpuRegisters.setA(result);
+	public CPURegisters getCpuReg() {
+		return cpuReg;
 	}
 	
-	public void instruct_XOR(int arg) {
-		int result = this.cpuRegisters.getA() ^ arg;
-		this.cpuRegisters.getFR().setZ(result);
-		this.cpuRegisters.getFR().setC(false);
-		this.cpuRegisters.getFR().setN(false);
-		this.cpuRegisters.getFR().setH(false);
-		this.cpuRegisters.setA(result);
-	}
-	
-	public void instruct_AND(int arg) {
-		int result = this.cpuRegisters.getA() & arg;
-		this.cpuRegisters.getFR().setZ(result);
-		this.cpuRegisters.getFR().setC(false);
-		this.cpuRegisters.getFR().setN(false);
-		this.cpuRegisters.getFR().setH(true);
-		this.cpuRegisters.setA(result);
-	}
-	
-	public CPURegisters getCpuRegisters() {
-		return cpuRegisters;
+	public MMU getMMU() {
+		return mmu;
 	}
 }
