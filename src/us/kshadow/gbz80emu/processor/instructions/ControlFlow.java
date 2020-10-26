@@ -54,7 +54,7 @@ public class ControlFlow {
 	
 	// Handles relative jump, based on next byte in memory (signed).
 	public static void instructJR(byte value) {
-		cpuReg.writeReg("PC", cpuReg.getReg("PC") + value, false);
+		cpuReg.writeReg("PC", cpuReg.getPC() + value, false);
 	}
 	
 	public static void instructCondJR(int opcode, byte value) {
