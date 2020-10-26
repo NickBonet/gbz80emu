@@ -1,5 +1,8 @@
 package us.kshadow.gbz80emu.processor;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import us.kshadow.gbz80emu.util.BitUtil;
 
 /**
@@ -11,6 +14,7 @@ import us.kshadow.gbz80emu.util.BitUtil;
 public class CPURegisters {
 	
 	private static final CPURegisters instance = new CPURegisters();
+	private static final Logger logger = Logger.getLogger("GBZ80Emu");
 	
 	// The 8 basic 8-bit CPU registers.
 	private int a, b, d, h, c, e, l;
@@ -37,8 +41,9 @@ public class CPURegisters {
 	
 	// Simple method for printing register values to console.
 	public void printReg() {
-		System.out.println(String.format("A: 0x%x  B: 0x%x  D: 0x%x  H: 0x%x  C: 0x%x  E: 0x%x  L: 0x%x  PC: 0x%x  SP: 0x%x  FR: 0x%x", 
-				a, b, d, h, c, e, l, pc, sp, flagRegister.getFlagsAsByte()));
+		String registers = String.format("A: 0x%x  B: 0x%x  D: 0x%x  H: 0x%x  C: 0x%x  E: 0x%x  L: 0x%x  PC: 0x%x  SP: 0x%x  FR: 0x%x", 
+				a, b, d, h, c, e, l, pc, sp, flagRegister.getFlagsAsByte());
+		logger.log(Level.INFO, registers);
 	}
 	
 	/**

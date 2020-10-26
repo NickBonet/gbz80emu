@@ -17,6 +17,8 @@ public class ControlFlow {
 	
 	private ControlFlow() { }
 	
+	// TODO: Implement HALT, STOP, DI, EI instructions, and finish RETI. (relies on interrupts impl.)
+	
 	// Handles absolute jump function.
 	public static void instructJP(int address) {
 		cpuReg.writeReg("PC", address, true);

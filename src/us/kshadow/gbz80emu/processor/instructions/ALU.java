@@ -17,6 +17,7 @@ public class ALU {
 	private ALU() {}
 	
 	// Base instruction implementations. Will be mapped to opcodes later on.
+	// TODO: Implement DAA instruction.
 	
 	public static void instructOR(int arg) {
 		int result = cpuReg.getReg("A") | arg;

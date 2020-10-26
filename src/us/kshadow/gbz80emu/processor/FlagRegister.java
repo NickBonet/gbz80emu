@@ -13,10 +13,10 @@ public class FlagRegister {
 	
 	private boolean z, n, h, c = false;
 	
-	private static final int zPos = 7;
-	private static final int nPos = 6;
-	private static final int hPos = 5;
-	private static final int cPos = 4;
+	private static final int Z_POS = 7;
+	private static final int N_POS = 6;
+	private static final int H_POS = 5;
+	private static final int C_POS = 4;
 	
 	private FlagRegister() { }
 	
@@ -28,29 +28,29 @@ public class FlagRegister {
 		int flagRegister = 0;
 		
 		if (z) {
-			flagRegister |= 1 << zPos;
+			flagRegister |= 1 << Z_POS;
 		}
 		
 		if (n) {
-			flagRegister |= 1 << nPos;
+			flagRegister |= 1 << N_POS;
 		}
 		
 		if (h) {
-			flagRegister |= 1 << hPos;
+			flagRegister |= 1 << H_POS;
 		}
 		
 		if (c) {
-			flagRegister |= 1 << cPos;
+			flagRegister |= 1 << C_POS;
 		}
 		
 		return flagRegister;
 	}
 	
 	public void setFlagsFromByte(int flags) {
-		z = BitUtil.checkBitSet(flags, zPos);
-		n = BitUtil.checkBitSet(flags, nPos);
-		h = BitUtil.checkBitSet(flags, hPos);
-		c = BitUtil.checkBitSet(flags, cPos);
+		z = BitUtil.checkBitSet(flags, Z_POS);
+		n = BitUtil.checkBitSet(flags, N_POS);
+		h = BitUtil.checkBitSet(flags, H_POS);
+		c = BitUtil.checkBitSet(flags, C_POS);
 	}
 	
 	public boolean isZ() {
