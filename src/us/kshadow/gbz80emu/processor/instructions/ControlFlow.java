@@ -1,5 +1,6 @@
 package us.kshadow.gbz80emu.processor.instructions;
 
+import us.kshadow.gbz80emu.memory.MMU;
 import us.kshadow.gbz80emu.processor.CPURegisters;
 import us.kshadow.gbz80emu.processor.FlagRegister;
 
@@ -12,6 +13,7 @@ public class ControlFlow {
 
 	private static final CPURegisters cpuReg = CPURegisters.getInstance();
 	private static final FlagRegister fr = cpuReg.getFR();
+	private static final MMU mmu = MMU.getInstance();
 	
 	private ControlFlow() { }
 	
@@ -73,6 +75,121 @@ public class ControlFlow {
 		case 0x38:
 			if (fr.isC()) {
 				instructJR(value);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	
+	public static void instructPUSH(String register) {
+		int value = cpuReg.getReg(register);
+		int currentSP = cpuReg.getReg("SP");
+		mmu.writeWord(cpuReg.getReg("SP"), value);
+		cpuReg.writeReg("SP", currentSP - 2, false);
+	}
+	
+	public static void instructPOP(String register) {
+		int currentSP = cpuReg.getReg("SP");
+		int value = mmu.readWord(currentSP);
+		cpuReg.writeReg(register, value, true);
+		cpuReg.writeReg("SP", currentSP + 2, false);
+	}
+	
+	public static void instructRET() {
+		instructPOP("PC");
+	}
+	
+	public static void instructCondRET(int opcode) {
+		switch(opcode) {
+		case 0xC0:
+			if (!fr.isZ()) {
+				instructRET();
+			}
+			break;
+		case 0xC8:
+			if (fr.isZ()) {
+				instructRET();
+			}
+			break;
+		case 0xD0:
+			if (!fr.isC()) {
+				instructRET();
+			}
+			break;
+		case 0xD8:
+			if (fr.isC()) {
+				instructRET();
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	
+	public static void instructRETI() {
+		instructRET();
+		// TODO: Enable interrupts here when they are implemented.
+	}
+	
+	public static void instructRST(int opcode) {
+		instructPUSH("PC");
+		// switch statement for opcodes
+		switch(opcode) {
+		case 0xC7:
+			cpuReg.writeReg("PC", 0x00, false);
+			break;
+		case 0xCF:
+			cpuReg.writeReg("PC", 0x08, false);
+			break;
+		case 0xD7:
+			cpuReg.writeReg("PC", 0x10, false);
+			break;
+		case 0xDF:
+			cpuReg.writeReg("PC", 0x18, false);
+			break;
+		case 0xE7:
+			cpuReg.writeReg("PC", 0x20, false);
+			break;
+		case 0xEF:
+			cpuReg.writeReg("PC", 0x28, false);
+			break;
+		case 0xF7:
+			cpuReg.writeReg("PC", 0x30, false);
+			break;
+		case 0xFF:
+			cpuReg.writeReg("PC", 0x38, false);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	public static void instructCALL(int address) {
+		instructPUSH("PC");
+		instructJP(address);
+	}
+	
+	public static void instructCondCALL(int opcode, int address) {
+		switch(opcode) {
+		case 0xC4:
+			if (!fr.isZ()) {
+				instructCALL(address);
+			}
+			break;
+		case 0xCC:
+			if (fr.isZ()) {
+				instructCALL(address);
+			}
+			break;
+		case 0xD4:
+			if (!fr.isC()) {
+				instructCALL(address);
+			}
+			break;
+		case 0xDC:
+			if (fr.isC()) {
+				instructCALL(address);
 			}
 			break;
 		default:
