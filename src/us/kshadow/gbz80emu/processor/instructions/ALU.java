@@ -54,6 +54,26 @@ public class ALU {
 		cpuReg.writeReg(register, result, false);
 	}
 	
+	public static void instructADDu16(String register) {
+		int value = cpuReg.getReg(register);
+		int hl = cpuReg.getReg("HL");
+		int result = (value + hl) & 0xFFFF;
+		fr.setN(false);
+		fr.setC(hl + value > 0xFFFF);
+		fr.setH((hl & 0x0fff) + (value & 0x0fff) > 0x0fff);
+		cpuReg.writeReg("HL", result, true);
+	}
+	
+	public static void instructADDSP(byte value) {
+		int sp = cpuReg.getReg("SP");
+		int result = (sp + value) & 0xFFFF; 
+		fr.setZ(false);
+		fr.setN(false);
+		fr.setC(((sp ^ value ^ result) & 0x100) == 0x100);
+		fr.setH(((sp ^ value ^ result) & 0x10) == 0x10);
+		cpuReg.writeReg("SP", result, true);
+	}
+	
 	public static void instructINCu16(String register) {
 		int regVal = cpuReg.getReg(register);
 		int result = (regVal + 1) & 0xFFFF;

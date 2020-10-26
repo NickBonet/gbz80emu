@@ -3,7 +3,7 @@ package us.kshadow.gbz80emu.processor;
 import us.kshadow.gbz80emu.memory.MMU;
 
 /** 
- * Main logic for modified Z80/8080 implementation from the original Gameboy.
+ * Takes care of the actual fetch-decode-execute logic for the emulator.
  * @author Nicholas Bonet
  */
 
