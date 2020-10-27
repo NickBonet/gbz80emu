@@ -19,12 +19,19 @@ public class ControlFlow {
 	
 	// TODO: Implement HALT, STOP, DI, EI instructions, and finish RETI. (relies on interrupts impl.)
 	
-	// Handles absolute jump function.
+	/**
+	 * JP - Handles absolute jump instruction.
+	 * @param address - Address to set PC to.
+	 */
 	public static void instructJP(int address) {
 		cpuReg.writeReg("PC", address, true);
 	}
 	
-	// Handles conditional jumps.
+	/**
+	 * Wrapper function for conditional jumps.
+	 * @param opcode - Opcode of the conditional jump.
+	 * @param address - Address to set PC to.
+	 */
 	public static void instructCondJP(int opcode, int address) {
 		switch(opcode) {
 		case 0xC2:
@@ -52,11 +59,19 @@ public class ControlFlow {
 		}
 	}
 	
-	// Handles relative jump, based on next byte in memory (signed).
+	/**
+	 * JR - Handles relative jump, based on next byte in memory (signed).
+	 * @param value - Next signed byte from memory.
+	 */
 	public static void instructJR(byte value) {
 		cpuReg.writeReg("PC", cpuReg.getPC() + value, false);
 	}
 	
+	/**
+	 * Wrapper function for conditional relative. jumps.
+	 * @param opcode - Opcode of the conditional relative jump.
+	 * @param value - Next signed byte from memory.
+	 */
 	public static void instructCondJR(int opcode, byte value) {
 		switch(opcode) {
 		case 0x20:
@@ -84,6 +99,10 @@ public class ControlFlow {
 		}
 	}
 	
+	/**
+	 * PUSH - Push register onto stack, then decrement SP by 2.
+	 * @param register - Register to push onto stack.
+	 */
 	public static void instructPUSH(String register) {
 		int value = cpuReg.getReg(register);
 		int currentSP = cpuReg.getReg("SP");
@@ -91,6 +110,11 @@ public class ControlFlow {
 		cpuReg.writeReg("SP", currentSP - 2, false);
 	}
 	
+	/**
+	 * POP - Pop two bytes off the stack into specified register, then
+	 * increment SP by 2.
+	 * @param register - Register to store popped bytes in.
+	 */
 	public static void instructPOP(String register) {
 		int currentSP = cpuReg.getReg("SP");
 		int value = mmu.readWord(currentSP);
@@ -98,10 +122,17 @@ public class ControlFlow {
 		cpuReg.writeReg("SP", currentSP + 2, false);
 	}
 	
+	/**
+	 * RET - Pop two bytes from stack and jump to the address.
+	 */
 	public static void instructRET() {
 		instructPOP("PC");
 	}
 	
+	/**
+	 * Wrapper function for conditional returns.
+	 * @param opcode - Opcode of the conditional return.
+	 */
 	public static void instructCondRET(int opcode) {
 		switch(opcode) {
 		case 0xC0:
@@ -129,14 +160,20 @@ public class ControlFlow {
 		}
 	}
 	
+	/**
+	 * RETI - Similar to RET, except enable interrupts afterward.
+	 */
 	public static void instructRETI() {
 		instructRET();
 		// TODO: Enable interrupts here when they are implemented.
 	}
 	
+	/**
+	 * RST - Push PC onto stack then jump to one of the addresses based on opcode.
+	 * @param opcode - Opcode for jump condition.
+	 */
 	public static void instructRST(int opcode) {
 		instructPUSH("PC");
-		// switch statement for opcodes
 		switch(opcode) {
 		case 0xC7:
 			cpuReg.writeReg("PC", 0x00, false);
@@ -167,11 +204,20 @@ public class ControlFlow {
 		}
 	}
 	
+	/**
+	 * CALL - Push PC onto the stack, then jump to the provided address.
+	 * @param address - Address to jump to.
+	 */
 	public static void instructCALL(int address) {
 		instructPUSH("PC");
 		instructJP(address);
 	}
 	
+	/**
+	 * Wrapper function for conditional calls.
+	 * @param opcode - Opcode of the conditional call.
+	 * @param address - Address to jump to.
+	 */
 	public static void instructCondCALL(int opcode, int address) {
 		switch(opcode) {
 		case 0xC4:
