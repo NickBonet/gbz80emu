@@ -14,7 +14,6 @@ public class MMU {
 	
 	private static final MMU instance = new MMU();
 	
-	// TODO: Address space for boot ROM when implemented.
 	// Gets switched out at end of actual Gameboy boot up, when $FF50 is written to.
 	private int[] bootRom = new int[0xFF];
 	private boolean bootRomEnabled = true;

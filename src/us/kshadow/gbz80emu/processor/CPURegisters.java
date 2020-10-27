@@ -45,7 +45,7 @@ public class CPURegisters {
 				a, b, d, h, c, e, l, pc, sp);
 		String flags = String.format("[FR]: Zero: %s, Negative: %s, Carry: %s, HalfCarry: %s", 
 				getFR().isZ(), getFR().isN(), getFR().isC(), getFR().isH());
-		logger.log(Level.INFO, registers + "\n" + flags);
+		logger.log(Level.INFO, "{0} \n {1}", new Object[] {registers, flags});
 	}
 	
 	/**
