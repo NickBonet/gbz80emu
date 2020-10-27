@@ -1,13 +1,10 @@
 package us.kshadow.gbz80emu.test;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.IOException;
 import java.util.Arrays;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import us.kshadow.gbz80emu.memory.MMU;
 import us.kshadow.gbz80emu.memory.ROMParser;
 
@@ -19,6 +16,7 @@ class MMUTest {
 	public void setup() {
 		try {
 			testROM.loadROM("tetris.gb");
+			mmu.toggleBootROM(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

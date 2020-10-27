@@ -72,12 +72,11 @@ public class MMU {
 		BitUtil.checkIsWord(address);
 		switch(address & 0xF000) 
 		{
-			case 0x0000: // will change later for boot ROM implementation
-				if (address < 0x100 && bootRomEnabled) {
-					return bootRom[address];
-				} else {
-					return romBank0[address];
+			case 0x0000:
+				if (address < 0x100) {
+					return bootRomEnabled ? bootRom[address] : romBank0[address];
 				}
+				return romBank0[address];
 			case 0x1000:
 			case 0x2000:
 			case 0x3000:
@@ -191,8 +190,20 @@ public class MMU {
 		romBank1 = Arrays.copyOfRange(romArray, 0x4000, 0x8000); // 0x4000 - 0x7FFF
 	}
 	
+	/**
+	 * Initial load of boot ROM into its array.
+	 * @param boot - The boot ROM loaded from file.
+	 */
 	private void loadBootROM(int[] boot) {
 		bootRom = Arrays.copyOfRange(boot, 0x00, 0x100);
+	}
+	
+	/**
+	 * Toggles whether or not the boot ROM is currently accessible.
+	 * @param - Desired state of the boot ROM (true for enabled, false for disabled)
+	 */
+	public void toggleBootROM(boolean state) {
+		bootRomEnabled = state;
 	}
 	
 	/**
