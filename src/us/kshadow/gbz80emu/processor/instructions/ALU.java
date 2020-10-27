@@ -4,6 +4,8 @@ import us.kshadow.gbz80emu.processor.CPURegisters;
 import us.kshadow.gbz80emu.processor.FlagRegister;
 import static us.kshadow.gbz80emu.util.BitUtil.*;
 
+import us.kshadow.gbz80emu.memory.MMU;
+
 /**
  * Instructions pertaining to the Arithmetic Logic Unit for the CPU.
  * @author Nicholas Bonet
@@ -13,6 +15,7 @@ public class ALU {
 	
 	private static final CPURegisters cpuReg = CPURegisters.getInstance();
 	private static final FlagRegister fr = cpuReg.getFR();
+	private static final MMU mmu = MMU.getInstance();
 	
 	private ALU() {}
 	// TODO: Implement DAA instruction.
@@ -93,7 +96,7 @@ public class ALU {
 	 * @param register - Register to increment.
 	 */
 	public static void instructINCu8(String register) {
-		int regVal = cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
 		int result = (regVal + 1) & 0xFF; // mask off higher than 8 bits if addition carries that much
 		fr.setZ(result == 0);
 		fr.setN(false);
@@ -106,7 +109,7 @@ public class ALU {
 	 * @param register - Register to decrement.
 	 */
 	public static void instructDECu8(String register) {
-		int regVal = cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
 		int result = (regVal - 1) & 0xFF; // two's complement if number reaches negative
 		fr.setZ(result == 0);
 		fr.setN(true);
