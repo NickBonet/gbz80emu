@@ -101,7 +101,7 @@ public class ALU {
 		fr.setZ(result == 0);
 		fr.setN(false);
 		fr.setH(checkHalfCarryAdd(regVal, 1, false));
-		cpuReg.writeReg(register, result, false);
+		writeValue(register, result);
 	}
 	
 	/**
@@ -114,7 +114,7 @@ public class ALU {
 		fr.setZ(result == 0);
 		fr.setN(true);
 		fr.setH(checkHalfCarrySub(regVal, 1, false));
-		cpuReg.writeReg(register, result, false);
+		writeValue(register, result);
 	}
 	
 	/**
@@ -218,5 +218,18 @@ public class ALU {
 		int regVal = cpuReg.getReg(register);
 		int result = (regVal - 1) & 0xFFFF;
 		cpuReg.writeReg(register, result, true);
+	}
+	
+	/**
+	 * Writes changed value to its proper register or address in memory.
+	 * @param register - register/pointer to write to.
+	 * @param result - Value to write to register/pointer.
+	 */
+	private static void writeValue(String register, int result) {
+		if(register.equals("HL")) {
+			mmu.writeByte(cpuReg.getReg("HL"), result);
+		} else {
+			cpuReg.writeReg(register, result, false);
+		}
 	}
 }
