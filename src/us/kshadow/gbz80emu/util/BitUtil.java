@@ -8,15 +8,21 @@ package us.kshadow.gbz80emu.util;
 public class BitUtil {
 	
 	private BitUtil() { }
-
-	// Verification method to check if a value is 8-bit before placing into a register.
+	
+	/**
+	 * Verification method to check if a value is 8-bit before placing into a register.
+	 * @param arg - The value that is being tested.
+	 */
 	public static void checkIsByte(int arg) {
 		if (!(arg >= 0 && arg <= 0xFF)) {
 			throw new IllegalArgumentException("Argument is not a valid byte.");
 		}
 	}
 	
-	// Same as above, but for 16-bit numbers.
+	/**
+	 * Verification method to check if a value is 16-bit before placing into a register.
+	 * @param arg - The value that is being tested.
+	 */
 	public static void checkIsWord(int arg) {
 		if (!(arg >= 0 && arg <= 0xFFFF)) {
 			throw new IllegalArgumentException("Argument is not a valid word.");
@@ -47,6 +53,9 @@ public class BitUtil {
 	}
 	
 	/**
+	 * Checks for a carry from bit 3 to bit 4 during addition.
+	 * @param a - First byte being tested.
+	 * @param b - Second byte being tested.
 	 * @param carryFlag - For ADC: If carry flag is 1, set true, false if 0
 	 */
 	public static boolean checkHalfCarryAdd(int a, int b, boolean carryFlag) {
@@ -56,13 +65,19 @@ public class BitUtil {
 	}
 
 	/**
-	 *  @param carryFlag - For SBC: If carry flag is 1, set true, false if 0
+	 * Checks for a carry from bit 3 to bit 4 during subtraction.
+	 * @param a - First byte being tested.
+	 * @param b - Second byte being tested.
+	 * @param carryFlag - For SBC: If carry flag is 1, set true, false if 0
 	 */
 	public static boolean checkHalfCarrySub(int a, int b, boolean carryFlag) {
 		return ((a & 0xF) < ((b & 0xF) + (carryFlag ? 1 : 0))); // very basic carry check, if lower half of first number if less than lower half of second, a half carry will be required.
 	}
 	
 	/**
+	 * Checks for a carry from bit 7 to bit 8 during addition.
+	 * @param a - First byte being tested.
+	 * @param b - Second byte being tested.
 	 * @param carryFlag - For ADC: If carry flag is 1, set true, false if 0
 	 */
 	public static boolean checkCarryAdd(int a, int b, boolean carryFlag) {
@@ -70,6 +85,9 @@ public class BitUtil {
 	}
 	
 	/**
+	 * Checks for a carry from bit 7 to bit 8 during subtraction.
+	 * @param a - First byte being tested.
+	 * @param b - Second byte being tested.
 	 * @param carryFlag - For SBC: If carry flag is 1, set true, false if 0
 	 */
 	public static boolean checkCarrySub(int a, int b, boolean carryFlag) {
