@@ -31,6 +31,14 @@ public class CPU {
 		case 0x00: // NOP
 			cycles += 4;
 			break;
+		case 0x05: // DEC B
+			ALU.instructDECu8("B");
+			cycles += 4;
+			break;
+		case 0x06: // LD B, u8
+			cpuReg.writeReg("B", fetchNextByte(), false);
+			cycles += 8;
+			break;
 		case 0x0C: // INC C
 			ALU.instructINCu8("C");
 			cycles += 4;
@@ -39,20 +47,28 @@ public class CPU {
 			cpuReg.writeReg("C", fetchNextByte(), false);
 			cycles += 8;
 			break;
+		case 0x11: // LD DE, u16
+			cpuReg.writeReg("DE", fetchNextWord(), true);
+			cycles += 12;
+			break;
+		case 0x17: // RLA
+			BitShift.instructRLA();
+			cycles += 4;
+			break;
+		case 0x1A: // LD A, (DE)
+			cpuReg.writeReg("A", mmu.readByte(cpuReg.getReg("DE")), false);
+			cycles += 8;
+			break;
 		case 0x20: // JR NZ,s8
 			ControlFlow.instructCondJR(instruction, (byte) fetchNextByte());
 			// TODO: figure out counting cycles on branches
 			break;
-		case 0x31: // LD SP, d16
-			cpuReg.writeReg("SP", fetchNextWord(), true);
-			cycles += 12;
-			break;
-		case 0xAF: // XOR A
-			ALU.instructXOR(cpuReg.getReg("A"));
-			cycles += 4;
-			break;
 		case 0x21: // LD HL,u16
 			cpuReg.writeReg("HL", fetchNextWord(), true);
+			cycles += 12;
+			break;
+		case 0x31: // LD SP, d16
+			cpuReg.writeReg("SP", fetchNextWord(), true);
 			cycles += 12;
 			break;
 		case 0x32: // LD (HL-),A
@@ -64,12 +80,32 @@ public class CPU {
 			cpuReg.writeReg("A", fetchNextByte(), false);
 			cycles += 8;
 			break;
+		case 0x4F: // lD C, A
+			cpuReg.writeReg("C", cpuReg.getReg("A"), false);
+			cycles += 4;
+			break;
 		case 0x77: // LD (HL), A
 			mmu.writeByte(cpuReg.getReg("HL"), cpuReg.getReg("A"));
 			cycles += 8;
 			break;
+		case 0xAF: // XOR A
+			ALU.instructXOR(cpuReg.getReg("A"));
+			cycles += 4;
+			break;
+		case 0xC1: // POP BC
+			ControlFlow.instructPOP("BC");
+			cycles += 12;
+			break;
+		case 0xC5: // PUSH BC
+			ControlFlow.instructPUSH("BC");
+			cycles += 16;
+			break;
 		case 0xCB: // send to CB handling function
 			handleCBInstruction();
+			break;
+		case 0xCD: // CALL u16
+			ControlFlow.instructCALL(fetchNextWord());
+			cycles += 24;
 			break;
 		case 0xE0: // LD ($FF00+n), A
 			mmu.writeByte(0xFF00 + fetchNextByte(), cpuReg.getReg("A"));
@@ -89,12 +125,16 @@ public class CPU {
 		String loggerMsg = String.format("Executing CB instruction 0x%x", instruction);
 		logger.log(Level.INFO, loggerMsg);
 		switch(instruction) {
+		case 0x11: // RL C
+			BitShift.instructRL("C");
+			cycles += 8;
+			break;
 		case 0x7C: // BIT 7,H
 			BitShift.instructBIT("H", 7);
 			cycles += 8;
 			break;
 		default:
-			break;
+			throw new IllegalArgumentException("Unhandled CPU CB instruction!");
 		}
 	}
 

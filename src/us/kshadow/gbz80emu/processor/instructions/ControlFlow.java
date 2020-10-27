@@ -104,10 +104,10 @@ public class ControlFlow {
 	 * @param register - Register to push onto stack.
 	 */
 	public static void instructPUSH(String register) {
-		int value = cpuReg.getReg(register);
 		int currentSP = cpuReg.getReg("SP");
+		cpuReg.writeReg("SP", currentSP - 2, true);
+		int value = cpuReg.getReg(register);
 		mmu.writeWord(cpuReg.getReg("SP"), value);
-		cpuReg.writeReg("SP", currentSP - 2, false);
 	}
 	
 	/**
@@ -119,7 +119,7 @@ public class ControlFlow {
 		int currentSP = cpuReg.getReg("SP");
 		int value = mmu.readWord(currentSP);
 		cpuReg.writeReg(register, value, true);
-		cpuReg.writeReg("SP", currentSP + 2, false);
+		cpuReg.writeReg("SP", currentSP + 2, true);
 	}
 	
 	/**
