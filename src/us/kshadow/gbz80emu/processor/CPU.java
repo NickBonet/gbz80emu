@@ -31,6 +31,18 @@ public class CPU {
 		case 0x00: // NOP
 			cycles += 4;
 			break;
+		case 0x0C: // INC C
+			ALU.instructINCu8("C");
+			cycles += 4;
+			break;
+		case 0x0E: // LD C, u8
+			cpuReg.writeReg("C", fetchNextByte(), false);
+			cycles += 8;
+			break;
+		case 0x20: // JR NZ,s8
+			ControlFlow.instructCondJR(instruction, (byte) fetchNextByte());
+			// TODO: figure out counting cycles on branches
+			break;
 		case 0x31: // LD SP, d16
 			cpuReg.writeReg("SP", fetchNextWord(), true);
 			cycles += 12;
@@ -48,12 +60,24 @@ public class CPU {
 			cpuReg.writeReg("HL", cpuReg.getReg("HL") - 1, true);
 			cycles += 8;
 			break;
-		case 0x20: // JR NZ,i8
-			ControlFlow.instructCondJR(instruction, (byte) fetchNextByte());
-			// TODO: figure out counting cycles on branches
+		case 0x3E: // LD A, u8
+			cpuReg.writeReg("A", fetchNextByte(), false);
+			cycles += 8;
+			break;
+		case 0x77: // LD (HL), A
+			mmu.writeByte(cpuReg.getReg("HL"), cpuReg.getReg("A"));
+			cycles += 8;
 			break;
 		case 0xCB: // send to CB handling function
 			handleCBInstruction();
+			break;
+		case 0xE0: // LD ($FF00+n), A
+			mmu.writeByte(0xFF00 + fetchNextByte(), cpuReg.getReg("A"));
+			cycles += 8;
+			break;
+		case 0xE2: // LD ($FF00+C), A
+			mmu.writeByte(0xFF00 + cpuReg.getReg("C"), cpuReg.getReg("A"));
+			cycles += 8;
 			break;
 		default:
 			throw new IllegalArgumentException("Unhandled CPU instruction!");
