@@ -41,9 +41,11 @@ public class CPURegisters {
 	
 	// Simple method for printing register values to console.
 	public void printReg() {
-		String registers = String.format("A: 0x%x  B: 0x%x  D: 0x%x  H: 0x%x  C: 0x%x  E: 0x%x  L: 0x%x  PC: 0x%x  SP: 0x%x  FR: 0x%x", 
-				a, b, d, h, c, e, l, pc, sp, flagRegister.getFlagsAsByte());
-		logger.log(Level.INFO, registers);
+		String registers = String.format("A: 0x%x  B: 0x%x  D: 0x%x  H: 0x%x  C: 0x%x  E: 0x%x  L: 0x%x  PC: 0x%x  SP: 0x%x", 
+				a, b, d, h, c, e, l, pc, sp);
+		String flags = String.format("[FR]: Zero: %s, Negative: %s, Carry: %s, HalfCarry: %s", 
+				getFR().isZ(), getFR().isN(), getFR().isC(), getFR().isH());
+		logger.log(Level.INFO, registers + "\n" + flags);
 	}
 	
 	/**
