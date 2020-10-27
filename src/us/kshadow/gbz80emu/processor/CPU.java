@@ -56,7 +56,7 @@ public class CPU {
 			handleCBInstruction();
 			break;
 		default:
-			break;
+			throw new IllegalArgumentException("Unhandled CPU instruction!");
 		}
 	}
 	
@@ -82,7 +82,8 @@ public class CPU {
 	
 	public int fetchNextWord() {
 		int result = mmu.readWord(cpuReg.getPC());
-		cpuReg.writeReg("PC", cpuReg.getPC() + 2, false);
+		cpuReg.incPC();
+		cpuReg.incPC();
 		return result;
 	}
 	
