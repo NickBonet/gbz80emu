@@ -17,10 +17,13 @@ public class CPU {
 	private static final CPURegisters cpuReg = CPURegisters.getInstance();
 	private static final MMU mmu = MMU.getInstance();
 	private static final Logger logger = Logger.getLogger("GBZ80Emu");
-	private int cycles = 0;
+	private int cycles;
+	private boolean isRunning;
 	
 	public CPU() {
 		// TODO: To be implemented later in the project.
+		cycles = 0;
+		isRunning = true;
 	}
 	
 	public void fetchInstruction() {
@@ -91,12 +94,32 @@ public class CPU {
 			BitShift.instructRRCA();
 			cycles += 4;
 			break;
+		case 0x10: // STOP
+			isRunning = false;
+			cycles += 4;
+			break;
 		case 0x11: // LD DE, u16
 			cpuReg.writeReg("DE", fetchNextWord(), true);
 			cycles += 12;
 			break;
+		case 0x12: // LD (DE), A
+			mmu.writeByte(cpuReg.getReg("DE"), cpuReg.getReg("A"));
+			cycles += 8;
+			break;
 		case 0x13: // INC DE
 			ALU.instructINCu16("DE");
+			cycles += 8;
+			break;
+		case 0x14: // INC D
+			ALU.instructINCu8("D");
+			cycles += 4;
+			break;
+		case 0x15: // DEC D
+			ALU.instructDECu8("D");
+			cycles += 4;
+			break;
+		case 0x16: // LD D, u8
+			cpuReg.writeReg("D", fetchNextByte(), false);
 			cycles += 8;
 			break;
 		case 0x17: // RLA
@@ -107,13 +130,33 @@ public class CPU {
 			ControlFlow.instructJR((byte) fetchNextByte());
 			cycles += 12;
 			break;
+		case 0x19: // ADD HL, DE
+			ALU.instructADDu16("DE");
+			cycles += 8;
+			break;
 		case 0x1A: // LD A, (DE)
 			cpuReg.writeReg("A", mmu.readByte(cpuReg.getReg("DE")), false);
 			cycles += 8;
 			break;
+		case 0x1B: // DEC DE
+			ALU.instructDECu16("DE");
+			cycles += 8;
+			break;
+		case 0x1C: // INC E
+			ALU.instructINCu8("E");
+			cycles += 4;
+			break;
+		case 0x1D: // DEC E
+			ALU.instructDECu16("E");
+			cycles += 4;
+			break;
 		case 0x1E: // LD E, u8
 			cpuReg.writeReg("E", fetchNextByte(), false);
 			cycles += 8;
+			break;
+		case 0x1F: // RRA
+			BitShift.instructRRA();
+			cycles += 4;
 			break;
 		case 0x20: // JR NZ,s8
 			ControlFlow.instructCondJR(instruction, (byte) fetchNextByte());
@@ -132,13 +175,54 @@ public class CPU {
 			ALU.instructINCu16("HL");
 			cycles += 8;
 			break;
+		case 0x24: // INC H
+			ALU.instructINCu8("H");
+			cycles += 4;
+			break;
+		case 0x25: // DEC H
+			ALU.instructDECu8("H");
+			cycles += 4;
+			break;
+		case 0x26: // LD H, u8
+			cpuReg.writeReg("H", fetchNextByte(), false);
+			cycles += 8;
+			break;
+		/*case 0x27: // DAA
+			handle DAA here
+			cycles += 4;
+			break;*/
 		case 0x28: // JR Z, s8
 			ControlFlow.instructCondJR(instruction, (byte) fetchNextByte());
 			// TODO: figure out counting cycles on branches
 			break;
+		case 0x29: // ADD HL, HL
+			ALU.instructADDu16("HL");
+			cycles += 8;
+			break;
+		case 0x2A: // LD A, (HL+)
+			cpuReg.writeReg("A", mmu.readByte(cpuReg.getReg("HL")), false);
+			cpuReg.writeReg("HL", cpuReg.getReg("HL") + 1, true);
+			cycles += 8;
+			break;
+		case 0x2B: // DEC HL
+			ALU.instructDECu16("HL");
+			cycles += 8;
+			break;
+		case 0x2C: // INC L
+			ALU.instructINCu8("L");
+			cycles += 4;
+			break;
+		case 0x2D: // DEC L
+			ALU.instructDECu8("L");
+			cycles += 4;
+			break;
 		case 0x2E: // LD L, u8
 			cpuReg.writeReg("L", fetchNextByte(), false);
 			cycles += 8;
+			break;
+		case 0x2F: // CPL
+			ALU.instructCPL();
+			cycles += 4;
 			break;
 		case 0x31: // LD SP, d16
 			cpuReg.writeReg("SP", fetchNextWord(), true);
@@ -262,5 +346,9 @@ public class CPU {
 	
 	public MMU getMMU() {
 		return mmu;
+	}
+
+	public boolean isRunning() {
+		return isRunning;
 	}
 }

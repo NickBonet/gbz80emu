@@ -24,8 +24,10 @@ public class Main {
 		
 		// Beginning of the actual fetch/decode/execute cycle
 		while(true) {
-			cpu.fetchInstruction();
-			cpu.getCpuReg().printReg();
+			if(cpu.isRunning()) {
+				cpu.fetchInstruction();
+				cpu.getCpuReg().printReg();
+			}
 		}
 	}
 }
