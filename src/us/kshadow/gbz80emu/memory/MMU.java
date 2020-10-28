@@ -48,6 +48,9 @@ public class MMU {
 	
 	// TODO: 0xFFFF - Interrupt Enabled Register
 	
+	/**
+	 * MMU constructor. Simply loads the boot ROM.
+	 */
 	private MMU() { 
 		ROMParser bootROM = new ROMParser();
 		try {
@@ -58,6 +61,10 @@ public class MMU {
 		}
 	}
 	
+	/**
+	 * Return the singleton instance of the MMU.
+	 * @return instance - This MMU instance.
+	 */
 	public static MMU getInstance() {
 		return instance;
 	}
