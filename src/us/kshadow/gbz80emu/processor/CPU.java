@@ -27,7 +27,7 @@ public class CPU {
 		mmu.toggleBootROM(true);
 	}
 	
-	public void fetchInstruction() {
+	public void nextInstruction() {
 		int instruction = fetchNextByte();
 		String loggerMsg = String.format("Executing instruction 0x%x", instruction);
 		logger.log(Level.INFO, loggerMsg);
@@ -283,7 +283,7 @@ public class CPU {
 			cycles += 16;
 			break;
 		case 0xCB: // send to CB handling function
-			handleCBInstruction();
+			nextCBInstruction();
 			break;
 		case 0xCD: // CALL u16
 			ControlFlow.instructCALL(fetchNextWord());
@@ -314,7 +314,7 @@ public class CPU {
 		}
 	}
 	
-	private void handleCBInstruction() {
+	private void nextCBInstruction() {
 		int instruction = fetchNextByte();
 		String loggerMsg = String.format("Executing CB instruction 0x%x", instruction);
 		logger.log(Level.INFO, loggerMsg);

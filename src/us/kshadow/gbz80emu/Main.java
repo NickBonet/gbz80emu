@@ -31,7 +31,7 @@ public class Main extends JFrame implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
-		case KeyEvent.VK_P:
+		case KeyEvent.VK_P: // pause/resume emulation
 			if (emu.getEmuRunning()) {
 				emu.setEmuRunning(false);
 			} else {
@@ -39,6 +39,9 @@ public class Main extends JFrame implements KeyListener {
 				Thread emuThread = new Thread(emuRunnable);
 				emuThread.start();
 			}
+			break;
+		case KeyEvent.VK_N: // next step
+			emu.nextStep();
 			break;
 		default:
 			break;
