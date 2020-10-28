@@ -31,6 +31,10 @@ public class CPU {
 		case 0x00: // NOP
 			cycles += 4;
 			break;
+		case 0x04: // INC B
+			ALU.instructINCu8("B");
+			cycles += 4;
+			break;
 		case 0x05: // DEC B
 			ALU.instructDECu8("B");
 			cycles += 4;
@@ -43,6 +47,10 @@ public class CPU {
 			ALU.instructINCu8("C");
 			cycles += 4;
 			break;
+		case 0x0D: // DEC C
+			ALU.instructDECu8("C");
+			cycles += 4;
+			break;
 		case 0x0E: // LD C, u8
 			cpuReg.writeReg("C", fetchNextByte(), false);
 			cycles += 8;
@@ -51,12 +59,24 @@ public class CPU {
 			cpuReg.writeReg("DE", fetchNextWord(), true);
 			cycles += 12;
 			break;
+		case 0x13:
+			ALU.instructINCu16("DE");
+			cycles += 8;
+			break;
 		case 0x17: // RLA
 			BitShift.instructRLA();
 			cycles += 4;
 			break;
+		case 0x18: // JR s8
+			ControlFlow.instructJR((byte) fetchNextByte());
+			cycles += 12;
+			break;
 		case 0x1A: // LD A, (DE)
 			cpuReg.writeReg("A", mmu.readByte(cpuReg.getReg("DE")), false);
+			cycles += 8;
+			break;
+		case 0x1E: // LD E, u8
+			cpuReg.writeReg("E", fetchNextByte(), false);
 			cycles += 8;
 			break;
 		case 0x20: // JR NZ,s8
@@ -67,14 +87,35 @@ public class CPU {
 			cpuReg.writeReg("HL", fetchNextWord(), true);
 			cycles += 12;
 			break;
+		case 0x22: // LD (HL+), A
+			mmu.writeByte(cpuReg.getReg("HL"), cpuReg.getReg("A"));
+			cpuReg.writeReg("HL", cpuReg.getReg("HL") + 1, true);
+			cycles += 8;
+			break;
+		case 0x23: // INC HL
+			ALU.instructINCu16("HL");
+			cycles += 8;
+			break;
+		case 0x28: // JR Z, s8
+			ControlFlow.instructCondJR(instruction, (byte) fetchNextByte());
+			// TODO: figure out counting cycles on branches
+			break;
+		case 0x2E: // LD L, u8
+			cpuReg.writeReg("L", fetchNextByte(), false);
+			cycles += 8;
+			break;
 		case 0x31: // LD SP, d16
 			cpuReg.writeReg("SP", fetchNextWord(), true);
 			cycles += 12;
 			break;
-		case 0x32: // LD (HL-),A
+		case 0x32: // LD (HL-), A
 			mmu.writeByte(cpuReg.getReg("HL"), cpuReg.getReg("A"));
 			cpuReg.writeReg("HL", cpuReg.getReg("HL") - 1, true);
 			cycles += 8;
+			break;
+		case 0x3D: // DEC A
+			ALU.instructDECu8("A");
+			cycles += 4;
 			break;
 		case 0x3E: // LD A, u8
 			cpuReg.writeReg("A", fetchNextByte(), false);
@@ -84,9 +125,21 @@ public class CPU {
 			cpuReg.writeReg("C", cpuReg.getReg("A"), false);
 			cycles += 4;
 			break;
+		case 0x57: // LD D, A
+			cpuReg.writeReg("D", cpuReg.getReg("A"), false);
+			cycles += 4;
+			break;
+		case 0x67: // LD H, A
+			cpuReg.writeReg("H", cpuReg.getReg("A"), false);
+			cycles += 4;
+			break;
 		case 0x77: // LD (HL), A
 			mmu.writeByte(cpuReg.getReg("HL"), cpuReg.getReg("A"));
 			cycles += 8;
+			break;
+		case 0x7B: // LD A, E
+			cpuReg.writeReg("A", cpuReg.getReg("E"), false);
+			cycles += 4;
 			break;
 		case 0xAF: // XOR A
 			ALU.instructXOR(cpuReg.getReg("A"));
@@ -100,6 +153,10 @@ public class CPU {
 			ControlFlow.instructPUSH("BC");
 			cycles += 16;
 			break;
+		case 0xC9: // RET
+			ControlFlow.instructRET();
+			cycles += 16;
+			break;
 		case 0xCB: // send to CB handling function
 			handleCBInstruction();
 			break;
@@ -109,10 +166,22 @@ public class CPU {
 			break;
 		case 0xE0: // LD ($FF00+n), A
 			mmu.writeByte(0xFF00 + fetchNextByte(), cpuReg.getReg("A"));
-			cycles += 8;
+			cycles += 12;
 			break;
 		case 0xE2: // LD ($FF00+C), A
 			mmu.writeByte(0xFF00 + cpuReg.getReg("C"), cpuReg.getReg("A"));
+			cycles += 8;
+			break;
+		case 0xEA: // LD (u16), A
+			mmu.writeByte(fetchNextWord(), cpuReg.getReg("A"));
+			cycles += 16;
+			break;
+		case 0xF0: // LD A, ($FF00+n)
+			cpuReg.writeReg("A", mmu.readByte(0xFF00 + fetchNextByte()), false);
+			cycles += 12;
+			break;
+		case 0xFE:
+			ALU.instructSUB(fetchNextByte(), true);
 			cycles += 8;
 			break;
 		default:
