@@ -23,7 +23,7 @@ public class Main extends JFrame implements KeyListener {
 		frame.setSize(320, 288);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		emuRunnable = () -> { emu.runEmulator(); };
+		emuRunnable = () -> emu.runEmulator();
 		Thread emuThread = new Thread(emuRunnable);
 		emuThread.start();
 	}
@@ -39,6 +39,9 @@ public class Main extends JFrame implements KeyListener {
 				Thread emuThread = new Thread(emuRunnable);
 				emuThread.start();
 			}
+			break;
+		default:
+			break;
 		}
 	}
 

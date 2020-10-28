@@ -6,10 +6,7 @@
 package us.kshadow.gbz80emu;
 
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 import us.kshadow.gbz80emu.memory.ROMParser;
@@ -20,9 +17,8 @@ import us.kshadow.gbz80emu.processor.CPU;
  */
 @SuppressWarnings("serial")
 public class Emulator extends JPanel {
-	private final CPU cpu;
-	private ROMParser testROM = new ROMParser();
-	private final transient Logger logger = Logger.getLogger("GBZ80Emu");
+	private final transient CPU cpu;
+	private transient ROMParser testROM = new ROMParser();
 	private boolean emuRunning;
 	
 	public Emulator() {
@@ -39,11 +35,11 @@ public class Emulator extends JPanel {
 	public void runEmulator() {
 		while (emuRunning) {
 			if(cpu.isRunning()) { // for STOP instruction
-				for (; cpu.cycles <= 70224; cpu.cycles++) {
+				while (cpu.getCycles() <= 70224) {
 					cpu.fetchInstruction();
 					cpu.getRegisters().print();
 				}
-				cpu.cycles = 0;
+				cpu.resetCycles();
 			}
 			repaint();
 		}
