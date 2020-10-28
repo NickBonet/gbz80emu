@@ -41,7 +41,9 @@ public class Main extends JFrame implements KeyListener {
 			}
 			break;
 		case KeyEvent.VK_N: // next step
-			emu.nextStep();
+			if (!emu.getEmuRunning()) {
+				emu.nextStep();
+			}
 			break;
 		default:
 			break;
