@@ -17,7 +17,7 @@ public class CPU {
 	private static final CPURegisters reg = CPURegisters.getInstance();
 	private static final MMU mmu = MMU.getInstance();
 	private static final Logger logger = Logger.getLogger("GBZ80Emu");
-	private int cycles;
+	public int cycles;
 	private boolean isRunning;
 	
 	public CPU() {

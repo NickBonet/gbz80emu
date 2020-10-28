@@ -1,33 +1,56 @@
 package us.kshadow.gbz80emu;
-import java.io.IOException;
 
-import us.kshadow.gbz80emu.memory.ROMParser;
-import us.kshadow.gbz80emu.processor.CPU;
+import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class Main {
+import javax.swing.JFrame;
 
+public class Main extends JFrame implements KeyListener {
+	private static Emulator emu = new Emulator();
+	private static Runnable emuRunnable;
+	
+	public Main(String title) {
+		super(title);
+		setFocusable(true);
+		addKeyListener(this);
+	}
+	
 	public static void main(String[] args) {
-		// Initialize CPU, load a ROM into MMU to prepare for execution loop.
-		
-		CPU cpu = new CPU();
-		ROMParser testROM = new ROMParser();
-		
-		try {
-			testROM.loadROM("tetris.gb");		
-			cpu.getMMU().loadROM(testROM.getROMAsArray());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		//cpu.getRegisters().setInitValues();
-		cpu.getRegisters().print();
-		
-		// Beginning of the actual fetch/decode/execute cycle
-		while(true) {
-			if(cpu.isRunning()) {
-				cpu.fetchInstruction();
-				cpu.getRegisters().print();
+		JFrame frame = new Main("GBZ80Emu");
+		emu.setBackground(Color.white);
+		frame.add(emu);
+		frame.setSize(320, 288);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		emuRunnable = () -> { emu.runEmulator(); };
+		Thread emuThread = new Thread(emuRunnable);
+		emuThread.start();
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		switch(e.getKeyCode()) {
+		case KeyEvent.VK_P:
+			if (emu.getEmuRunning()) {
+				emu.setEmuRunning(false);
+			} else {
+				emu.setEmuRunning(true);
+				Thread emuThread = new Thread(emuRunnable);
+				emuThread.start();
 			}
 		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

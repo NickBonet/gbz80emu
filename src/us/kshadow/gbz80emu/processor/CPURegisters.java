@@ -62,7 +62,7 @@ public class CPURegisters {
 	 * @param value - Data to be written to register.
 	 */
 	public void write(String register, int value) {
-		boolean word = register.length() > 1 ? true : false;
+		boolean word = register.length() > 1;
 		if (word) { BitUtil.checkIsWord(value); }
 		else { BitUtil.checkIsByte(value); }
 		switch(register.toUpperCase()) 
