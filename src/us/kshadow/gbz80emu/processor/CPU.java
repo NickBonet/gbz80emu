@@ -31,6 +31,18 @@ public class CPU {
 		case 0x00: // NOP
 			cycles += 4;
 			break;
+		case 0x01: // LD BC, u16
+			cpuReg.writeReg("BC", fetchNextWord(), true);
+			cycles += 12;
+			break;
+		case 0x02: // LD (BC),A
+			mmu.writeByte(cpuReg.getReg("BC"), cpuReg.getReg("A"));
+			cycles += 8;
+			break;
+		case 0x03: // INC BC
+			ALU.instructINCu16("BC");
+			cycles += 8;
+			break;
 		case 0x04: // INC B
 			ALU.instructINCu8("B");
 			cycles += 4;
@@ -41,6 +53,26 @@ public class CPU {
 			break;
 		case 0x06: // LD B, u8
 			cpuReg.writeReg("B", fetchNextByte(), false);
+			cycles += 8;
+			break;
+		case 0x07: // RLCA
+			BitShift.instructRLCA();
+			cycles += 4;
+			break;
+		case 0x08: // LD (u16), SP
+			mmu.writeWord(fetchNextWord(), cpuReg.getReg("SP"));
+			cycles += 20;
+			break;
+		case 0x09: // ADD HL, BC
+			ALU.instructADDu16("BC");
+			cycles += 8;
+			break;
+		case 0x0A: // LD A, (BC)
+			cpuReg.writeReg("A", mmu.readByte(cpuReg.getReg("BC")), false);
+			cycles += 8;
+			break;
+		case 0x0B: // DEC BC
+			ALU.instructDECu16("BC");
 			cycles += 8;
 			break;
 		case 0x0C: // INC C
@@ -54,6 +86,10 @@ public class CPU {
 		case 0x0E: // LD C, u8
 			cpuReg.writeReg("C", fetchNextByte(), false);
 			cycles += 8;
+			break;
+		case 0x0F: // RRCA
+			BitShift.instructRRCA();
+			cycles += 4;
 			break;
 		case 0x11: // LD DE, u16
 			cpuReg.writeReg("DE", fetchNextWord(), true);
@@ -180,7 +216,7 @@ public class CPU {
 			cpuReg.writeReg("A", mmu.readByte(0xFF00 + fetchNextByte()), false);
 			cycles += 12;
 			break;
-		case 0xFE:
+		case 0xFE: // CP A, u8
 			ALU.instructSUB(fetchNextByte(), true);
 			cycles += 8;
 			break;
