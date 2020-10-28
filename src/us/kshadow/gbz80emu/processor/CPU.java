@@ -59,7 +59,7 @@ public class CPU {
 			cpuReg.writeReg("DE", fetchNextWord(), true);
 			cycles += 12;
 			break;
-		case 0x13:
+		case 0x13: // INC DE
 			ALU.instructINCu16("DE");
 			cycles += 8;
 			break;
@@ -121,7 +121,7 @@ public class CPU {
 			cpuReg.writeReg("A", fetchNextByte(), false);
 			cycles += 8;
 			break;
-		case 0x4F: // lD C, A
+		case 0x4F: // LD C, A
 			cpuReg.writeReg("C", cpuReg.getReg("A"), false);
 			cycles += 4;
 			break;
