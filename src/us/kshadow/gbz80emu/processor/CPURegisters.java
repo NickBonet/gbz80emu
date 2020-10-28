@@ -33,14 +33,18 @@ public class CPURegisters {
 		return instance;
 	}
 	
-	// Simply reset all registers to 0x00.
-	public void clearRegs() {
+	/**
+	 * Simply reset all registers to 0x00.
+	 */
+	public void clearRegisters() {
 		a = b = d = h = c = e = l = pc = sp = 0;
 		flagRegister.setFlagsFromByte(0x00);
 	}
 	
-	// Simple method for printing register values to console.
-	public void printReg() {
+	/**
+	 * Simple method for printing register values to console.
+	 */
+	public void print() {
 		String registers = String.format("A: 0x%x  B: 0x%x  D: 0x%x  H: 0x%x  C: 0x%x  E: 0x%x  L: 0x%x  PC: 0x%x  SP: 0x%x", 
 				a, b, d, h, c, e, l, pc, sp);
 		String flags = String.format("[FR]: Zero: %s, Negative: %s, Carry: %s, HalfCarry: %s", 
@@ -52,9 +56,9 @@ public class CPURegisters {
 	 * Method to abstract the individual setters for registers, will be useful when mapping opcodes for similar instructions. (less duplication in those moments)
 	 * @param register - String of register to write value to.
 	 * @param value - Data to be written to register.
-	 * @param word - True if register/value are 16-bit, false if 8-bit register/value.
 	 */
-	public void writeReg(String register, int value, boolean word) {
+	public void write(String register, int value) {
+		boolean word = register.length() > 1 ? true : false;
 		if (word) { BitUtil.checkIsWord(value); }
 		else { BitUtil.checkIsByte(value); }
 		switch(register.toUpperCase()) 
@@ -115,7 +119,7 @@ public class CPURegisters {
 	 * @param register - String of register to read value from.
 	 * @return Value of the register.
 	 */
-	public int getReg(String register) {
+	public int read(String register) {
 		int regValue = 0;
 		switch(register.toUpperCase()) 
 		{
@@ -170,25 +174,37 @@ public class CPURegisters {
 	}
 	
 	
-	// Sets the initial values of the registers as if the firmware has executed on the GB.
+	/**
+	 * Sets the initial values of the registers as if the firmware has executed on the GB.
+	 */
 	public void setInitValues() {
-		this.writeReg("AF", 0x01B0, true);
-		this.writeReg("BC", 0x0013, true);
-		this.writeReg("DE", 0x00D8, true);
-		this.writeReg("HL", 0x014D, true);
-		this.writeReg("SP", 0xFFFE, true);
-		this.writeReg("PC", 0x100, true);
+		this.write("AF", 0x01B0);
+		this.write("BC", 0x0013);
+		this.write("DE", 0x00D8);
+		this.write("HL", 0x014D);
+		this.write("SP", 0xFFFE);
+		this.write("PC", 0x100);
 	}
 	
+	/**
+	 * Increases PC by 1.
+	 */
 	public void incPC() {
 		this.pc++;
 	}
 	
+	/**
+	 * Get the current value of PC.
+	 * @return pc - The current value of PC.
+	 */
 	public int getPC() {
 		return pc;
 	}
 	
-	// return FlagRegister object in special cases
+	/**
+	 * Returns the FlagRegister object.
+	 * @return flagRegister - see above.
+	 */
 	public FlagRegister getFR() {
 		return flagRegister;
 	}

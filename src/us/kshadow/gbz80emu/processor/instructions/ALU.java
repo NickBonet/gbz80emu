@@ -13,8 +13,8 @@ import us.kshadow.gbz80emu.memory.MMU;
 
 public class ALU {	
 	
-	private static final CPURegisters cpuReg = CPURegisters.getInstance();
-	private static final FlagRegister fr = cpuReg.getFR();
+	private static final CPURegisters reg = CPURegisters.getInstance();
+	private static final FlagRegister fr = reg.getFR();
 	private static final MMU mmu = MMU.getInstance();
 	
 	private ALU() {}
@@ -35,10 +35,10 @@ public class ALU {
 	 * CPL - Complement of register A. (Flip all bits)
 	 */
 	public static void instructCPL() {
-		int result = cpuReg.getReg("A") ^ 0xFF;
+		int result = reg.read("A") ^ 0xFF;
 		fr.setN(true);
 		fr.setH(true);
-		cpuReg.writeReg("A", result, false);
+		reg.write("A", result);
 	}
 	
 	/**
@@ -57,12 +57,12 @@ public class ALU {
 	 * @param arg - Value to OR with register A.
 	 */
 	public static void instructOR(int arg) {
-		int result = cpuReg.getReg("A") | arg;
+		int result = reg.read("A") | arg;
 		fr.setZ(result == 0);
 		fr.setC(false);
 		fr.setN(false);
 		fr.setH(false);
-		cpuReg.writeReg("A", result, false);
+		reg.write("A", result);
 	}
 	
 	/**
@@ -70,12 +70,12 @@ public class ALU {
 	 * @param arg - Value to XOR with register A.
 	 */
 	public static void instructXOR(int arg) {
-		int result = cpuReg.getReg("A") ^ arg;
+		int result = reg.read("A") ^ arg;
 		fr.setZ(result == 0);
 		fr.setC(false);
 		fr.setN(false);
 		fr.setH(false);
-		cpuReg.writeReg("A", result, false);
+		reg.write("A", result);
 	}
 	
 	/**
@@ -83,12 +83,12 @@ public class ALU {
 	 * @param arg - Value to AND with register A.
 	 */
 	public static void instructAND(int arg) {
-		int result = cpuReg.getReg("A") & arg;
+		int result = reg.read("A") & arg;
 		fr.setZ(result == 0);
 		fr.setC(false);
 		fr.setN(false);
 		fr.setH(true);
-		cpuReg.writeReg("A", result, false);
+		reg.write("A", result);
 	}
 	
 	/**
@@ -96,7 +96,7 @@ public class ALU {
 	 * @param register - Register to increment.
 	 */
 	public static void instructINCu8(String register) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = (regVal + 1) & 0xFF; // mask off higher than 8 bits if addition carries that much
 		fr.setZ(result == 0);
 		fr.setN(false);
@@ -109,7 +109,7 @@ public class ALU {
 	 * @param register - Register to decrement.
 	 */
 	public static void instructDECu8(String register) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = (regVal - 1) & 0xFF; // two's complement if number reaches negative
 		fr.setZ(result == 0);
 		fr.setN(true);
@@ -122,12 +122,12 @@ public class ALU {
 	 * @param arg - Value to be added to register A.
 	 */
 	public static void instructADD(int arg) {
-		int result = (cpuReg.getReg("A") + arg) & 0xFF;
+		int result = (reg.read("A") + arg) & 0xFF;
 		fr.setZ(result == 0);
 		fr.setN(false);
-		fr.setH(checkHalfCarryAdd(cpuReg.getReg("A"), arg, false));
-		fr.setC(checkCarryAdd(cpuReg.getReg("A"), arg, false));
-		cpuReg.writeReg("A", result, false);
+		fr.setH(checkHalfCarryAdd(reg.read("A"), arg, false));
+		fr.setC(checkCarryAdd(reg.read("A"), arg, false));
+		reg.write("A", result);
 	}
 	
 	/**
@@ -135,12 +135,12 @@ public class ALU {
 	 * @param arg - Value to be added to register A.
 	 */
 	public static void instructADC(int arg) {
-		int result = (cpuReg.getReg("A") + arg + (fr.isC() ? 1 : 0)) & 0xFF;
+		int result = (reg.read("A") + arg + (fr.isC() ? 1 : 0)) & 0xFF;
 		fr.setZ(result == 0);
 		fr.setN(false);
-		fr.setH(checkHalfCarryAdd(cpuReg.getReg("A"), arg, fr.isC()));
-		fr.setC(checkCarryAdd(cpuReg.getReg("A"), arg, fr.isC()));
-		cpuReg.writeReg("A", result, false);
+		fr.setH(checkHalfCarryAdd(reg.read("A"), arg, fr.isC()));
+		fr.setC(checkCarryAdd(reg.read("A"), arg, fr.isC()));
+		reg.write("A", result);
 	}
 	
 	/**
@@ -149,12 +149,12 @@ public class ALU {
 	 * @param cp - If true, treat instruction as CP and don't save result in A. (Only difference between SUB and CP)
 	 */
 	public static void instructSUB(int arg, boolean cp) {
-		int result = (cpuReg.getReg("A") - arg) & 0xFF;
+		int result = (reg.read("A") - arg) & 0xFF;
 		fr.setZ(result == 0);
 		fr.setN(true);
-		fr.setH(checkHalfCarrySub(cpuReg.getReg("A"), arg, false));
-		fr.setC(checkCarrySub(cpuReg.getReg("A"), arg, false));
-		if (!cp) { cpuReg.writeReg("A", result, false); }
+		fr.setH(checkHalfCarrySub(reg.read("A"), arg, false));
+		fr.setC(checkCarrySub(reg.read("A"), arg, false));
+		if (!cp) { reg.write("A", result); }
 	}
 	
 	/**
@@ -162,12 +162,12 @@ public class ALU {
 	 * @param arg - Value to be subtracted from register A.
 	 */
 	public static void instructSBC(int arg) {
-		int result = (cpuReg.getReg("A") - arg - (fr.isC() ? 1 : 0)) & 0xFF;
+		int result = (reg.read("A") - arg - (fr.isC() ? 1 : 0)) & 0xFF;
 		fr.setZ(result == 0);
 		fr.setN(true);
-		fr.setH(checkHalfCarrySub(cpuReg.getReg("A"), arg, fr.isC()));
-		fr.setC(checkCarrySub(cpuReg.getReg("A"), arg, fr.isC()));
-		cpuReg.writeReg("A", result, false);
+		fr.setH(checkHalfCarrySub(reg.read("A"), arg, fr.isC()));
+		fr.setC(checkCarrySub(reg.read("A"), arg, fr.isC()));
+		reg.write("A", result);
 	}
 	
 	// 16-Bit Arithmetic
@@ -177,13 +177,13 @@ public class ALU {
 	 * @param register - Register to add to register HL.
 	 */
 	public static void instructADDu16(String register) {
-		int value = cpuReg.getReg(register);
-		int hl = cpuReg.getReg("HL");
+		int value = reg.read(register);
+		int hl = reg.read("HL");
 		int result = (value + hl) & 0xFFFF;
 		fr.setN(false);
 		fr.setC(hl + value > 0xFFFF);
 		fr.setH((hl & 0x0fff) + (value & 0x0fff) > 0x0fff);
-		cpuReg.writeReg("HL", result, true);
+		reg.write("HL", result);
 	}
 	
 	/**
@@ -191,13 +191,13 @@ public class ALU {
 	 * @param value - Signed value to be added to SP.
 	 */
 	public static void instructADDSP(byte value) {
-		int sp = cpuReg.getReg("SP");
+		int sp = reg.read("SP");
 		int result = (sp + value) & 0xFFFF; 
 		fr.setZ(false);
 		fr.setN(false);
 		fr.setC(((sp ^ value ^ result) & 0x100) == 0x100);
 		fr.setH(((sp ^ value ^ result) & 0x10) == 0x10);
-		cpuReg.writeReg("SP", result, true);
+		reg.write("SP", result);
 	}
 	
 	/**
@@ -205,9 +205,9 @@ public class ALU {
 	 * @param register - Register to be incremented.
 	 */
 	public static void instructINCu16(String register) {
-		int regVal = cpuReg.getReg(register);
+		int regVal = reg.read(register);
 		int result = (regVal + 1) & 0xFFFF;
-		cpuReg.writeReg(register, result, true);
+		reg.write(register, result);
 	}
 	
 	/**
@@ -215,9 +215,9 @@ public class ALU {
 	 * @param register - Register to be decremented.
 	 */
 	public static void instructDECu16(String register) {
-		int regVal = cpuReg.getReg(register);
+		int regVal = reg.read(register);
 		int result = (regVal - 1) & 0xFFFF;
-		cpuReg.writeReg(register, result, true);
+		reg.write(register, result);
 	}
 	
 	/**
@@ -227,9 +227,9 @@ public class ALU {
 	 */
 	private static void writeValue(String register, int result) {
 		if(register.equals("HL")) {
-			mmu.writeByte(cpuReg.getReg("HL"), result);
+			mmu.writeByte(reg.read("HL"), result);
 		} else {
-			cpuReg.writeReg(register, result, false);
+			reg.write(register, result);
 		}
 	}
 }

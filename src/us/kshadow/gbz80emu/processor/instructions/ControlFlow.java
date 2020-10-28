@@ -11,8 +11,8 @@ import us.kshadow.gbz80emu.processor.FlagRegister;
  */
 public class ControlFlow {
 
-	private static final CPURegisters cpuReg = CPURegisters.getInstance();
-	private static final FlagRegister fr = cpuReg.getFR();
+	private static final CPURegisters reg = CPURegisters.getInstance();
+	private static final FlagRegister fr = reg.getFR();
 	private static final MMU mmu = MMU.getInstance();
 	
 	private ControlFlow() { }
@@ -24,7 +24,7 @@ public class ControlFlow {
 	 * @param address - Address to set PC to.
 	 */
 	public static void instructJP(int address) {
-		cpuReg.writeReg("PC", address, true);
+		reg.write("PC", address);
 	}
 	
 	/**
@@ -64,7 +64,7 @@ public class ControlFlow {
 	 * @param value - Next signed byte from memory.
 	 */
 	public static void instructJR(byte value) {
-		cpuReg.writeReg("PC", cpuReg.getPC() + value, false);
+		reg.write("PC", reg.getPC() + value);
 	}
 	
 	/**
@@ -104,10 +104,10 @@ public class ControlFlow {
 	 * @param register - Register to push onto stack.
 	 */
 	public static void instructPUSH(String register) {
-		int currentSP = cpuReg.getReg("SP");
-		cpuReg.writeReg("SP", currentSP - 2, true);
-		int value = cpuReg.getReg(register);
-		mmu.writeWord(cpuReg.getReg("SP"), value);
+		int currentSP = reg.read("SP");
+		reg.write("SP", currentSP - 2);
+		int value = reg.read(register);
+		mmu.writeWord(reg.read("SP"), value);
 	}
 	
 	/**
@@ -116,10 +116,10 @@ public class ControlFlow {
 	 * @param register - Register to store popped bytes in.
 	 */
 	public static void instructPOP(String register) {
-		int currentSP = cpuReg.getReg("SP");
+		int currentSP = reg.read("SP");
 		int value = mmu.readWord(currentSP);
-		cpuReg.writeReg(register, value, true);
-		cpuReg.writeReg("SP", currentSP + 2, true);
+		reg.write(register, value);
+		reg.write("SP", currentSP + 2);
 	}
 	
 	/**
@@ -176,28 +176,28 @@ public class ControlFlow {
 		instructPUSH("PC");
 		switch(opcode) {
 		case 0xC7:
-			cpuReg.writeReg("PC", 0x00, false);
+			reg.write("PC", 0x00);
 			break;
 		case 0xCF:
-			cpuReg.writeReg("PC", 0x08, false);
+			reg.write("PC", 0x08);
 			break;
 		case 0xD7:
-			cpuReg.writeReg("PC", 0x10, false);
+			reg.write("PC", 0x10);
 			break;
 		case 0xDF:
-			cpuReg.writeReg("PC", 0x18, false);
+			reg.write("PC", 0x18);
 			break;
 		case 0xE7:
-			cpuReg.writeReg("PC", 0x20, false);
+			reg.write("PC", 0x20);
 			break;
 		case 0xEF:
-			cpuReg.writeReg("PC", 0x28, false);
+			reg.write("PC", 0x28);
 			break;
 		case 0xF7:
-			cpuReg.writeReg("PC", 0x30, false);
+			reg.write("PC", 0x30);
 			break;
 		case 0xFF:
-			cpuReg.writeReg("PC", 0x38, false);
+			reg.write("PC", 0x38);
 			break;
 		default:
 			break;

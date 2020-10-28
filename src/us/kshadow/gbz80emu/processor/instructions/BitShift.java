@@ -14,8 +14,8 @@ import us.kshadow.gbz80emu.memory.MMU;
 
 public class BitShift {
 
-	private static final CPURegisters cpuReg = CPURegisters.getInstance();
-	private static final FlagRegister fr = cpuReg.getFR();
+	private static final CPURegisters reg = CPURegisters.getInstance();
+	private static final FlagRegister fr = reg.getFR();
 	private static final MMU mmu = MMU.getInstance();
 	
 	private BitShift() { }
@@ -25,65 +25,65 @@ public class BitShift {
 	 * @param register - register/pointer for SWAP operation.
 	 */
 	public static void instructSWAP(String register) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = ((regVal & 0x0F) << 4 | (regVal & 0xF0) >> 4);
 		fr.setZ(result == 0);
 		fr.setC(false);
 		fr.setN(false);
 		fr.setH(false);
-		cpuReg.writeReg(register, result, false);
+		reg.write(register, result);
 	}
 	
 	/**
 	 * RLCA - Rotate A left. Bit 7 from initial value goes into carry flag and bit 0.
 	 */
 	public static void instructRLCA() {
-		int result = ((cpuReg.getReg("A") << 1) & 0xFF);
-		result |= checkBitSet(cpuReg.getReg("A"), 7) ? 1 : 0;
-		fr.setC(checkBitSet(cpuReg.getReg("A"), 7));
+		int result = ((reg.read("A") << 1) & 0xFF);
+		result |= checkBitSet(reg.read("A"), 7) ? 1 : 0;
+		fr.setC(checkBitSet(reg.read("A"), 7));
 		fr.setN(false);
 		fr.setH(false);
 		fr.setZ(false);
-		cpuReg.writeReg("A", result, false);
+		reg.write("A", result);
 	}
 	
 	/**
 	 * RLA - Rotate A register left through carry flag.
 	 */
 	public static void instructRLA() {
-		int result = ((cpuReg.getReg("A") << 1) & 0xFF);
+		int result = ((reg.read("A") << 1) & 0xFF);
 		result |= fr.isC() ? 1 : 0;
-		fr.setC(checkBitSet(cpuReg.getReg("A"), 7));
+		fr.setC(checkBitSet(reg.read("A"), 7));
 		fr.setH(false);
 		fr.setN(false);
 		fr.setZ(false);
-		cpuReg.writeReg("A", result, false); 
+		reg.write("A", result); 
 	}
 	
 	/**
 	 * RRCA - Rotate A right. Bit 0 from original value is moved to bit 7 and also stored as carry flag.
 	 */
 	public static void instructRRCA() {
-		int result = ((cpuReg.getReg("A") >> 1) & 0xFF);
-		result = checkBitSet(cpuReg.getReg("A"), 0) ? setBit(result, 7) : result;
-		fr.setC(checkBitSet(cpuReg.getReg("A"), 0));
+		int result = ((reg.read("A") >> 1) & 0xFF);
+		result = checkBitSet(reg.read("A"), 0) ? setBit(result, 7) : result;
+		fr.setC(checkBitSet(reg.read("A"), 0));
 		fr.setN(false);
 		fr.setH(false);
 		fr.setZ(false);
-		cpuReg.writeReg("A", result, false);
+		reg.write("A", result);
 	}
 	
 	/**
 	 * RRA - Rotate A right through carry.
 	 */
 	public static void instructRRA() {
-		int result = ((cpuReg.getReg("A") >> 1) & 0xFF);
+		int result = ((reg.read("A") >> 1) & 0xFF);
 		result = fr.isC() ? setBit(result, 7) : result;
 		fr.setN(false);
 		fr.setH(false);
 		fr.setZ(false);
-		fr.setC(checkBitSet(cpuReg.getReg("A"), 0));
-		cpuReg.writeReg("A", result, false);
+		fr.setC(checkBitSet(reg.read("A"), 0));
+		reg.write("A", result);
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class BitShift {
 	 * @param register - register/pointer for RLC operation.
 	 */
 	public static void instructRLC(String register) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = ((regVal << 1) & 0xFF);
 		result |= checkBitSet(regVal, 7) ? 1 : 0;
 		fr.setC(checkBitSet(regVal, 7));
@@ -106,7 +106,7 @@ public class BitShift {
 	 * @param register - register/pointer for RL operation.
 	 */
 	public static void instructRL(String register) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = ((regVal << 1) & 0xFF);
 		result |= fr.isC() ? 1 : 0; // puts carry bit into bit 0 if set
 		fr.setC(checkBitSet(regVal, 7));
@@ -121,7 +121,7 @@ public class BitShift {
 	 * @param register - register/pointer for RRC operation.
 	 */
 	public static void instructRRC(String register) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = ((regVal >> 1) & 0xFF);
 		result = checkBitSet(regVal, 0) ? setBit(result, 7) : result;
 		fr.setC(checkBitSet(regVal, 0));
@@ -136,7 +136,7 @@ public class BitShift {
 	 * @param register - register/pointer for RR operation.
 	 */
 	public static void instructRR(String register) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = ((regVal >> 1) & 0xFF);
 		result = fr.isC() ? setBit(result, 7) : result;
 		fr.setN(false);
@@ -151,7 +151,7 @@ public class BitShift {
 	 * @param register - register/pointer for SLA operation.
 	 */
 	public static void instructSLA(String register) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = ((regVal << 1) & 0xFF);
 		if (!checkBitSet(result, 0)) { setBit(result, 0); } // set bit 0 to 0 if it's not already.
 		fr.setC(checkBitSet(regVal, 7));
@@ -166,7 +166,7 @@ public class BitShift {
 	 * @param register - register/pointer for SRA operation.
 	 */
 	public static void instructSRA(String register) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = ((regVal >> 1) & 0xFF);
 		fr.setN(false);
 		fr.setH(false);
@@ -180,7 +180,7 @@ public class BitShift {
 	 * @param register - register/pointer for SRL operation.
 	 */
 	public static void instructSRL(String register) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = ((regVal >> 1) & 0xFF);
 		if (!checkBitSet(result, 7)) { setBit(result, 7); } // set bit 7 to 0 if it's not already.
 		fr.setN(false);
@@ -196,7 +196,7 @@ public class BitShift {
 	 * @param bitPos - position of bit to test.
 	 */
 	public static void instructBIT(String register, int bitPos) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		if (bitPos < 8) {
 			fr.setZ(!checkBitSet(regVal, bitPos));
 			fr.setN(false);
@@ -210,7 +210,7 @@ public class BitShift {
 	 * @param bitPos - position of bit to set.
 	 */
 	public static void instructSET(String register, int bitPos) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		if (bitPos < 8) {
 			int result = regVal;
 			if (!checkBitSet(result, bitPos)) { setBit(result, bitPos); }
@@ -224,7 +224,7 @@ public class BitShift {
 	 * @param bitPos - position of bit to set.
 	 */
 	public static void instructRES(String register, int bitPos) {
-		int regVal = register.equals("HL") ? mmu.readByte(cpuReg.getReg("HL")) : cpuReg.getReg(register);
+		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		if (bitPos < 8) {
 			int result = regVal;
 			if (checkBitSet(result, bitPos)) { setBit(result, bitPos); }
@@ -239,9 +239,9 @@ public class BitShift {
 	 */
 	private static void writeValue(String register, int result) {
 		if(register.equals("HL")) {
-			mmu.writeByte(cpuReg.getReg("HL"), result);
+			mmu.writeByte(reg.read("HL"), result);
 		} else {
-			cpuReg.writeReg(register, result, false);
+			reg.write(register, result);
 		}
 	}
 }

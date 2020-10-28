@@ -20,13 +20,13 @@ public class Main {
 		}
 		
 		//cpu.getCpuReg().setInitValues();
-		cpu.getCpuReg().printReg();
+		cpu.getCpuReg().print();
 		
 		// Beginning of the actual fetch/decode/execute cycle
 		while(true) {
 			if(cpu.isRunning()) {
 				cpu.fetchInstruction();
-				cpu.getCpuReg().printReg();
+				cpu.getCpuReg().print();
 			}
 		}
 	}
