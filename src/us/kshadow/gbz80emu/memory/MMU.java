@@ -52,7 +52,7 @@ public class MMU {
 		ROMParser bootROM = new ROMParser();
 		try {
 			bootROM.loadROM("dmg_boot.bin");
-			loadBootROM(bootROM.getRomAsArray());
+			loadBootROM(bootROM.getROMAsArray());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

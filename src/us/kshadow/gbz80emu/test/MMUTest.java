@@ -33,7 +33,7 @@ class MMUTest {
 	 */
 	public void testWriteThenReadROM() {
 		setup();
-		mmu.loadROM(testROM.getRomAsArray());
+		mmu.loadROM(testROM.getROMAsArray());
 		
 		int[] readBank0 = new int[0x4000];
 		int[] readBank1 = new int[0x4000];
@@ -43,8 +43,8 @@ class MMUTest {
 			readBank1[i] = mmu.readByte(i + 0x4000);
 		}
 		
-		assertEquals(true, Arrays.equals(Arrays.copyOfRange(testROM.getRomAsArray(), 0x0000, 0x4000), readBank0));
-		assertEquals(true, Arrays.equals(Arrays.copyOfRange(testROM.getRomAsArray(), 0x4000, 0x8000), readBank1));
+		assertEquals(true, Arrays.equals(Arrays.copyOfRange(testROM.getROMAsArray(), 0x0000, 0x4000), readBank0));
+		assertEquals(true, Arrays.equals(Arrays.copyOfRange(testROM.getROMAsArray(), 0x4000, 0x8000), readBank1));
 	}
 	
 	@Test
@@ -53,8 +53,8 @@ class MMUTest {
 	 */
 	public void testWriteByteROMFails() {
 		setup();
-		for (int i = 0; i < testROM.getRomAsArray().length; i++) {
-			mmu.writeByte(i, testROM.getRomAsArray()[i]);
+		for (int i = 0; i < testROM.getROMAsArray().length; i++) {
+			mmu.writeByte(i, testROM.getROMAsArray()[i]);
 		}
 		
 		int[] readROMTest = new int[0x8000];
@@ -65,7 +65,7 @@ class MMUTest {
 			readROMTest[i] = mmu.readByte(i);
 		}
 		
-		assertEquals(false, Arrays.equals(readROMTest, testROM.getRomAsArray()));
+		assertEquals(false, Arrays.equals(readROMTest, testROM.getROMAsArray()));
 		assertEquals(true, Arrays.equals(emptyArr, readROMTest));
 	}
 

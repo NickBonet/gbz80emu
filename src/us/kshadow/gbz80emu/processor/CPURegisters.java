@@ -29,6 +29,10 @@ public class CPURegisters {
 	
 	private CPURegisters() { }
 	
+	/**
+	 * Return the singleton instance of the CPU's registers.
+	 * @return instance - This CPURegisters instance.
+	 */
 	public static CPURegisters getInstance() {
 		return instance;
 	}

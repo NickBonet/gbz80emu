@@ -345,7 +345,7 @@ public class CPU {
 		return result;
 	}
 	
-	public CPURegisters getCpuReg() {
+	public CPURegisters getRegisters() {
 		return reg;
 	}
 	

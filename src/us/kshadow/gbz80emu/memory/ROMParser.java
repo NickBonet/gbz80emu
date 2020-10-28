@@ -29,7 +29,7 @@ public class ROMParser {
 		} catch (IOException ex) { ex.printStackTrace(); }
 	}
 	
-	public int[] getRomAsArray() {
+	public int[] getROMAsArray() {
 		return romArray;
 	}
 	
