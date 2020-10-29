@@ -1,6 +1,12 @@
 package us.kshadow.gbz80emu.processor;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import us.kshadow.gbz80emu.memory.MMU;
 
@@ -28,26 +34,27 @@ public class GPU {
 	public BufferedImage readTile(int address) {
 		int[] bytes = new int[16];
 		BufferedImage tile = new BufferedImage(8, 8, BufferedImage.TYPE_INT_RGB);
-		// loop through every 2 bytes
+		// loop through every 2 bytes (2 bytes = 1 row of tile)
 		for (int i = 0; i < bytes.length; i += 2) {
 			bytes[i] = MMU.getInstance().readByte(address + i);
+			bytes[i + 1] = MMU.getInstance().readByte(address + i + 1);
+			// loop through bits of each byte to get color information.
 			for (int j = 0; j < 8; j++) {
-				int bitMask = 1 << (7 - j);
-				int lsb = bytes[i] & bitMask;
-				int msb = bytes[i+1] & bitMask;
+				int lsb = ((bytes[i] >> 7 - j) & 1);
+				int msb = ((bytes[i+1] >> 7 - j) & 1);
 				int colorValue = msb << 1 | lsb;
 				switch (colorValue) {
 				case 0:
-					tile.setRGB(j, i/2, 0x9bbc0f);
+					tile.setRGB(j, i/2, 0xe0f8d0);
 					break;
 				case 1:
-					tile.setRGB(j, i/2, 0x8bac0f);
+					tile.setRGB(j, i/2, 0x88c070);
 					break;
 				case 2:
-					tile.setRGB(j, i/2, 0x306230);
+					tile.setRGB(j, i/2, 0x346856);
 					break;
 				case 3:
-					tile.setRGB(j, i/2, 0x0f380f);
+					tile.setRGB(j, i/2, 0x081820);
 					break;
 				default:
 					break;
@@ -55,5 +62,26 @@ public class GPU {
 			}
 		}
 		return tile;
+	}
+	
+	public void saveTile(int address, String name) {
+		BufferedImage dimg = resizeTile(address);
+		File output = new File(name + ".png");
+		try {
+			ImageIO.write(dimg, "png", output);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// Function I use for resizing tiles while testing.
+	public BufferedImage resizeTile(int address) {
+		BufferedImage tile = readTile(address);
+		Image tmp = tile.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+		BufferedImage dimg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = dimg.createGraphics();
+		g2d.drawImage(tmp, 0, 0, null);
+		g2d.dispose();
+		return dimg;
 	}
 }

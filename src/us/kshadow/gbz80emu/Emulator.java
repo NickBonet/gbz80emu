@@ -54,12 +54,15 @@ public class Emulator extends JPanel {
 		}
 	}
 	
+	public void dumpTile(int address) {
+		gpu.saveTile(address, "tile");
+	}
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		for (int i = 0; i <= 0x190; i+=0x10) {
-			g.drawImage(gpu.readTile(0x8000+i), i/2, 0, null);
-		}
+		for (int i = 0; i <= 0x190; i+= 0x10)
+			g.drawImage(gpu.resizeTile(0x8000 + i), 0+i, 0, null);
 	}
 	
 	public void setEmuRunning(boolean emuRunning) {

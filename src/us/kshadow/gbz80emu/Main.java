@@ -46,6 +46,9 @@ public class Main extends JFrame implements KeyListener {
 				emu.nextStep();
 			}
 			break;
+		case KeyEvent.VK_B: // save tile to file
+			emu.dumpTile(0x8190);
+			break;
 		default:
 			break;
 		}
