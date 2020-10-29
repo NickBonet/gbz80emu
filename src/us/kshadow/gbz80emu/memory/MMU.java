@@ -3,6 +3,7 @@ package us.kshadow.gbz80emu.memory;
 import java.io.IOException;
 import java.util.Arrays;
 
+import us.kshadow.gbz80emu.processor.GPU;
 import us.kshadow.gbz80emu.util.BitUtil;
 
 /**
@@ -13,6 +14,7 @@ import us.kshadow.gbz80emu.util.BitUtil;
 public class MMU {
 	
 	private static final MMU instance = new MMU();
+	private static final GPU gpu = GPU.getInstance();
 	
 	// Gets switched out at end of actual Gameboy boot up, when $FF50 is written to.
 	private int[] bootRom = new int[0xFF];
@@ -111,6 +113,9 @@ public class MMU {
 				if (address < 0xFE00) { return workRam[address & 0x1FFF]; }
 				else if (address >= 0xFE00 && address < 0xFEA0) { return oam[address & 0x9F]; }
 				else if (address >= 0xFF80 && address < 0xFFFF) { return zeroPage[address & 0x7F]; }
+				
+				// Experimental code.
+				else if (address == 0xFF44) { return gpu.getLY(); }
 				
 				// If address = unused range, I/O registers, or interrupt register, return 0 for now.
 				return 0;

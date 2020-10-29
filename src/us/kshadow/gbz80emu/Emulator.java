@@ -39,7 +39,7 @@ public class Emulator extends JPanel {
 					cpu.nextInstruction();
 					cpu.getRegisters().print();
 				}
-				cpu.resetCycles();
+				cpu.resetCyclesAfterFrame();
 			}
 			repaint();
 		}
@@ -49,7 +49,7 @@ public class Emulator extends JPanel {
 		cpu.nextInstruction();
 		cpu.getRegisters().print();
 		if (cpu.getCycles() >= 70224) { 
-			cpu.resetCycles();
+			cpu.resetCyclesAfterFrame();
 		}
 	}
 	

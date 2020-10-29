@@ -361,7 +361,7 @@ public class CPU {
 		return cycles;
 	}
 
-	public void resetCycles() {
-		this.cycles = 0;
+	public void resetCyclesAfterFrame() {
+		this.cycles -= 70224;
 	}
 }
