@@ -8,9 +8,9 @@ package us.kshadow.gbz80emu;
 import java.awt.Graphics;
 import java.io.IOException;
 import javax.swing.JPanel;
-
 import us.kshadow.gbz80emu.memory.ROMParser;
 import us.kshadow.gbz80emu.processor.CPU;
+import us.kshadow.gbz80emu.processor.GPU;
 
 /**
  * Emulator - Where all the moving parts are tied together to load GB games.
@@ -18,6 +18,7 @@ import us.kshadow.gbz80emu.processor.CPU;
 @SuppressWarnings("serial")
 public class Emulator extends JPanel {
 	private final transient CPU cpu;
+	private static final GPU gpu = GPU.getInstance();
 	private transient ROMParser testROM = new ROMParser();
 	private boolean emuRunning;
 	
@@ -56,8 +57,11 @@ public class Emulator extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		for (int i = 0; i <= 0x190; i+=0x10) {
+			g.drawImage(gpu.readTile(0x8000+i), i/2, 0, null);
+		}
 	}
-
+	
 	public void setEmuRunning(boolean emuRunning) {
 		this.emuRunning = emuRunning;
 	}
