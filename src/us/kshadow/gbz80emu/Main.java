@@ -6,6 +6,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
+@SuppressWarnings("serial")
 public class Main extends JFrame implements KeyListener {
 	private static Emulator emu = new Emulator();
 	private static Runnable emuRunnable;
