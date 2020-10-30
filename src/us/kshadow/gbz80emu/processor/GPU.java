@@ -21,7 +21,7 @@ public class GPU {
 	private static int lcdControl; // 0xFF40 - LCD/GPU control
 	private static int scrollY; // 0xFF42
 	private static int scrollX; // 0xFF43
-	private static int lineY = 0x00; // 0xFF44
+	private static int lineY; // 0xFF44
 	private static int bgPalette; // 0xFF47
 	private static int gpuMode; // Technically a part of LCDC status, will get to that later.
 	private static int systemCycles;

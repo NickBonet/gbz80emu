@@ -33,12 +33,17 @@ public class Emulator extends JPanel {
 			if(cpu.isRunning()) { // for STOP instruction
 				while (cpu.getCycles() <= 70224) {
 					int cycles = cpu.nextInstruction();
-					cpu.getRegisters().print();
+					if (cycles == 0) break;
 					gpu.nextStep(cycles);
 				}
-				cpu.resetCyclesAfterFrame();
+				if (cpu.getCycles() >= 70224) { cpu.resetCyclesAfterFrame(); }
+				repaint();
+				try {
+					Thread.sleep(16);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			repaint();
 		}
 	}
 	

@@ -25,13 +25,20 @@ public class CPU {
 		cpuCycles = 0;
 		isRunning = true;
 		mmu.toggleBootROM(true);
+		logger.log(Level.INFO, "CPU execution started.");
 	}
 	
 	public int nextInstruction() {
+		if (reg.getPC() >= 0x100) {
+			logger.log(Level.INFO, "BootROM execution complete.");
+			reg.print();
+			isRunning = false;
+			return 0;
+		}
 		int instruction = fetchNextByte();
 		int cycles;
-		String loggerMsg = String.format("Executing instruction 0x%x", instruction);
-		logger.log(Level.INFO, loggerMsg);
+		//String loggerMsg = String.format("Executing instruction 0x%x", instruction);
+		//logger.log(Level.INFO, loggerMsg);
 		switch (instruction) {
 		case 0x00: // NOP
 			cycles = 4;
@@ -255,6 +262,10 @@ public class CPU {
 			mmu.writeByte(reg.read("HL"), reg.read("A"));
 			cycles = 8;
 			break;
+		case 0x78: // LD A, B
+			reg.write("A", reg.read("B"));
+			cycles = 4;
+			break;
 		case 0x7B: // LD A, E
 			reg.write("A", reg.read("E"));
 			cycles = 4;
@@ -263,9 +274,25 @@ public class CPU {
 			reg.write("A", reg.read("H"));
 			cycles = 4;
 			break;
+		case 0x7D: // LD A, L
+			reg.write("A", reg.read("L"));
+			cycles = 4;
+			break;
+		case 0x86: // ADD A, (HL)
+			ALU.instructADD(mmu.readByte(reg.read("HL")));
+			cycles = 8;
+			break;
+		case 0x90:
+			ALU.instructSUB(reg.read("B"), false);
+			cycles = 4;
+			break;
 		case 0xAF: // XOR A
 			ALU.instructXOR(reg.read("A"));
 			cycles = 4;
+			break;
+		case 0xBE:
+			ALU.instructSUB(mmu.readByte(reg.read("HL")), true);
+			cycles = 8;
 			break;
 		case 0xC1: // POP BC
 			ControlFlow.instructPOP("BC");
@@ -311,7 +338,7 @@ public class CPU {
 			cycles = 8;
 			break;
 		default:
-			throw new IllegalArgumentException("Unhandled CPU instruction!");
+			throw new IllegalArgumentException(String.format("Unhandled CPU instruction 0x%x", instruction));
 		}
 		cpuCycles += cycles;
 		return cycles;
@@ -320,8 +347,8 @@ public class CPU {
 	private int nextCBInstruction() {
 		int instruction = fetchNextByte();
 		int cycles;
-		String loggerMsg = String.format("Executing CB instruction 0x%x", instruction);
-		logger.log(Level.INFO, loggerMsg);
+		//String loggerMsg = String.format("Executing CB instruction 0x%x", instruction);
+		//logger.log(Level.INFO, loggerMsg);
 		switch(instruction) {
 		case 0x11: // RL C
 			BitShift.instructRL("C");
@@ -332,7 +359,7 @@ public class CPU {
 			cycles = 8;
 			break;
 		default:
-			throw new IllegalArgumentException("Unhandled CPU CB instruction!");
+			throw new IllegalArgumentException(String.format("Unhandled CB instruction 0x%x", instruction));
 		}
 		return cycles;
 	}
