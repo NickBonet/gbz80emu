@@ -11,8 +11,11 @@ public class FlagRegister {
 	
 	private static final FlagRegister instance = new FlagRegister();
 	
-	private boolean z, n, h, c = false;
-	
+	private boolean z = false;
+	private boolean n = false;
+	private boolean h = false;
+	private boolean c = false;
+
 	private static final int Z_POS = 7;
 	private static final int N_POS = 6;
 	private static final int H_POS = 5;
