@@ -22,7 +22,7 @@ public class GPU {
 	private static int gpuMode; // Technically a part of LCDC status, will get to that later.
 	private static int scrollX; // 0xFF42
 	private static int scrollY; // 0xFF43
-	private static int lineY = 0x89; // 0xFF44
+	private static int lineY = 0x00; // 0xFF44
 	private int systemCycles;
 
 	/**
@@ -33,12 +33,38 @@ public class GPU {
 		systemCycles += cycles;
 		switch(gpuMode) {
 			case 0: // HBlank mode
+				if (systemCycles >= 204) {
+					lineY++;
+					if (lineY == 143) {
+						gpuMode = 1;
+					} else {
+						gpuMode = 2;
+					}
+					systemCycles -= 204;
+				}
 				break;
 			case 1: // VBlank mode
+				if (systemCycles >= 456) {
+					lineY++;
+					if(lineY > 153) {
+						gpuMode = 2;
+						lineY = 0;
+					}
+					systemCycles -= 456;
+				}
 				break;
 			case 2: // Searching OAM
+				if (systemCycles >= 80) {
+					gpuMode = 3;
+					systemCycles -= 80;
+				}
 				break;
 			case 3: // Transfer data to display
+				if (systemCycles >= 172) {
+					gpuMode = 0;
+					// render scanline here
+					systemCycles -= 172;
+				}
 				break;
 			default:
 				break;
