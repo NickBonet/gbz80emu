@@ -259,6 +259,10 @@ public class CPU {
 			reg.write("A", reg.read("E"));
 			cycles = 4;
 			break;
+		case 0x7C: // LD A, H
+			reg.write("A", reg.read("H"));
+			cycles = 4;
+			break;
 		case 0xAF: // XOR A
 			ALU.instructXOR(reg.read("A"));
 			cycles = 4;

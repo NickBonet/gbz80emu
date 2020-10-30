@@ -114,8 +114,12 @@ public class MMU {
 				else if (address >= 0xFE00 && address < 0xFEA0) { return oam[address & 0x9F]; }
 				else if (address >= 0xFF80 && address < 0xFFFF) { return zeroPage[address & 0x7F]; }
 				
-				// Experimental code.
+				// GPU hookups
+				else if (address == 0xFF40) { return gpu.getLCDC(); }
+				else if (address == 0xFF42) { return gpu.getSCY(); }
+				else if (address == 0xFF43) { return gpu.getSCX(); }
 				else if (address == 0xFF44) { return gpu.getLY(); }
+				else if (address == 0xFF47) { return gpu.getBGP(); }
 				
 				// If address = unused range, I/O registers, or interrupt register, return 0 for now.
 				return 0;
@@ -174,6 +178,14 @@ public class MMU {
 				if (address < 0xFE00) { workRam[address & 0x1FFF] = value; }
 				else if (address >= 0xFE00 && address < 0xFEA0) { oam[address & 0x9F] = value; }
 				else if (address >= 0xFF80 && address < 0xFFFF) { zeroPage[address & 0x7F] = value; }
+
+				// GPU hookups
+				else if (address == 0xFF40) { gpu.setLCDC(value); }
+				else if (address == 0xFF42) { gpu.setSCY(value); }
+				else if (address == 0xFF43) { gpu.setSCX(value); }
+				else if (address == 0xFF44) { gpu.resetLY(); }
+				else if (address == 0xFF47) { gpu.setBGP(value); }
+
 				break;
 				
 			default:

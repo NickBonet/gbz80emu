@@ -17,19 +17,20 @@ import us.kshadow.gbz80emu.memory.MMU;
  */
 public class GPU {
 	private static final GPU instance = new GPU();
-	//private static int lcdControl; // 0xFF40 - LCD/GPU control
 	//private static int lcdStatus; // 0xFF41 - LCDC Status
-	private static int gpuMode; // Technically a part of LCDC status, will get to that later.
-	private static int scrollX; // 0xFF42
-	private static int scrollY; // 0xFF43
+	private static int lcdControl; // 0xFF40 - LCD/GPU control
+	private static int scrollY; // 0xFF42
+	private static int scrollX; // 0xFF43
 	private static int lineY = 0x00; // 0xFF44
-	private int systemCycles;
+	private static int bgPalette; // 0xFF47
+	private static int gpuMode; // Technically a part of LCDC status, will get to that later.
+	private static int systemCycles;
 
 	/**
 	 * Similar to CPU's nextInstruction(), except for GPU operations.
 	 * @param cycles - CPU cycles to add to internal GPU cycle count.
 	 */
-	public void nextStep(int cycles) {
+	public static void nextStep(int cycles) {
 		systemCycles += cycles;
 		switch(gpuMode) {
 			case 0: // HBlank mode
@@ -134,7 +135,44 @@ public class GPU {
 		return instance;
 	}
 
-	public int getLY() {
+	public static int getLY() {
 		return lineY;
 	}
+
+	public static void resetLY() {
+		lineY = 0;
+	}
+
+	public static int getLCDC() {
+		return lcdControl;
+	}
+
+	public static void setLCDC(int lcdControl) {
+		GPU.lcdControl = lcdControl;
+	}
+
+	public static int getSCY() {
+		return scrollY;
+	}
+
+	public static void setSCY(int scrollY) {
+		GPU.scrollY = scrollY;
+	}
+
+	public static int getSCX() {
+		return scrollX;
+	}
+
+	public static void setSCX(int scrollY) {
+		GPU.scrollX = scrollX;
+	}
+
+	public static int getBGP() {
+		return bgPalette;
+	}
+
+	public static void setBGP(int bgPalette) {
+		GPU.bgPalette = bgPalette;
+	}
+
 }
