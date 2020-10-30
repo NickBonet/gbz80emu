@@ -1,8 +1,3 @@
-/**
- * Emulator - edit me!
- * @author Nicholas Bonet
- *
- */
 package us.kshadow.gbz80emu;
 
 import java.awt.Graphics;
@@ -61,15 +56,31 @@ public class Emulator extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		for (int i = 0; i <= 0x190; i+= 0x10)
-			g.drawImage(gpu.resizeTile(0x8000 + i), 0+i, 0, null);
+		drawTileMapFromVRAM(g);
 	}
-	
+
 	public void setEmuRunning(boolean emuRunning) {
 		this.emuRunning = emuRunning;
 	}
 	
 	public boolean getEmuRunning() {
 		return emuRunning;
+	}
+
+	/**
+	 * Method for drawing tile map to window display.
+	 * @param g - Graphics object to draw to.
+	 */
+	private void drawTileMapFromVRAM(Graphics g) {
+		int x = 0;
+		int y = 0;
+		for (int i = 0x8000; i <= 0x97FF; i+= 0x10) {
+			if (x == 304) {
+				x = 0;
+				y += 0x10;
+			}
+			g.drawImage(gpu.resizeTile(i), x, y, null);
+			x += 0x10;
+		}
 	}
 }
