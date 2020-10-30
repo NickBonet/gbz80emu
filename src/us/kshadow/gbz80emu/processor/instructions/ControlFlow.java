@@ -17,7 +17,7 @@ public class ControlFlow {
 	
 	private ControlFlow() { }
 	
-	// TODO: Implement HALT, STOP, DI, EI instructions, and finish RETI. (relies on interrupts impl.)
+	// TODO: Implement HALT, DI, EI instructions, and finish RETI. (relies on interrupts impl.)
 	
 	/**
 	 * JP - Handles absolute jump instruction.
@@ -72,31 +72,37 @@ public class ControlFlow {
 	 * @param opcode - Opcode of the conditional relative jump.
 	 * @param value - Next signed byte from memory.
 	 */
-	public static void instructCondJR(int opcode, byte value) {
+	public static int instructCondJR(int opcode, byte value) {
+		int cycles = 8;
 		switch(opcode) {
 		case 0x20:
 			if (!fr.isZ()) {
 				instructJR(value);
+				cycles += 4;
 			}
 			break;
 		case 0x28:
 			if (fr.isZ()) {
 				instructJR(value);
+				cycles += 4;
 			}
 			break;
 		case 0x30:
 			if (!fr.isC()) {
 				instructJR(value);
+				cycles += 4;
 			}
 			break;
 		case 0x38:
 			if (fr.isC()) {
 				instructJR(value);
+				cycles += 4;
 			}
 			break;
 		default:
 			break;
 		}
+		return cycles;
 	}
 	
 	/**

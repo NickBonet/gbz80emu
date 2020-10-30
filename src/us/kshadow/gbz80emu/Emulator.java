@@ -32,8 +32,9 @@ public class Emulator extends JPanel {
 		while (emuRunning) {
 			if(cpu.isRunning()) { // for STOP instruction
 				while (cpu.getCycles() <= 70224) {
-					cpu.nextInstruction();
+					int cycles = cpu.nextInstruction();
 					cpu.getRegisters().print();
+					gpu.nextStep(cycles);
 				}
 				cpu.resetCyclesAfterFrame();
 			}
@@ -42,8 +43,9 @@ public class Emulator extends JPanel {
 	}
 	
 	public void nextStep() {
-		cpu.nextInstruction();
+		int cycles = cpu.nextInstruction();
 		cpu.getRegisters().print();
+		gpu.nextStep(cycles);
 		if (cpu.getCycles() >= 70224) { 
 			cpu.resetCyclesAfterFrame();
 		}

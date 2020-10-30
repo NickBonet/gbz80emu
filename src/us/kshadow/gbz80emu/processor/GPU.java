@@ -17,20 +17,26 @@ import us.kshadow.gbz80emu.memory.MMU;
  */
 public class GPU {
 	private static final GPU instance = new GPU();
-	private static int LCDC; // 0xFF40 - LCD/GPU control
-	private static int STAT; // 0xFF41 - LCDC Status
-	private static int SCY; // 0xFF42
-	private static int SCX; // 0xFF43
-	private static int LY = 0x89; // 0xFF44
-	
-	public static GPU getInstance() {
-		return instance;
+	private static int lcdControl; // 0xFF40 - LCD/GPU control
+	private static int lcdStatus; // 0xFF41 - LCDC Status
+	private static int scrollX; // 0xFF42
+	private static int scrollY; // 0xFF43
+	private static int lineY = 0x89; // 0xFF44
+	private int systemCycles;
+
+	/**
+	 * Similar to CPU's nextInstruction(), except for GPU operations.
+	 * @param cycles - CPU cycles to add to internal GPU cycle count.
+	 */
+	public void nextStep(int cycles) {
+		systemCycles += cycles;
 	}
-	
-	public int getLY() {
-		return LY;
-	}
-	
+
+	/**
+	 * Reads a tile at a given address in VRAM, and create it as a BufferedImage.
+	 * @param address - The address to read the tile data from.
+	 * @return tile - The tile as a BufferedImage.
+	 */
 	public BufferedImage readTile(int address) {
 		int[] bytes = new int[16];
 		BufferedImage tile = new BufferedImage(8, 8, BufferedImage.TYPE_INT_RGB);
@@ -83,5 +89,13 @@ public class GPU {
 		g2d.drawImage(tmp, 0, 0, null);
 		g2d.dispose();
 		return dimg;
+	}
+
+	public static GPU getInstance() {
+		return instance;
+	}
+
+	public int getLY() {
+		return lineY;
 	}
 }
