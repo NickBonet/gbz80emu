@@ -3,3 +3,4 @@
 *.gb
 /.settings/
 *.bin
+/.idea/sonarlint/issuestore/index.pb
