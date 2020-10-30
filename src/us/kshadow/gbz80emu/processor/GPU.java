@@ -17,6 +17,7 @@ import us.kshadow.gbz80emu.memory.MMU;
  */
 public class GPU {
 	private static final GPU instance = new GPU();
+	private static final MMU mmu = MMU.getInstance();
 	//private static int lcdStatus; // 0xFF41 - LCDC Status
 	private int lcdControl; // 0xFF40 - LCD/GPU control
 	private int scrollY; // 0xFF42
@@ -26,8 +27,57 @@ public class GPU {
 	private int gpuMode; // Technically a part of LCDC status, will get to that later.
 	private int systemCycles;
 
-	private GPU() {
+	// 2D array tp represent GB display. Will store the color
+	// to display in our BufferedImage each frame.
+	public int[][] framebuffer;
 
+	private GPU() {
+		// TODO: Set this to 160x144 for actual display size.
+		framebuffer = new int[256][256];
+	}
+
+	// TODO: change to line rendering at some point..
+	public void renderLine() {
+		// Loop through the background tile map.
+		for (int rowIndex = 0; rowIndex < 32; rowIndex++) {
+			for (int colIndex = 0; colIndex < 32; colIndex++) {
+				int elementIndex = (colIndex * 32) + rowIndex;
+				// Grab tile index from tile map.
+				int tileIndex = mmu.readByte(0x9800 + elementIndex);
+				drawTileToFramebuffer(0x8000+(tileIndex*0x10), rowIndex, colIndex);
+			}
+		}
+	}
+
+	private void drawTileToFramebuffer(int address, int rowIndex, int colIndex) {
+		int[] bytes = new int[16];
+		// loop through every 2 bytes (2 bytes = 1 row of tile)
+		for (int i = 0; i < bytes.length; i += 2) {
+			bytes[i] = MMU.getInstance().readByte(address + i);
+			bytes[i + 1] = MMU.getInstance().readByte(address + i + 1);
+			// loop through bits of each byte to get color information.
+			for (int j = 0; j < 8; j++) {
+				int lsb = ((bytes[i] >> 7 - j) & 1);
+				int msb = ((bytes[i + 1] >> 7 - j) & 1);
+				int colorValue = msb << 1 | lsb;
+				switch (colorValue) {
+					case 0:
+						framebuffer[(j*1)+(8*rowIndex)][((i/2))+(8*colIndex)] = 0xe0f8d0;
+						break;
+					case 1:
+						framebuffer[(j*1)+(8*rowIndex)][((i/2))+(8*colIndex)] = 0x88c070;
+						break;
+					case 2:
+						framebuffer[(j*1)+(8*rowIndex)][((i/2))+(8*colIndex)] = 0x346856;
+						break;
+					case 3:
+						framebuffer[(j*1)+(8*rowIndex)][((i/2))+(8*colIndex)] = 0x081820;
+						break;
+					default:
+						break;
+				}
+			}
+		}
 	}
 
 	/**
@@ -77,7 +127,7 @@ public class GPU {
 	}
 
 	/**
-	 * Reads a tile at a given address in VRAM, and create it as a BufferedImage.
+	 * Reads a tile at a given address in VRAM, and render it as a BufferedImage.
 	 * @param address - The address to read the tile data from.
 	 * @return tile - The tile as a BufferedImage.
 	 */

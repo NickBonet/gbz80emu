@@ -1,6 +1,7 @@
 package us.kshadow.gbz80emu;
 
-import java.awt.Graphics;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.swing.JPanel;
 import us.kshadow.gbz80emu.memory.ROMParser;
@@ -64,7 +65,19 @@ public class Emulator extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		drawTileMapFromVRAM(g);
+		g.drawImage(renderFrame(), 0, 0, null);
+		//drawTileMapFromVRAM(g);
+	}
+
+	public BufferedImage renderFrame() {
+		gpu.renderLine();
+		BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
+		for (int x = 0; x < 256; x++) {
+			for (int y = 0; y < 256; y++) {
+				image.setRGB(x, y, gpu.framebuffer[x][y]);
+			}
+		}
+		return image;
 	}
 
 	public void setEmuRunning(boolean emuRunning) {
