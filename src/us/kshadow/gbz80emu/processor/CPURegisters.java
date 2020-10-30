@@ -17,7 +17,13 @@ public class CPURegisters {
 	private static final Logger logger = Logger.getLogger("GBZ80Emu");
 	
 	// The 8 basic 8-bit CPU registers.
-	private int a, b, d, h, c, e, l;
+	private int a;
+	private int b;
+	private int d;
+	private int h;
+	private int c;
+	private int e;
+	private int l;
 	
 	private static final FlagRegister flagRegister = FlagRegister.getInstance();
 	

@@ -11,7 +11,7 @@ import us.kshadow.gbz80emu.memory.ROMParser;
 class MMUTest {
 	
 	private static final MMU mmu = MMU.getInstance();
-	private ROMParser testROM = new ROMParser();
+	private final ROMParser testROM = new ROMParser();
 	
 	public void setup() {
 		try {
@@ -42,9 +42,9 @@ class MMUTest {
 			readBank0[i] = mmu.readByte(i);
 			readBank1[i] = mmu.readByte(i + 0x4000);
 		}
-		
-		assertEquals(true, Arrays.equals(Arrays.copyOfRange(testROM.getROMAsArray(), 0x0000, 0x4000), readBank0));
-		assertEquals(true, Arrays.equals(Arrays.copyOfRange(testROM.getROMAsArray(), 0x4000, 0x8000), readBank1));
+
+		assertTrue(Arrays.equals(Arrays.copyOfRange(testROM.getROMAsArray(), 0x0000, 0x4000), readBank0));
+		assertTrue(Arrays.equals(Arrays.copyOfRange(testROM.getROMAsArray(), 0x4000, 0x8000), readBank1));
 	}
 	
 	@Test
@@ -64,9 +64,9 @@ class MMUTest {
 		for (int i = 0; i < readROMTest.length; i++) {
 			readROMTest[i] = mmu.readByte(i);
 		}
-		
-		assertEquals(false, Arrays.equals(readROMTest, testROM.getROMAsArray()));
-		assertEquals(true, Arrays.equals(emptyArr, readROMTest));
+
+		assertFalse(Arrays.equals(readROMTest, testROM.getROMAsArray()));
+		assertTrue(Arrays.equals(emptyArr, readROMTest));
 	}
 
 	@Test
@@ -139,11 +139,11 @@ class MMUTest {
 		}
 		
 		for (int i = 0; i < 0x1E00; i++) { echoRam[i] = mmu.readByte(0xE000 + i); }
-		
-		assertEquals(true, Arrays.equals(vRam, vRamFull));
-		assertEquals(true, Arrays.equals(extRam, extRamFull));
-		assertEquals(true, Arrays.equals(wRam, wRamFull));
-		assertEquals(true, Arrays.equals(Arrays.copyOfRange(wRam, 0, 0x1E00), echoRam));
+
+		assertTrue(Arrays.equals(vRam, vRamFull));
+		assertTrue(Arrays.equals(extRam, extRamFull));
+		assertTrue(Arrays.equals(wRam, wRamFull));
+		assertTrue(Arrays.equals(Arrays.copyOfRange(wRam, 0, 0x1E00), echoRam));
 		
 		for (int i = 0; i < 0x200; i++) {
 			mmu.writeByte(0xFE00 + i, 0x22); // OAM, zeroPage
@@ -151,8 +151,8 @@ class MMUTest {
 		
 		for (int i = 0; i < 0xA0; i++) { oam[i] = mmu.readByte(0xFE00 + i); }
 		for (int i = 0; i < 0x7F; i++) { zeroPage[i] = mmu.readByte(0xFF80 + i); }
-		
-		assertEquals(true, Arrays.equals(oam, oamFull));
-		assertEquals(true, Arrays.equals(zeroPage, zeroPageFull));
+
+		assertTrue(Arrays.equals(oam, oamFull));
+		assertTrue(Arrays.equals(zeroPage, zeroPageFull));
 	}
 }

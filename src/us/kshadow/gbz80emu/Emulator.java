@@ -14,7 +14,7 @@ import us.kshadow.gbz80emu.processor.GPU;
 public class Emulator extends JPanel {
 	private final transient CPU cpu;
 	private static final GPU gpu = GPU.getInstance();
-	private transient ROMParser testROM = new ROMParser();
+	private final transient ROMParser testROM = new ROMParser();
 	private boolean emuRunning;
 	
 	public Emulator() {
@@ -42,6 +42,7 @@ public class Emulator extends JPanel {
 					Thread.sleep(16);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+					Thread.currentThread().interrupt();
 				}
 			}
 		}

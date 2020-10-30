@@ -18,19 +18,23 @@ import us.kshadow.gbz80emu.memory.MMU;
 public class GPU {
 	private static final GPU instance = new GPU();
 	//private static int lcdStatus; // 0xFF41 - LCDC Status
-	private static int lcdControl; // 0xFF40 - LCD/GPU control
-	private static int scrollY; // 0xFF42
-	private static int scrollX; // 0xFF43
-	private static int lineY; // 0xFF44
-	private static int bgPalette; // 0xFF47
-	private static int gpuMode; // Technically a part of LCDC status, will get to that later.
-	private static int systemCycles;
+	private int lcdControl; // 0xFF40 - LCD/GPU control
+	private int scrollY; // 0xFF42
+	private int scrollX; // 0xFF43
+	private int lineY; // 0xFF44
+	private int bgPalette; // 0xFF47
+	private int gpuMode; // Technically a part of LCDC status, will get to that later.
+	private int systemCycles;
+
+	private GPU() {
+
+	}
 
 	/**
 	 * Similar to CPU's nextInstruction(), except for GPU operations.
 	 * @param cycles - CPU cycles to add to internal GPU cycle count.
 	 */
-	public static void nextStep(int cycles) {
+	public void nextStep(int cycles) {
 		systemCycles += cycles;
 		switch(gpuMode) {
 			case 0: // HBlank mode
@@ -135,44 +139,44 @@ public class GPU {
 		return instance;
 	}
 
-	public static int getLY() {
+	public int getLY() {
 		return lineY;
 	}
 
-	public static void resetLY() {
+	public void resetLY() {
 		lineY = 0;
 	}
 
-	public static int getLCDC() {
+	public int getLCDC() {
 		return lcdControl;
 	}
 
-	public static void setLCDC(int lcdControl) {
-		GPU.lcdControl = lcdControl;
+	public void setLCDC(int lcdControl) {
+		this.lcdControl = lcdControl;
 	}
 
-	public static int getSCY() {
+	public int getSCY() {
 		return scrollY;
 	}
 
-	public static void setSCY(int scrollY) {
-		GPU.scrollY = scrollY;
+	public void setSCY(int scrollY) {
+		this.scrollY = scrollY;
 	}
 
-	public static int getSCX() {
+	public int getSCX() {
 		return scrollX;
 	}
 
-	public static void setSCX(int scrollY) {
-		GPU.scrollX = scrollX;
+	public void setSCX(int scrollY) {
+		this.scrollX = scrollX;
 	}
 
-	public static int getBGP() {
+	public int getBGP() {
 		return bgPalette;
 	}
 
-	public static void setBGP(int bgPalette) {
-		GPU.bgPalette = bgPalette;
+	public void setBGP(int bgPalette) {
+		this.bgPalette = bgPalette;
 	}
 
 }
