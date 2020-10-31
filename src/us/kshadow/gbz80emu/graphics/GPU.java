@@ -26,7 +26,7 @@ public class GPU {
 	private int systemCycles;
 	// 2D array tp represent GB display. Will store the color
 	// to display in our BufferedImage each frame.
-	private int[][] framebuffer;
+	private final int[][] framebuffer;
 
 	/**
 	 * Initializer for the emulated GPU/PPU.
@@ -62,6 +62,7 @@ public class GPU {
 	 * @param scrollX  - SCX offset (if needed).
 	 * @param scrollY  - SCY offset (if needed).
 	 */
+	@SuppressWarnings("java:S107")
 	private void drawTileToFramebuffer(int[][] framebuffer, int address, int columnIndex, int rowIndex, int startAtLine, int endBeforeLine, int scrollX, int scrollY) {
 		int[] bytes = new int[16];
 		// Loop through every 2 bytes (2 bytes = 1 row of tile).
@@ -99,6 +100,7 @@ public class GPU {
 	 * Similar to CPU's nextInstruction(), except for GPU operations.
 	 * @param cycles - CPU cycles to add to internal GPU cycle count.
 	 */
+	@SuppressWarnings("java:S3776")
 	public void nextStep(int cycles) {
 		systemCycles += cycles;
 		switch(gpuMode) {
@@ -202,6 +204,9 @@ public class GPU {
 		return bgPalette;
 	}
 
+	/**
+	 * Updates color palette assignments on changes to BGP register.
+	 */
 	public void setBGP(int bgPalette) {
 		currentPalette[3] = DMG_COLORS[(bgPalette & 0xC0) >> 6];
 		currentPalette[2] = DMG_COLORS[(bgPalette & 0x30) >> 4];

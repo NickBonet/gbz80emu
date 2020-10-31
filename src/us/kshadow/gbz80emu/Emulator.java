@@ -42,6 +42,7 @@ public class Emulator extends JPanel {
 	/**
 	 * Handles running the normal emulation loop.
 	 */
+	@SuppressWarnings("java:S3776")
 	public void runEmulator() {
 		while (emuRunning) {
 			if(cpu.isRunning()) { // for STOP instruction
@@ -50,8 +51,10 @@ public class Emulator extends JPanel {
 					if (cycles == 0) break;
 					gpu.nextStep(cycles);
 				}
-				if (cpu.getCycles() >= 70224) { cpu.resetCyclesAfterFrame(); }
-				repaint();
+				if (cpu.getCycles() >= 70224) {
+					cpu.resetCyclesAfterFrame();
+					repaint();
+				}
 				try {
 					Thread.sleep(16);
 				} catch (InterruptedException e) {

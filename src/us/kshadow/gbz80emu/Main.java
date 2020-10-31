@@ -12,13 +12,13 @@ import static javax.swing.JFrame.EXIT_ON_CLOSE;
 public class Main extends JFrame implements KeyListener {
 	private static final Emulator emu = new Emulator();
 	private static Runnable emuRunnable;
-	
+
 	public Main(String title) {
 		super(title);
 		setFocusable(true);
 		addKeyListener(this);
 	}
-	
+
 	public static void main(String[] args) {
 		JFrame frame = new Main("GBZ80Emu");
 		emu.setBackground(Color.white);
@@ -60,12 +60,12 @@ public class Main extends JFrame implements KeyListener {
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

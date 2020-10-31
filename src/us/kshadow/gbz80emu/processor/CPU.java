@@ -19,14 +19,22 @@ public class CPU {
 	private static final Logger logger = Logger.getLogger("GBZ80Emu");
 	private int cpuCycles;
 	private boolean isRunning;
-	
+
+	/**
+	 * Initializer for the CPU object.
+	 */
 	public CPU() {
 		cpuCycles = 0;
 		isRunning = true;
 		mmu.toggleBootROM(true);
 		logger.log(Level.INFO, "CPU execution started.");
 	}
-	
+
+	/**
+	 * Fetches the next byte in memory and executes the associated instruction.
+	 * @return The number of cycles for the executed instruction.
+	 */
+	@SuppressWarnings("java:S1479")
 	public int nextInstruction() {
 		int instruction = fetchNextByte();
 		int cycles;
@@ -543,7 +551,12 @@ public class CPU {
 		cpuCycles += cycles;
 		return cycles;
 	}
-	
+
+	/**
+	 * Fetches the next byte in memory and executes the associated CB instruction.
+	 * @return The number of cycles for the executed CB instruction.
+	 */
+	@SuppressWarnings("java:S1479")
 	private int nextCBInstruction() {
 		int instruction = fetchNextByte();
 		int cycles;
@@ -578,12 +591,20 @@ public class CPU {
 		return cycles;
 	}
 
+	/**
+	 * Fetches the next byte and increments PC by 1.
+	 * @return The next byte in memory.
+	 */
 	public int fetchNextByte() {
 		int result = mmu.readByte(reg.getPC());
 		reg.incPC();
 		return result;
 	}
-	
+
+	/**
+	 * Fetches the next 2 bytes and increments PC by 2.
+	 * @return The next 2 bytes in memory.
+	 */
 	public int fetchNextWord() {
 		int result = mmu.readWord(reg.getPC());
 		reg.incPC();
