@@ -13,4 +13,9 @@ A (potential) Gameboy emulator written in Java, for learning purposes.
   - [ ] DAA
 - [ ] Fetch-Decode-Execute Cycle (in progress now).
 - [x] Able to execute bootROM fully.
-- [ ] Very basic display output.
+- [x] PPU implementation.
+  - [x] Able to draw tiles line by line to framebuffer.
+  - [x] Very basic display output via background tiles only.
+  - [ ] Drawing windows
+  - [ ] Drawing sprites
+  - [ ] Integrating registers properly
