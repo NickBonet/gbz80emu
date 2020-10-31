@@ -31,6 +31,9 @@ public class CPU {
 		logger.log(Level.INFO, "CPU execution started.");
 	}
 
+	/**
+	 * Handles checking for interrupts after normal GPU/CPU steps.
+	 */
 	public void handleInterrupt() {
 		int cycles = 0;
 		if (reg.getIME() && mmu.readByte(0xFFFF) != 0 && mmu.readByte(0xFF0F) != 0) {
@@ -277,6 +280,11 @@ public class CPU {
 			ALU.instructADDu16("SP");
 			cycles = 8;
 			break;
+		case 0x3A: // LD A, (HL-)
+			reg.write("A", mmu.readByte(reg.read("HL")));
+			reg.write("HL", reg.read("HL") - 1);
+			cycles = 8;
+			break;
 		case 0x3B: // DEC SP
 			ALU.instructDECu16("SP");
 			cycles = 8;
@@ -391,7 +399,6 @@ public class CPU {
 			break;
 		case 0x76: // HALT
 			// TODO: implement this instruction
-			reg.print();
 			cycles = 4;
 			break;
 		case 0x77: // LD (HL), A
@@ -556,6 +563,10 @@ public class CPU {
 		case 0xD6: // SUB A, u8
 			ALU.instructSUB(fetchNextByte(), false);
 			cycles = 8;
+			break;
+		case 0xD9: // RETI
+			ControlFlow.instructRETI();
+			cycles = 16;
 			break;
 		case 0xE0: // LD ($FF00+n), A
 			mmu.writeByte(0xFF00 + fetchNextByte(), reg.read("A"));
