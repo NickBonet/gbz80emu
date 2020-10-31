@@ -3,7 +3,7 @@ package us.kshadow.gbz80emu.memory;
 import java.io.IOException;
 import java.util.Arrays;
 
-import us.kshadow.gbz80emu.processor.GPU;
+import us.kshadow.gbz80emu.graphics.GPU;
 import us.kshadow.gbz80emu.util.BitUtil;
 
 /**

@@ -12,5 +12,5 @@ A (potential) Gameboy emulator written in Java, for learning purposes.
   - [ ] RETI
   - [ ] DAA
 - [ ] Fetch-Decode-Execute Cycle (in progress now).
-- [ ] Able to execute bootROM fully.
-- [ ] Basic display output.
+- [x] Able to execute bootROM fully.
+- [ ] Very basic display output.

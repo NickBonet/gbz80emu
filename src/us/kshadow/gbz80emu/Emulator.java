@@ -6,7 +6,7 @@ import java.io.IOException;
 import javax.swing.JPanel;
 import us.kshadow.gbz80emu.memory.ROMParser;
 import us.kshadow.gbz80emu.processor.CPU;
-import us.kshadow.gbz80emu.processor.GPU;
+import us.kshadow.gbz80emu.graphics.GPU;
 
 /**
  * Emulator - Where all the moving parts are tied together to load GB games.
