@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -16,14 +17,17 @@ import us.kshadow.gbz80emu.memory.MMU;
  *
  */
 public class GPU {
+	// lightest green, light green, dark green, darkest green
+	private static final int[] DMG_COLORS = {0xe0f8d0, 0x88c070, 0x346856, 0x081820};
 	private static final GPU instance = new GPU();
 	private static final MMU mmu = MMU.getInstance();
 	//private static int lcdStatus; // 0xFF41 - LCDC Status
+	private int[] currentPalette;
 	private int lcdControl; // 0xFF40 - LCD/GPU control
 	private int scrollY; // 0xFF42
 	private int scrollX; // 0xFF43
 	private int lineY; // 0xFF44
-	private int bgPalette; // 0xFF47
+	private int bgPalette; // 0xFF47, sets palette colors or BG/windows
 	private int gpuMode; // Technically a part of LCDC status, will get to that later.
 	private int systemCycles;
 
@@ -34,6 +38,8 @@ public class GPU {
 	private GPU() {
 		// TODO: Set this to 160x144 for actual display size.
 		framebuffer = new int[256][256];
+		currentPalette = new int[4];
+		currentPalette = Arrays.copyOf(DMG_COLORS, 4);
 	}
 
 	/**
@@ -50,20 +56,6 @@ public class GPU {
 		}
 	}
 
-	/*
-	public void tileMapToFramebuffer() {
-		// Loop through the background tile map.
-		for (int columnIndex = 0; columnIndex < 32; columnIndex++) {
-			for (int rowIndex = 0; rowIndex < 32; rowIndex++) {
-				int elementIndex = (rowIndex * 32) + columnIndex;
-				// Grab tile index from tile map.
-				int tileIndex = mmu.readByte(0x9800 + elementIndex);
-				drawTileToFramebuffer(0x8000+(tileIndex*0x10), columnIndex, rowIndex, 0, 8);
-			}
-		}
-	}
-	*/
-
 	private void drawTileToFramebuffer(int address, int columnIndex, int rowIndex, int startAtLine, int endBeforeLine) {
 		int[] bytes = new int[16];
 		// loop through every 2 bytes (2 bytes = 1 row of tile)
@@ -79,16 +71,16 @@ public class GPU {
 				int y = ((((row/2))+(8*rowIndex))-scrollY) & 0xFF;
 				switch (colorValue) {
 					case 0:
-						framebuffer[x][y] = 0xe0f8d0;
+						framebuffer[x][y] = currentPalette[0];
 						break;
 					case 1:
-						framebuffer[x][y] = 0x88c070;
+						framebuffer[x][y] = currentPalette[1];
 						break;
 					case 2:
-						framebuffer[x][y] = 0x346856;
+						framebuffer[x][y] = currentPalette[2];
 						break;
 					case 3:
-						framebuffer[x][y] = 0x081820;
+						framebuffer[x][y] = currentPalette[3];
 						break;
 					default:
 						break;
@@ -203,6 +195,20 @@ public class GPU {
 		return dimg;
 	}
 
+	/*
+	public void tileMapToFramebuffer() {
+		// Loop through the background tile map.
+		for (int columnIndex = 0; columnIndex < 32; columnIndex++) {
+			for (int rowIndex = 0; rowIndex < 32; rowIndex++) {
+				int elementIndex = (rowIndex * 32) + columnIndex;
+				// Grab tile index from tile map.
+				int tileIndex = mmu.readByte(0x9800 + elementIndex);
+				drawTileToFramebuffer(0x8000+(tileIndex*0x10), columnIndex, rowIndex, 0, 8);
+			}
+		}
+	}
+	*/
+
 	public static GPU getInstance() {
 		return instance;
 	}
@@ -245,6 +251,11 @@ public class GPU {
 	}
 
 	public void setBGP(int bgPalette) {
+		System.out.println(bgPalette);
+		currentPalette[3] = DMG_COLORS[(bgPalette & 0xC0) >> 6];
+		currentPalette[2] = DMG_COLORS[(bgPalette & 0x30) >> 4];
+		currentPalette[1] = DMG_COLORS[(bgPalette & 0xC) >> 2];
+		currentPalette[0] = DMG_COLORS[bgPalette & 0x3];
 		this.bgPalette = bgPalette;
 	}
 
