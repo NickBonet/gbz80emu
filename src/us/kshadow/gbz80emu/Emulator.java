@@ -50,6 +50,7 @@ public class Emulator extends JPanel {
 					int cycles = cpu.nextInstruction();
 					if (cycles == 0) break;
 					gpu.nextStep(cycles);
+					cpu.handleInterrupt();
 				}
 				if (cpu.getCycles() >= 70224) {
 					cpu.resetCyclesAfterFrame();

@@ -24,7 +24,11 @@ public class CPURegisters {
 	private int c;
 	private int e;
 	private int l;
-	
+
+	// The interrupt master enable flag
+	private boolean ime;
+
+	// Instance of the flag register.
 	private static final FlagRegister flagRegister = FlagRegister.getInstance();
 	
 	// Program counter register, holds address data for next instruction to be executed by the CPU.
@@ -218,4 +222,13 @@ public class CPURegisters {
 	public FlagRegister getFR() {
 		return flagRegister;
 	}
+
+	public boolean getIME() {
+		return ime;
+	}
+
+	public void toggleIME(boolean ime) {
+		this.ime = ime;
+	}
+
 }

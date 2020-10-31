@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
 import us.kshadow.gbz80emu.memory.MMU;
+import us.kshadow.gbz80emu.processor.CPURegisters;
+import us.kshadow.gbz80emu.util.BitUtil;
 
 /**
  * GPU - An emulation of the graphical operations the GameBoy performs to draw to its LCD.
@@ -14,6 +16,7 @@ public class GPU {
 	// Lightest green, light green, dark green, darkest green.
 	private static final int[] DMG_COLORS = {0xe0f8d0, 0x88c070, 0x346856, 0x081820};
 	private static final GPU instance = new GPU();
+	private static final CPURegisters reg = CPURegisters.getInstance();
 	private static final MMU mmu = MMU.getInstance();
 	//private static int lcdStatus; // 0xFF41 - LCDC Status
 	private int[] currentPalette;
@@ -67,8 +70,8 @@ public class GPU {
 		int[] bytes = new int[16];
 		// Loop through every 2 bytes (2 bytes = 1 row of tile).
 		for (int row = startAtLine * 2; row < endBeforeLine * 2; row += 2) {
-			bytes[row] = MMU.getInstance().readByte(address + row);
-			bytes[row + 1] = MMU.getInstance().readByte(address + row + 1);
+			bytes[row] = mmu.readByte(address + row);
+			bytes[row + 1] = mmu.readByte(address + row + 1);
 			// Loop through bits of each byte to get color information.
 			for (int column = 0; column < 8; column++) {
 				int lsb = ((bytes[row] >> 7 - column) & 1);
@@ -108,6 +111,12 @@ public class GPU {
 				if (systemCycles >= 204) {
 					lineY++;
 					if (lineY > 143) {
+						int interruptEnable = mmu.readByte(0xFFFF);
+						if (reg.getIME() && BitUtil.checkBitSet(interruptEnable, 0)) {
+							int interruptFlag = mmu.readByte((0xFF0F));
+							interruptFlag = BitUtil.setBit(interruptFlag, 0);
+							mmu.writeByte(0xFF0F, interruptFlag);
+						}
 						gpuMode = 1;
 					} else {
 						gpuMode = 2;

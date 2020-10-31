@@ -6,6 +6,7 @@ import us.kshadow.gbz80emu.memory.MMU;
 import us.kshadow.gbz80emu.processor.instructions.ALU;
 import us.kshadow.gbz80emu.processor.instructions.BitShift;
 import us.kshadow.gbz80emu.processor.instructions.ControlFlow;
+import us.kshadow.gbz80emu.util.BitUtil;
 
 /** 
  * Takes care of the actual fetch-decode-execute logic for the emulator.
@@ -28,6 +29,23 @@ public class CPU {
 		isRunning = true;
 		mmu.toggleBootROM(true);
 		logger.log(Level.INFO, "CPU execution started.");
+	}
+
+	public void handleInterrupt() {
+		int cycles = 0;
+		if (reg.getIME() && mmu.readByte(0xFFFF) != 0 && mmu.readByte(0xFF0F) != 0) {
+			int interruptFlag = mmu.readByte(0xFF0F);
+			int interruptEnable = mmu.readByte(0xFFFF);
+
+			// Check if a VBlank interrupt occurred.
+			if (BitUtil.checkBitSet(interruptFlag, 0) && BitUtil.checkBitSet(interruptEnable, 0)) {
+				reg.toggleIME(false);
+				ControlFlow.instructPUSH("PC");
+				reg.write("PC", 0x0040);
+				cycles += 20; // According to The Cycle Accurate GameBoy Docs
+			}
+		}
+		cpuCycles += cycles;
 	}
 
 	/**
@@ -373,6 +391,7 @@ public class CPU {
 			break;
 		case 0x76: // HALT
 			// TODO: implement this instruction
+			reg.print();
 			cycles = 4;
 			break;
 		case 0x77: // LD (HL), A
@@ -583,7 +602,7 @@ public class CPU {
 			cycles = 12;
 			break;
 		case 0xF3: // DI
-			// TODO: implement when interrupts are implemented.
+			ControlFlow.instructDI();
 			cycles = 4;
 			break;
 		case 0xF5: // PUSH AF
@@ -614,7 +633,7 @@ public class CPU {
 			cycles = 16;
 			break;
 		case 0xFB: // EI
-			// TODO: implement when interrupts are implemented.
+			ControlFlow.instructEI();
 			cycles = 4;
 			break;
 		case 0xFE: // CP A, u8

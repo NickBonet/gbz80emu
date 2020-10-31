@@ -17,7 +17,21 @@ public class ControlFlow {
 	
 	private ControlFlow() { }
 	
-	// TODO: Implement HALT, DI, EI instructions, and finish RETI. (relies on interrupts impl.)
+	// TODO: Implement HALT
+
+	/**
+	 * DI - Disables any potential interrupts
+	 */
+	public static void instructDI() {
+		reg.toggleIME(false);
+	}
+
+	/**
+	 * EI - Enable interrupts
+	 */
+	public static void instructEI() {
+		reg.toggleIME(true);
+	}
 	
 	/**
 	 * JP - Handles absolute jump instruction.
@@ -183,7 +197,7 @@ public class ControlFlow {
 	 */
 	public static void instructRETI() {
 		instructRET();
-		// TODO: Enable interrupts here when they are implemented.
+		instructEI();
 	}
 	
 	/**

@@ -47,8 +47,9 @@ public class MMU {
 	
 	// 0xFF80 - 0xFFFE - Zero Page RAM
 	private int[] zeroPage = new int[0x7F];
-	
-	// TODO: 0xFFFF - Interrupt Enabled Register
+
+	private int interruptFlag = 0; // 0xFF0F
+	private int interruptEnable = 0; // 0xFFFF
 	
 	/**
 	 * MMU constructor. Simply loads the boot ROM.
@@ -119,7 +120,11 @@ public class MMU {
 				else if (address == 0xFF42) { return gpu.getSCY(); }
 				else if (address == 0xFF43) { return gpu.getSCX(); }
 				else if (address == 0xFF44) { return gpu.getLY(); }
-				
+
+				// Interrupt Flag/Enable
+				else if (address == 0xFFFF) { return interruptEnable; }
+				else if (address == 0xFF0F) { return interruptFlag; }
+
 				// If address = unused range, I/O registers, or interrupt register, return 0 for now.
 				return 0;
 			
@@ -184,6 +189,10 @@ public class MMU {
 				else if (address == 0xFF43) { gpu.setSCX(value); }
 				else if (address == 0xFF44) { gpu.resetLY(); }
 				else if (address == 0xFF47) { gpu.setBGP(value); }
+
+				// Interrupt Flag/Enable
+				else if (address == 0xFF0F) { interruptFlag = value; }
+				else if (address == 0xFFFF) { interruptEnable = value; }
 
 				// Boot ROM disable
 				else if (address == 0xFF50) { bootRomEnabled = false; }
