@@ -70,14 +70,18 @@ public class Emulator extends JPanel {
 	}
 
 	public BufferedImage renderFrame() {
-		gpu.renderLine();
-		BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
-		for (int x = 0; x < 256; x++) {
-			for (int y = 0; y < 256; y++) {
+		BufferedImage image = new BufferedImage(160, 144, BufferedImage.TYPE_INT_RGB);
+		for (int x = 0; x < 160; x++) {
+			for (int y = 0; y < 144; y++) {
 				image.setRGB(x, y, gpu.framebuffer[x][y]);
 			}
 		}
-		return image;
+		Image tmp = image.getScaledInstance(480, 432, Image.SCALE_SMOOTH);
+		BufferedImage dimg = new BufferedImage(488, 432, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = dimg.createGraphics();
+		g2d.drawImage(tmp, 0, 0, null);
+		g2d.dispose();
+		return dimg;
 	}
 
 	public void setEmuRunning(boolean emuRunning) {

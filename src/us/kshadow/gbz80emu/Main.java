@@ -1,6 +1,6 @@
 package us.kshadow.gbz80emu;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -20,8 +20,9 @@ public class Main extends JFrame implements KeyListener {
 	public static void main(String[] args) {
 		JFrame frame = new Main("GBZ80Emu");
 		emu.setBackground(Color.white);
+		emu.setPreferredSize(new Dimension(480, 432));
 		frame.add(emu);
-		frame.setSize(320, 288);
+		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		emuRunnable = () -> emu.runEmulator();

@@ -36,42 +36,55 @@ public class GPU {
 		framebuffer = new int[256][256];
 	}
 
-	// TODO: change to line rendering at some point..
-	public void renderLine() {
+	/**
+	 * Draws a horizontal line for the Gameboy's display.
+	 * @param line - Line to draw. (0-143)
+	 */
+	public void renderScanLine(int line) {
+		int rowIndex = line / 8;
+		for (int columnIndex = 0; columnIndex < 20; columnIndex++) {
+			int elementIndex = (rowIndex * 32) + columnIndex;
+			int tileIndex = mmu.readByte(0x9800 + elementIndex);
+			int relativeLine = line % 8;
+			drawTileToFramebuffer(0x8000+(tileIndex*0x10), columnIndex, rowIndex, relativeLine, relativeLine+1);
+		}
+	}
+
+	public void tileMapToFramebuffer() {
 		// Loop through the background tile map.
-		for (int rowIndex = 0; rowIndex < 32; rowIndex++) {
-			for (int colIndex = 0; colIndex < 32; colIndex++) {
-				int elementIndex = (colIndex * 32) + rowIndex;
+		for (int columnIndex = 0; columnIndex < 32; columnIndex++) {
+			for (int rowIndex = 0; rowIndex < 32; rowIndex++) {
+				int elementIndex = (rowIndex * 32) + columnIndex;
 				// Grab tile index from tile map.
 				int tileIndex = mmu.readByte(0x9800 + elementIndex);
-				drawTileToFramebuffer(0x8000+(tileIndex*0x10), rowIndex, colIndex);
+				drawTileToFramebuffer(0x8000+(tileIndex*0x10), columnIndex, rowIndex, 0, 8);
 			}
 		}
 	}
 
-	private void drawTileToFramebuffer(int address, int rowIndex, int colIndex) {
+	private void drawTileToFramebuffer(int address, int rowIndex, int colIndex, int startAtLine, int endBeforeLine) {
 		int[] bytes = new int[16];
 		// loop through every 2 bytes (2 bytes = 1 row of tile)
-		for (int i = 0; i < bytes.length; i += 2) {
-			bytes[i] = MMU.getInstance().readByte(address + i);
-			bytes[i + 1] = MMU.getInstance().readByte(address + i + 1);
+		for (int row = startAtLine * 2; row < endBeforeLine * 2; row += 2) {
+			bytes[row] = MMU.getInstance().readByte(address + row);
+			bytes[row + 1] = MMU.getInstance().readByte(address + row + 1);
 			// loop through bits of each byte to get color information.
-			for (int j = 0; j < 8; j++) {
-				int lsb = ((bytes[i] >> 7 - j) & 1);
-				int msb = ((bytes[i + 1] >> 7 - j) & 1);
+			for (int column = 0; column < 8; column++) {
+				int lsb = ((bytes[row] >> 7 - column) & 1);
+				int msb = ((bytes[row + 1] >> 7 - column) & 1);
 				int colorValue = msb << 1 | lsb;
 				switch (colorValue) {
 					case 0:
-						framebuffer[(j*1)+(8*rowIndex)][((i/2))+(8*colIndex)] = 0xe0f8d0;
+						framebuffer[(column*1)+(8*rowIndex)+scrollX][((row/2))+(8*colIndex)+scrollY] = 0xe0f8d0;
 						break;
 					case 1:
-						framebuffer[(j*1)+(8*rowIndex)][((i/2))+(8*colIndex)] = 0x88c070;
+						framebuffer[(column*1)+(8*rowIndex)+scrollX][((row/2))+(8*colIndex)+scrollY] = 0x88c070;
 						break;
 					case 2:
-						framebuffer[(j*1)+(8*rowIndex)][((i/2))+(8*colIndex)] = 0x346856;
+						framebuffer[(column*1)+(8*rowIndex)+scrollX][((row/2))+(8*colIndex)+scrollY] = 0x346856;
 						break;
 					case 3:
-						framebuffer[(j*1)+(8*rowIndex)][((i/2))+(8*colIndex)] = 0x081820;
+						framebuffer[(column*1)+(8*rowIndex)+scrollX][((row/2))+(8*colIndex)+scrollY] = 0x081820;
 						break;
 					default:
 						break;
@@ -118,6 +131,7 @@ public class GPU {
 				if (systemCycles >= 172) {
 					gpuMode = 0;
 					// render scanline here
+					renderScanLine(lineY);
 					systemCycles -= 172;
 				}
 				break;
@@ -210,6 +224,7 @@ public class GPU {
 	}
 
 	public void setSCY(int scrollY) {
+		//System.out.println(String.format("0x%x", scrollY));
 		this.scrollY = scrollY;
 	}
 
