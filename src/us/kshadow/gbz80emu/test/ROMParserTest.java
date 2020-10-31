@@ -16,10 +16,10 @@ import org.junit.jupiter.api.BeforeAll;
  */
 class ROMParserTest {
 	
-	private static ROMParser testGoodROM = new ROMParser();
-	private static ROMParser testBadROM = new ROMParser();
+	private static final ROMParser testGoodROM = new ROMParser();
+	private static final ROMParser testBadROM = new ROMParser();
 	
-	private static char[] testTitle = new char[] {
+	private static final char[] testTitle = new char[] {
 			0x54, 0x45, 0x54, 0x52, 0x49, 0x53, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 	};
 
@@ -39,10 +39,10 @@ class ROMParserTest {
 	@Test
 	public void testValidROM() {
 		assertEquals(String.copyValueOf(testTitle), testGoodROM.getTitle()); // test against title char[] above
-		assertEquals(true, testGoodROM.isLogoValid()); // should be true with ANY valid ROM.
-		assertEquals(false, testGoodROM.hasSgbFuncSupport()); // should be false for valid Tetris ROM.
-		assertEquals(true, testGoodROM.isCartridgeValid());
-		assertEquals(true, testGoodROM.isHeaderValid());
+		assertTrue(testGoodROM.isLogoValid()); // should be true with ANY valid ROM.
+		assertFalse(testGoodROM.hasSgbFuncSupport()); // should be false for valid Tetris ROM.
+		assertTrue(testGoodROM.isCartridgeValid());
+		assertTrue(testGoodROM.isHeaderValid());
 	}
 	
 	/**
@@ -51,9 +51,9 @@ class ROMParserTest {
 	@Test
 	public void testBadROM() {
 		assertNotEquals(String.copyValueOf(testTitle), testBadROM.getTitle());
-		assertEquals(false, testBadROM.isLogoValid()); 
-		assertEquals(false, testBadROM.hasSgbFuncSupport());
-		assertEquals(false, testBadROM.isCartridgeValid());
-		assertEquals(false, testBadROM.isHeaderValid());
+		assertFalse(testBadROM.isLogoValid());
+		assertFalse(testBadROM.hasSgbFuncSupport());
+		assertFalse(testBadROM.isCartridgeValid());
+		assertFalse(testBadROM.isHeaderValid());
 	}
 }

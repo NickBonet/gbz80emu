@@ -17,7 +17,7 @@ public class ControlFlow {
 	
 	private ControlFlow() { }
 	
-	// TODO: Implement HALT, STOP, DI, EI instructions, and finish RETI. (relies on interrupts impl.)
+	// TODO: Implement HALT, DI, EI instructions, and finish RETI. (relies on interrupts impl.)
 	
 	/**
 	 * JP - Handles absolute jump instruction.
@@ -72,31 +72,37 @@ public class ControlFlow {
 	 * @param opcode - Opcode of the conditional relative jump.
 	 * @param value - Next signed byte from memory.
 	 */
-	public static void instructCondJR(int opcode, byte value) {
+	public static int instructCondJR(int opcode, byte value) {
+		int cycles = 8;
 		switch(opcode) {
 		case 0x20:
 			if (!fr.isZ()) {
 				instructJR(value);
+				cycles += 4;
 			}
 			break;
 		case 0x28:
 			if (fr.isZ()) {
 				instructJR(value);
+				cycles += 4;
 			}
 			break;
 		case 0x30:
 			if (!fr.isC()) {
 				instructJR(value);
+				cycles += 4;
 			}
 			break;
 		case 0x38:
 			if (fr.isC()) {
 				instructJR(value);
+				cycles += 4;
 			}
 			break;
 		default:
 			break;
 		}
+		return cycles;
 	}
 	
 	/**
@@ -133,31 +139,37 @@ public class ControlFlow {
 	 * Wrapper function for conditional returns.
 	 * @param opcode - Opcode of the conditional return.
 	 */
-	public static void instructCondRET(int opcode) {
+	public static int instructCondRET(int opcode) {
+		int cycles = 8;
 		switch(opcode) {
 		case 0xC0:
 			if (!fr.isZ()) {
 				instructRET();
+				cycles += 12;
 			}
 			break;
 		case 0xC8:
 			if (fr.isZ()) {
 				instructRET();
+				cycles += 12;
 			}
 			break;
 		case 0xD0:
 			if (!fr.isC()) {
 				instructRET();
+				cycles += 12;
 			}
 			break;
 		case 0xD8:
 			if (fr.isC()) {
 				instructRET();
+				cycles += 12;
 			}
 			break;
 		default:
 			break;
 		}
+		return cycles;
 	}
 	
 	/**
@@ -218,30 +230,36 @@ public class ControlFlow {
 	 * @param opcode - Opcode of the conditional call.
 	 * @param address - Address to jump to.
 	 */
-	public static void instructCondCALL(int opcode, int address) {
+	public static int instructCondCALL(int opcode, int address) {
+		int cycles = 12;
 		switch(opcode) {
 		case 0xC4:
 			if (!fr.isZ()) {
 				instructCALL(address);
+				cycles += 12;
 			}
 			break;
 		case 0xCC:
 			if (fr.isZ()) {
 				instructCALL(address);
+				cycles += 12;
 			}
 			break;
 		case 0xD4:
 			if (!fr.isC()) {
 				instructCALL(address);
+				cycles += 12;
 			}
 			break;
 		case 0xDC:
 			if (fr.isC()) {
 				instructCALL(address);
+				cycles += 12;
 			}
 			break;
 		default:
 			break;
 		}
+		return cycles;
 	}
 }

@@ -3,7 +3,7 @@ package us.kshadow.gbz80emu.memory;
 import java.io.IOException;
 import java.util.Arrays;
 
-import us.kshadow.gbz80emu.processor.GPU;
+import us.kshadow.gbz80emu.graphics.GPU;
 import us.kshadow.gbz80emu.util.BitUtil;
 
 /**
@@ -65,7 +65,7 @@ public class MMU {
 	
 	/**
 	 * Return the singleton instance of the MMU.
-	 * @return instance - This MMU instance.
+	 * @return This MMU instance.
 	 */
 	public static MMU getInstance() {
 		return instance;
@@ -74,7 +74,7 @@ public class MMU {
 	/**
 	 * Handles reading a byte from the correct region of memory, based on memory address.
 	 * @param address - Address of the byte to read from memory.
-	 * @return - The byte from memory.
+	 * @return The byte from memory.
 	 */
 	public int readByte(int address) {
 		BitUtil.checkIsWord(address);
@@ -114,8 +114,12 @@ public class MMU {
 				else if (address >= 0xFE00 && address < 0xFEA0) { return oam[address & 0x9F]; }
 				else if (address >= 0xFF80 && address < 0xFFFF) { return zeroPage[address & 0x7F]; }
 				
-				// Experimental code.
+				// GPU hookups
+				else if (address == 0xFF40) { return gpu.getLCDC(); }
+				else if (address == 0xFF42) { return gpu.getSCY(); }
+				else if (address == 0xFF43) { return gpu.getSCX(); }
 				else if (address == 0xFF44) { return gpu.getLY(); }
+				else if (address == 0xFF47) { return gpu.getBGP(); }
 				
 				// If address = unused range, I/O registers, or interrupt register, return 0 for now.
 				return 0;
@@ -174,6 +178,17 @@ public class MMU {
 				if (address < 0xFE00) { workRam[address & 0x1FFF] = value; }
 				else if (address >= 0xFE00 && address < 0xFEA0) { oam[address & 0x9F] = value; }
 				else if (address >= 0xFF80 && address < 0xFFFF) { zeroPage[address & 0x7F] = value; }
+
+				// GPU hookups
+				else if (address == 0xFF40) { gpu.setLCDC(value); }
+				else if (address == 0xFF42) { gpu.setSCY(value); }
+				else if (address == 0xFF43) { gpu.setSCX(value); }
+				else if (address == 0xFF44) { gpu.resetLY(); }
+				else if (address == 0xFF47) { gpu.setBGP(value); }
+
+				// Boot ROM disable
+				else if (address == 0xFF50) { bootRomEnabled = false; }
+
 				break;
 				
 			default:

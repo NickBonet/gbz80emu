@@ -17,7 +17,13 @@ public class CPURegisters {
 	private static final Logger logger = Logger.getLogger("GBZ80Emu");
 	
 	// The 8 basic 8-bit CPU registers.
-	private int a, b, d, h, c, e, l;
+	private int a;
+	private int b;
+	private int d;
+	private int h;
+	private int c;
+	private int e;
+	private int l;
 	
 	private static final FlagRegister flagRegister = FlagRegister.getInstance();
 	
@@ -31,7 +37,7 @@ public class CPURegisters {
 	
 	/**
 	 * Return the singleton instance of the CPU's registers.
-	 * @return instance - This CPURegisters instance.
+	 * @return This CPURegisters instance.
 	 */
 	public static CPURegisters getInstance() {
 		return instance;
@@ -199,7 +205,7 @@ public class CPURegisters {
 	
 	/**
 	 * Get the current value of PC.
-	 * @return pc - The current value of PC.
+	 * @return The current value of PC.
 	 */
 	public int getPC() {
 		return pc;
@@ -207,7 +213,7 @@ public class CPURegisters {
 	
 	/**
 	 * Returns the FlagRegister object.
-	 * @return flagRegister - see above.
+	 * @return see above.
 	 */
 	public FlagRegister getFR() {
 		return flagRegister;

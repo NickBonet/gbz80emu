@@ -11,8 +11,11 @@ public class FlagRegister {
 	
 	private static final FlagRegister instance = new FlagRegister();
 	
-	private boolean z, n, h, c = false;
-	
+	private boolean z = false;
+	private boolean n = false;
+	private boolean h = false;
+	private boolean c = false;
+
 	private static final int Z_POS = 7;
 	private static final int N_POS = 6;
 	private static final int H_POS = 5;
@@ -23,7 +26,11 @@ public class FlagRegister {
 	public static FlagRegister getInstance() {
 		return instance;
 	}
-	
+
+	/**
+	 * Get the current FR status as a byte.
+	 * @return FR as unsigned byte.
+	 */
 	public int getFlagsAsByte() {
 		int flagRegister = 0;
 		
@@ -45,7 +52,11 @@ public class FlagRegister {
 		
 		return flagRegister;
 	}
-	
+
+	/**
+	 * Sets the flags in the register from an unsigned byte.
+	 * @param flags - The byte used for setting the flags.
+	 */
 	public void setFlagsFromByte(int flags) {
 		z = BitUtil.checkBitSet(flags, Z_POS);
 		n = BitUtil.checkBitSet(flags, N_POS);
