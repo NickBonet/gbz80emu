@@ -41,15 +41,16 @@ public class GPU {
 	 * @param line - Line to draw. (0-143)
 	 */
 	public void renderScanLine(int line) {
-		int rowIndex = line / 8;
+		int rowIndex = (line / 8);
 		for (int columnIndex = 0; columnIndex < 20; columnIndex++) {
 			int elementIndex = (rowIndex * 32) + columnIndex;
 			int tileIndex = mmu.readByte(0x9800 + elementIndex);
-			int relativeLine = line % 8;
+			int relativeLine = (line % 8);
 			drawTileToFramebuffer(0x8000+(tileIndex*0x10), columnIndex, rowIndex, relativeLine, relativeLine+1);
 		}
 	}
 
+	/*
 	public void tileMapToFramebuffer() {
 		// Loop through the background tile map.
 		for (int columnIndex = 0; columnIndex < 32; columnIndex++) {
@@ -61,8 +62,9 @@ public class GPU {
 			}
 		}
 	}
+	*/
 
-	private void drawTileToFramebuffer(int address, int rowIndex, int colIndex, int startAtLine, int endBeforeLine) {
+	private void drawTileToFramebuffer(int address, int columnIndex, int rowIndex, int startAtLine, int endBeforeLine) {
 		int[] bytes = new int[16];
 		// loop through every 2 bytes (2 bytes = 1 row of tile)
 		for (int row = startAtLine * 2; row < endBeforeLine * 2; row += 2) {
@@ -73,18 +75,20 @@ public class GPU {
 				int lsb = ((bytes[row] >> 7 - column) & 1);
 				int msb = ((bytes[row + 1] >> 7 - column) & 1);
 				int colorValue = msb << 1 | lsb;
+				int x = (((column*1)+(8*columnIndex))-scrollX) & 0xFF;
+				int y = ((((row/2))+(8*rowIndex))-scrollY) & 0xFF;
 				switch (colorValue) {
 					case 0:
-						framebuffer[(column*1)+(8*rowIndex)+scrollX][((row/2))+(8*colIndex)+scrollY] = 0xe0f8d0;
+						framebuffer[x][y] = 0xe0f8d0;
 						break;
 					case 1:
-						framebuffer[(column*1)+(8*rowIndex)+scrollX][((row/2))+(8*colIndex)+scrollY] = 0x88c070;
+						framebuffer[x][y] = 0x88c070;
 						break;
 					case 2:
-						framebuffer[(column*1)+(8*rowIndex)+scrollX][((row/2))+(8*colIndex)+scrollY] = 0x346856;
+						framebuffer[x][y] = 0x346856;
 						break;
 					case 3:
-						framebuffer[(column*1)+(8*rowIndex)+scrollX][((row/2))+(8*colIndex)+scrollY] = 0x081820;
+						framebuffer[x][y] = 0x081820;
 						break;
 					default:
 						break;
@@ -103,7 +107,7 @@ public class GPU {
 			case 0: // HBlank mode
 				if (systemCycles >= 204) {
 					lineY++;
-					if (lineY == 143) {
+					if (lineY > 143) {
 						gpuMode = 1;
 					} else {
 						gpuMode = 2;

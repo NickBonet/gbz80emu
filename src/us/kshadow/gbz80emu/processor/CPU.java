@@ -29,12 +29,13 @@ public class CPU {
 	}
 	
 	public int nextInstruction() {
+		/*
 		if (reg.getPC() >= 0x100) {
 			logger.log(Level.INFO, "BootROM execution complete.");
 			reg.print();
-			isRunning = false;
+			//isRunning = false;
 			return 0;
-		}
+		}*/
 		int instruction = fetchNextByte();
 		int cycles;
 		//String loggerMsg = String.format("Executing instruction 0x%x", instruction);
@@ -245,6 +246,10 @@ public class CPU {
 		case 0x3E: // LD A, u8
 			reg.write("A", fetchNextByte());
 			cycles = 8;
+			break;
+		case 0x47: // LD B, A
+			reg.write("B", reg.read("A"));
+			cycles = 4;
 			break;
 		case 0x4F: // LD C, A
 			reg.write("C", reg.read("A"));
