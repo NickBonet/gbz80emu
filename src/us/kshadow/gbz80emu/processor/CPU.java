@@ -243,8 +243,16 @@ public class CPU {
 			ALU.instructINCu16("SP");
 			cycles = 8;
 			break;
+		case 0x34: // INC (HL)
+			ALU.instructINCu8("HL");
+			cycles = 12;
+			break;
 		case 0x35: // DEC (HL)
 			ALU.instructDECu8("HL");
+			cycles = 12;
+			break;
+		case 0x36: // LD (HL), u8
+			mmu.writeByte(reg.read("HL"), fetchNextByte());
 			cycles = 12;
 			break;
 		case 0x39: // ADD HL, SP
@@ -267,6 +275,14 @@ public class CPU {
 			reg.write("A", fetchNextByte());
 			cycles = 8;
 			break;
+		case 0x42: // LD B, D
+			reg.write("B", reg.read("D"));
+			cycles = 4;
+			break;
+		case 0x44: // LD B, H
+			reg.write("B", reg.read("H"));
+			cycles = 4;
+			break;
 		case 0x46: // LD B, (HL)
 			reg.write("B", mmu.readByte(reg.read("HL")));
 			cycles = 8;
@@ -275,12 +291,24 @@ public class CPU {
 			reg.write("B", reg.read("A"));
 			cycles = 4;
 			break;
+		case 0x4B: // LD C, E
+			reg.write("C", reg.read("E"));
+			cycles = 4;
+			break;
+		case 0x4D: // LD C, L
+			reg.write("C", reg.read("L"));
+			cycles = 4;
+			break;
 		case 0x4E: // LD C, (HL)
 			reg.write("C", mmu.readByte(reg.read("HL")));
 			cycles = 8;
 			break;
 		case 0x4F: // LD C, A
 			reg.write("C", reg.read("A"));
+			cycles = 4;
+			break;
+		case 0x54: // LD D, H
+			reg.write("D", reg.read("H"));
 			cycles = 4;
 			break;
 		case 0x56: // LD D, (HL)
@@ -343,6 +371,10 @@ public class CPU {
 			mmu.writeByte(reg.read("HL"), reg.read("E"));
 			cycles = 8;
 			break;
+		case 0x76: // HALT
+			// TODO: implement this instruction
+			cycles = 4;
+			break;
 		case 0x77: // LD (HL), A
 			mmu.writeByte(reg.read("HL"), reg.read("A"));
 			cycles = 8;
@@ -375,12 +407,28 @@ public class CPU {
 			reg.write("A", mmu.readByte(reg.read("HL")));
 			cycles = 8;
 			break;
+		case 0x83: // ADD A, E
+			ALU.instructADD(reg.read("E"));
+			cycles = 4;
+			break;
+		case 0x84: // ADD A, H
+			ALU.instructADD(reg.read("H"));
+			cycles = 4;
+			break;
 		case 0x86: // ADD A, (HL)
 			ALU.instructADD(mmu.readByte(reg.read("HL")));
 			cycles = 8;
 			break;
+		case 0x87: // ADD A, A
+			ALU.instructADD(reg.read("A"));
+			cycles = 4;
+			break;
 		case 0x90: // SUB A, B
 			ALU.instructSUB(reg.read("B"), false);
+			cycles = 4;
+			break;
+		case 0xA8: // XOR A, B
+			ALU.instructXOR(reg.read("B"));
 			cycles = 4;
 			break;
 		case 0xAD: // XOR A, L
@@ -395,6 +443,10 @@ public class CPU {
 			ALU.instructXOR(reg.read("C"));
 			cycles = 4;
 			break;
+		case 0xAA: // XOR D
+			ALU.instructXOR(reg.read("D"));
+			cycles = 4;
+			break;
 		case 0xAF: // XOR A
 			ALU.instructXOR(reg.read("A"));
 			cycles = 4;
@@ -407,12 +459,24 @@ public class CPU {
 			ALU.instructOR(reg.read("C"));
 			cycles = 4;
 			break;
+		case 0xB2: // OR A, D
+			ALU.instructOR(reg.read("D"));
+			cycles = 4;
+			break;
+		case 0xB3: // OR A, E
+			ALU.instructOR(reg.read("E"));
+			cycles = 4;
+			break;
 		case 0xB6: // OR A, (HL)
 			ALU.instructOR(mmu.readByte(reg.read("HL")));
 			cycles = 8;
 			break;
 		case 0xB7: // OR A, A
 			ALU.instructOR(reg.read("A"));
+			cycles = 4;
+			break;
+		case 0xB9: // CP A, C
+			ALU.instructSUB(reg.read("C"), true);
 			cycles = 4;
 			break;
 		case 0xBE: // CP A, (HL)
@@ -441,6 +505,10 @@ public class CPU {
 		case 0xC9: // RET
 			ControlFlow.instructRET();
 			cycles = 16;
+			break;
+		case 0xC2: // JP NZ, u16
+		case 0xCA: // JP Z, u16
+			cycles = ControlFlow.instructCondJP(instruction, fetchNextWord());
 			break;
 		case 0xCB: // send to CB handling function
 			cycles = nextCBInstruction();
@@ -522,6 +590,10 @@ public class CPU {
 			ControlFlow.instructPUSH("AF");
 			cycles = 16;
 			break;
+		case 0xF6: // OR A, u8
+			ALU.instructOR(fetchNextByte());
+			cycles = 8;
+			break;
 		case 0xF8: // LD HL, SP+s8
 			byte value = (byte) fetchNextByte();
 			int sp = reg.read("SP");
@@ -540,6 +612,10 @@ public class CPU {
 		case 0xFA: // LD A, (u16)
 			reg.write("A", mmu.readByte(fetchNextWord()));
 			cycles = 16;
+			break;
+		case 0xFB: // EI
+			// TODO: implement when interrupts are implemented.
+			cycles = 4;
 			break;
 		case 0xFE: // CP A, u8
 			ALU.instructSUB(fetchNextByte(), true);
@@ -565,6 +641,14 @@ public class CPU {
 			BitShift.instructRL("C");
 			cycles = 8;
 			break;
+		case 0x12: // RL D
+			BitShift.instructRL("D");
+			cycles = 8;
+			break;
+		case 0x13: // RL E
+			BitShift.instructRL("E");
+			cycles = 8;
+			break;
 		case 0x19: // RR C
 			BitShift.instructRR("C");
 			cycles = 8;
@@ -581,8 +665,32 @@ public class CPU {
 			BitShift.instructSRL("B");
 			cycles = 8;
 			break;
+		case 0x42: // BIT 0, D
+			BitShift.instructBIT("D", 0);
+			cycles = 8;
+			break;
+		case 0x47: // BIT 0, A
+			BitShift.instructBIT("A", 0);
+			cycles = 8;
+			break;
+		case 0x4A: // BIT 1, D
+			BitShift.instructBIT("D", 1);
+			cycles = 8;
+			break;
+		case 0x4F: // BIT 1, A
+			BitShift.instructBIT("A", 1);
+			cycles = 8;
+			break;
+		case 0x57: // BIT 2, A
+			BitShift.instructBIT("A", 2);
+			cycles = 8;
+			break;
 		case 0x7C: // BIT 7,H
 			BitShift.instructBIT("H", 7);
+			cycles = 8;
+			break;
+		case 0x7F: // BIT 7, A
+			BitShift.instructBIT("A", 7);
 			cycles = 8;
 			break;
 		default:

@@ -32,31 +32,37 @@ public class ControlFlow {
 	 * @param opcode - Opcode of the conditional jump.
 	 * @param address - Address to set PC to.
 	 */
-	public static void instructCondJP(int opcode, int address) {
+	public static int instructCondJP(int opcode, int address) {
+		int cycles = 12;
 		switch(opcode) {
 		case 0xC2:
 			if (!fr.isZ()) {
 				instructJP(address);
+				cycles += 4;
 			}
 			break;
 		case 0xCA:
 			if (fr.isZ()) {
 				instructJP(address);
+				cycles += 4;
 			}
 			break;
 		case 0xD2:
 			if (!fr.isC()) {
 				instructJP(address);
+				cycles += 4;
 			}
 			break;
 		case 0xDA:
 			if (fr.isC()) {
 				instructJP(address);
+				cycles += 4;
 			}
 			break;
 		default:
 			break;
 		}
+		return cycles;
 	}
 	
 	/**

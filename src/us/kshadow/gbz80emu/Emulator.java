@@ -32,7 +32,7 @@ public class Emulator extends JPanel {
 		emuRunning = true;
 		cpu = new CPU();
 		try {
-			testROM.loadROM("03-op sp,hl.gb");
+			testROM.loadROM("hello.gb");
 			cpu.getMMU().loadROM(testROM.getROMAsArray());
 		} catch (IOException e) {
 			e.printStackTrace();

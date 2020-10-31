@@ -119,7 +119,6 @@ public class MMU {
 				else if (address == 0xFF42) { return gpu.getSCY(); }
 				else if (address == 0xFF43) { return gpu.getSCX(); }
 				else if (address == 0xFF44) { return gpu.getLY(); }
-				else if (address == 0xFF47) { return gpu.getBGP(); }
 				
 				// If address = unused range, I/O registers, or interrupt register, return 0 for now.
 				return 0;
