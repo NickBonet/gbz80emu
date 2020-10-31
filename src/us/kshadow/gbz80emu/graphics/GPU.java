@@ -1,16 +1,9 @@
 package us.kshadow.gbz80emu.graphics;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 
-import javax.imageio.ImageIO;
-
 import us.kshadow.gbz80emu.memory.MMU;
-import us.kshadow.gbz80emu.util.MiscUtil;
 
 /**
  * GPU - An emulation of the graphical operations the GameBoy performs to draw to its LCD.
@@ -81,7 +74,7 @@ public class GPU {
 				int msb = ((bytes[row + 1] >> 7 - column) & 1);
 				int colorValue = msb << 1 | lsb;
 				int x = (((column*1)+(8*columnIndex))-scrollX) & 0xFF;
-				int y = ((((row/2))+(8*rowIndex))-scrollY) & 0xFF;
+				int y = (((row/2)+(8*rowIndex))-scrollY) & 0xFF;
 				switch (colorValue) {
 					case 0:
 						framebuffer[x][y] = currentPalette[0];
@@ -201,7 +194,7 @@ public class GPU {
 		return scrollX;
 	}
 
-	public void setSCX(int scrollY) {
+	public void setSCX(int scrollX) {
 		this.scrollX = scrollX;
 	}
 

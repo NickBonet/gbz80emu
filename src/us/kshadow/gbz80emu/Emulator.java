@@ -21,7 +21,7 @@ public class Emulator extends JPanel {
 	private final transient CPU cpu;
 	private static final GPU gpu = GPU.getInstance();
 	private final transient ROMParser testROM = new ROMParser();
-	private BufferedImage gbDisplay;
+	private transient BufferedImage gbDisplay;
 	private boolean emuRunning;
 
 	/**

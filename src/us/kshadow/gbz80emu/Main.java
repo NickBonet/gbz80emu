@@ -6,6 +6,8 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
+
 @SuppressWarnings("serial")
 public class Main extends JFrame implements KeyListener {
 	private static final Emulator emu = new Emulator();
@@ -20,11 +22,11 @@ public class Main extends JFrame implements KeyListener {
 	public static void main(String[] args) {
 		JFrame frame = new Main("GBZ80Emu");
 		emu.setBackground(Color.white);
-		emu.setPreferredSize(new Dimension(emu.WINDOW_WIDTH, emu.WINDOW_HEIGHT));
+		emu.setPreferredSize(new Dimension(Emulator.WINDOW_WIDTH, Emulator.WINDOW_HEIGHT));
 		frame.add(emu);
 		frame.pack();
 		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		emuRunnable = () -> emu.runEmulator();
 		Thread emuThread = new Thread(emuRunnable);
 		emuThread.start();
