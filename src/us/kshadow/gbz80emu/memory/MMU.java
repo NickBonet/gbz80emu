@@ -186,6 +186,9 @@ public class MMU {
 				else if (address == 0xFF44) { gpu.resetLY(); }
 				else if (address == 0xFF47) { gpu.setBGP(value); }
 
+				// Boot ROM disable
+				else if (address == 0xFF50) { bootRomEnabled = false; }
+
 				break;
 				
 			default:

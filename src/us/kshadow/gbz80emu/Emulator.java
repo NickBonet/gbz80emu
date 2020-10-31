@@ -55,6 +55,7 @@ public class Emulator extends JPanel {
 		gpu.nextStep(cycles);
 		if (cpu.getCycles() >= 70224) { 
 			cpu.resetCyclesAfterFrame();
+			repaint();
 		}
 	}
 	
