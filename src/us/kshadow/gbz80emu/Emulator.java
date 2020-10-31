@@ -2,23 +2,33 @@ package us.kshadow.gbz80emu;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import us.kshadow.gbz80emu.memory.ROMParser;
 import us.kshadow.gbz80emu.processor.CPU;
 import us.kshadow.gbz80emu.graphics.GPU;
+import us.kshadow.gbz80emu.util.MiscUtil;
 
 /**
  * Emulator - Where all the moving parts are tied together to load GB games.
  */
 @SuppressWarnings("serial")
 public class Emulator extends JPanel {
+	public static final int WINDOW_WIDTH = 480;
+	public static final int WINDOW_HEIGHT = 432;
 	private final transient CPU cpu;
 	private static final GPU gpu = GPU.getInstance();
 	private final transient ROMParser testROM = new ROMParser();
+	private BufferedImage gbDisplay;
 	private boolean emuRunning;
-	
+
+	/**
+	 * Initializer for the Emulator panel.
+	 */
 	public Emulator() {
+		gbDisplay = new BufferedImage(160, 144, BufferedImage.TYPE_INT_RGB);
 		emuRunning = true;
 		cpu = new CPU();
 		try {
@@ -28,7 +38,10 @@ public class Emulator extends JPanel {
 			e.printStackTrace();
 		}
 	}
-	
+
+	/**
+	 * Handles running the normal emulation loop.
+	 */
 	public void runEmulator() {
 		while (emuRunning) {
 			if(cpu.isRunning()) { // for STOP instruction
@@ -48,7 +61,10 @@ public class Emulator extends JPanel {
 			}
 		}
 	}
-	
+
+	/**
+	 * Allows for a single step of the system to be executed. (CPU/GPU)
+	 */
 	public void nextStep() {
 		int cycles = cpu.nextInstruction();
 		cpu.getRegisters().print();
@@ -58,55 +74,57 @@ public class Emulator extends JPanel {
 			repaint();
 		}
 	}
-	
-	public void dumpTile(int address) {
-		gpu.saveTile(address, "tile");
+
+	/**
+	 * Renders the next frame for the emulator view, and resizes it to
+	 * the defined width/height.
+	 * @return The resized BufferedImage.
+	 */
+	public BufferedImage renderFrame() {
+		for (int x = 0; x < 160; x++) {
+			for (int y = 0; y < 144; y++) {
+				gbDisplay.setRGB(x, y, gpu.getFramebuffer()[x][y]);
+			}
+		}
+		return MiscUtil.resizeBufferedImage(gbDisplay, WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
-	
+
+	/**
+	 * Method for dumping the current tile set in VRAM to file.
+	 */
+	public void dumpTileSetFromVRAM() {
+		int x = 0;
+		int y = 0;
+		BufferedImage fullTileSet = new BufferedImage(256, 384, BufferedImage.TYPE_INT_RGB);
+		Graphics g = fullTileSet.getGraphics();
+		for (int i = 0x8000; i <= 0x97FF; i+= 0x10) {
+			BufferedImage tile = gpu.tileToImage(i);
+			if (x == 256) {
+				x = 0;
+				y += 0x10;
+			}
+			g.drawImage(MiscUtil.resizeBufferedImage(tile, 16, 16), x, y, null);
+			x += 0x10;
+		}
+		File tileOutputFile = new File("tileset.png");
+		try {
+			ImageIO.write(fullTileSet, "png", tileOutputFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.drawImage(renderFrame(), 0, 0, null);
-		//drawTileMapFromVRAM(g);
-	}
-
-	public BufferedImage renderFrame() {
-		BufferedImage image = new BufferedImage(160, 144, BufferedImage.TYPE_INT_RGB);
-		for (int x = 0; x < 160; x++) {
-			for (int y = 0; y < 144; y++) {
-				image.setRGB(x, y, gpu.framebuffer[x][y]);
-			}
-		}
-		Image tmp = image.getScaledInstance(480, 432, Image.SCALE_SMOOTH);
-		BufferedImage dimg = new BufferedImage(488, 432, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g2d = dimg.createGraphics();
-		g2d.drawImage(tmp, 0, 0, null);
-		g2d.dispose();
-		return dimg;
 	}
 
 	public void setEmuRunning(boolean emuRunning) {
 		this.emuRunning = emuRunning;
 	}
-	
+
 	public boolean getEmuRunning() {
 		return emuRunning;
-	}
-
-	/**
-	 * Method for drawing tile map to window display.
-	 * @param g - Graphics object to draw to.
-	 */
-	private void drawTileMapFromVRAM(Graphics g) {
-		int x = 0;
-		int y = 0;
-		for (int i = 0x8000; i <= 0x97FF; i+= 0x10) {
-			if (x == 304) {
-				x = 0;
-				y += 0x10;
-			}
-			g.drawImage(gpu.resizeTile(i), x, y, null);
-			x += 0x10;
-		}
 	}
 }

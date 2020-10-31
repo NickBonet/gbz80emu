@@ -37,7 +37,7 @@ public class CPURegisters {
 	
 	/**
 	 * Return the singleton instance of the CPU's registers.
-	 * @return instance - This CPURegisters instance.
+	 * @return This CPURegisters instance.
 	 */
 	public static CPURegisters getInstance() {
 		return instance;
@@ -205,7 +205,7 @@ public class CPURegisters {
 	
 	/**
 	 * Get the current value of PC.
-	 * @return pc - The current value of PC.
+	 * @return The current value of PC.
 	 */
 	public int getPC() {
 		return pc;
@@ -213,7 +213,7 @@ public class CPURegisters {
 	
 	/**
 	 * Returns the FlagRegister object.
-	 * @return flagRegister - see above.
+	 * @return see above.
 	 */
 	public FlagRegister getFR() {
 		return flagRegister;

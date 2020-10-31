@@ -10,6 +10,7 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 
 import us.kshadow.gbz80emu.memory.MMU;
+import us.kshadow.gbz80emu.util.MiscUtil;
 
 /**
  * GPU - An emulation of the graphical operations the GameBoy performs to draw to its LCD.
@@ -17,7 +18,7 @@ import us.kshadow.gbz80emu.memory.MMU;
  *
  */
 public class GPU {
-	// lightest green, light green, dark green, darkest green
+	// Lightest green, light green, dark green, darkest green.
 	private static final int[] DMG_COLORS = {0xe0f8d0, 0x88c070, 0x346856, 0x081820};
 	private static final GPU instance = new GPU();
 	private static final MMU mmu = MMU.getInstance();
@@ -30,20 +31,21 @@ public class GPU {
 	private int bgPalette; // 0xFF47, sets palette colors or BG/windows
 	private int gpuMode; // Technically a part of LCDC status, will get to that later.
 	private int systemCycles;
-
 	// 2D array tp represent GB display. Will store the color
 	// to display in our BufferedImage each frame.
-	public int[][] framebuffer;
+	private int[][] framebuffer;
 
+	/**
+	 * Initializer for the emulated GPU/PPU.
+	 */
 	private GPU() {
-		// TODO: Set this to 160x144 for actual display size.
 		framebuffer = new int[256][256];
 		currentPalette = new int[4];
 		currentPalette = Arrays.copyOf(DMG_COLORS, 4);
 	}
 
 	/**
-	 * Draws a horizontal line for the Gameboy's display.
+	 * Draws a horizontal line for the Gameboy display.
 	 * @param line - Line to draw. (0-143)
 	 */
 	public void renderScanLine(int line) {
@@ -52,17 +54,28 @@ public class GPU {
 			int elementIndex = (rowIndex * 32) + columnIndex;
 			int tileIndex = mmu.readByte(0x9800 + elementIndex);
 			int relativeLine = (line % 8);
-			drawTileToFramebuffer(0x8000+(tileIndex*0x10), columnIndex, rowIndex, relativeLine, relativeLine+1);
+			drawTileToFramebuffer(framebuffer,0x8000+(tileIndex*0x10), columnIndex, rowIndex, relativeLine, relativeLine+1, scrollX, scrollY);
 		}
 	}
 
-	private void drawTileToFramebuffer(int address, int columnIndex, int rowIndex, int startAtLine, int endBeforeLine) {
+	/**
+	 * As the name states, draws a tile onto the framebuffer.
+	 * @param framebuffer - Framebuffer to write pixel data to.
+	 * @param address - Address of the tile to draw.
+	 * @param columnIndex - Column index of the tile in relation to the tile map.
+	 * @param rowIndex - Row index of the tile in relation to the tile map.
+	 * @param startAtLine - Line of tile to start drawing at.
+	 * @param endBeforeLine - Line of tile to end drawing before.
+	 * @param scrollX  - SCX offset (if needed).
+	 * @param scrollY  - SCY offset (if needed).
+	 */
+	private void drawTileToFramebuffer(int[][] framebuffer, int address, int columnIndex, int rowIndex, int startAtLine, int endBeforeLine, int scrollX, int scrollY) {
 		int[] bytes = new int[16];
-		// loop through every 2 bytes (2 bytes = 1 row of tile)
+		// Loop through every 2 bytes (2 bytes = 1 row of tile).
 		for (int row = startAtLine * 2; row < endBeforeLine * 2; row += 2) {
 			bytes[row] = MMU.getInstance().readByte(address + row);
 			bytes[row + 1] = MMU.getInstance().readByte(address + row + 1);
-			// loop through bits of each byte to get color information.
+			// Loop through bits of each byte to get color information.
 			for (int column = 0; column < 8; column++) {
 				int lsb = ((bytes[row] >> 7 - column) & 1);
 				int msb = ((bytes[row + 1] >> 7 - column) & 1);
@@ -137,80 +150,27 @@ public class GPU {
 	}
 
 	/**
-	 * Reads a tile at a given address in VRAM, and render it as a BufferedImage.
+	 * Reads a tile at a given address in VRAM, and renders it as a BufferedImage.
 	 * @param address - The address to read the tile data from.
-	 * @return tile - The tile as a BufferedImage.
+	 * @return The tile as a BufferedImage.
 	 */
-	public BufferedImage readTile(int address) {
-		int[] bytes = new int[16];
+	public BufferedImage tileToImage(int address) {
+		int[][] tileFramebuffer = new int[8][8];
+		drawTileToFramebuffer(tileFramebuffer, address, 0, 0, 0, 8, 0, 0);
 		BufferedImage tile = new BufferedImage(8, 8, BufferedImage.TYPE_INT_RGB);
-		// loop through every 2 bytes (2 bytes = 1 row of tile)
-		for (int i = 0; i < bytes.length; i += 2) {
-			bytes[i] = MMU.getInstance().readByte(address + i);
-			bytes[i + 1] = MMU.getInstance().readByte(address + i + 1);
-			// loop through bits of each byte to get color information.
-			for (int j = 0; j < 8; j++) {
-				int lsb = ((bytes[i] >> 7 - j) & 1);
-				int msb = ((bytes[i+1] >> 7 - j) & 1);
-				int colorValue = msb << 1 | lsb;
-				switch (colorValue) {
-				case 0:
-					tile.setRGB(j, i/2, 0xe0f8d0);
-					break;
-				case 1:
-					tile.setRGB(j, i/2, 0x88c070);
-					break;
-				case 2:
-					tile.setRGB(j, i/2, 0x346856);
-					break;
-				case 3:
-					tile.setRGB(j, i/2, 0x081820);
-					break;
-				default:
-					break;
-				}
-			}
+		for (int x = 0; x < 8; x++) {
+			for (int y = 0; y < 8; y++)
+				tile.setRGB(x, y, tileFramebuffer[x][y]);
 		}
 		return tile;
 	}
-	
-	public void saveTile(int address, String name) {
-		BufferedImage dimg = resizeTile(address);
-		File output = new File(name + ".png");
-		try {
-			ImageIO.write(dimg, "png", output);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	// Function I use for resizing tiles while testing.
-	public BufferedImage resizeTile(int address) {
-		BufferedImage tile = readTile(address);
-		Image tmp = tile.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
-		BufferedImage dimg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g2d = dimg.createGraphics();
-		g2d.drawImage(tmp, 0, 0, null);
-		g2d.dispose();
-		return dimg;
-	}
-
-	/*
-	public void tileMapToFramebuffer() {
-		// Loop through the background tile map.
-		for (int columnIndex = 0; columnIndex < 32; columnIndex++) {
-			for (int rowIndex = 0; rowIndex < 32; rowIndex++) {
-				int elementIndex = (rowIndex * 32) + columnIndex;
-				// Grab tile index from tile map.
-				int tileIndex = mmu.readByte(0x9800 + elementIndex);
-				drawTileToFramebuffer(0x8000+(tileIndex*0x10), columnIndex, rowIndex, 0, 8);
-			}
-		}
-	}
-	*/
 
 	public static GPU getInstance() {
 		return instance;
+	}
+
+	public int[][] getFramebuffer() {
+		return framebuffer;
 	}
 
 	public int getLY() {
@@ -234,7 +194,6 @@ public class GPU {
 	}
 
 	public void setSCY(int scrollY) {
-		//System.out.println(String.format("0x%x", scrollY));
 		this.scrollY = scrollY;
 	}
 
@@ -251,7 +210,6 @@ public class GPU {
 	}
 
 	public void setBGP(int bgPalette) {
-		System.out.println(bgPalette);
 		currentPalette[3] = DMG_COLORS[(bgPalette & 0xC0) >> 6];
 		currentPalette[2] = DMG_COLORS[(bgPalette & 0x30) >> 4];
 		currentPalette[1] = DMG_COLORS[(bgPalette & 0xC) >> 2];

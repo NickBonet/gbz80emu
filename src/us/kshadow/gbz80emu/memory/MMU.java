@@ -65,7 +65,7 @@ public class MMU {
 	
 	/**
 	 * Return the singleton instance of the MMU.
-	 * @return instance - This MMU instance.
+	 * @return This MMU instance.
 	 */
 	public static MMU getInstance() {
 		return instance;
@@ -74,7 +74,7 @@ public class MMU {
 	/**
 	 * Handles reading a byte from the correct region of memory, based on memory address.
 	 * @param address - Address of the byte to read from memory.
-	 * @return - The byte from memory.
+	 * @return The byte from memory.
 	 */
 	public int readByte(int address) {
 		BitUtil.checkIsWord(address);
