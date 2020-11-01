@@ -32,10 +32,10 @@ public class Emulator extends JPanel {
 		emuRunning = true;
 		cpu = new CPU();
 		try {
-			testROM.loadROM("07-jr,jp,call,ret,rst.gb");
+			testROM.loadROM("hello.gb");
 			cpu.getMMU().loadROM(testROM.getROMAsArray());
-			cpu.getMMU().toggleBootROM(false);
-			cpu.getRegisters().setInitValues();
+			//cpu.getMMU().toggleBootROM(false);
+			//cpu.getRegisters().setInitValues();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -50,7 +50,6 @@ public class Emulator extends JPanel {
 			if(cpu.isRunning()) { // for STOP instruction
 				while (cpu.getCycles() <= 70224) {
 					int cycles = cpu.nextInstruction();
-					if (cycles == 0) break;
 					gpu.nextStep(cycles);
 					cycles = cpu.handleInterrupt();
 					gpu.addCycles(cycles);

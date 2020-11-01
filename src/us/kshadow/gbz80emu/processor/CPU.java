@@ -20,6 +20,7 @@ public class CPU {
 	private static final Logger logger = Logger.getLogger("GBZ80Emu");
 	private int cpuCycles;
 	private boolean isRunning;
+	private boolean delayedEI;
 
 	/**
 	 * Initializer for the CPU object.
@@ -43,9 +44,17 @@ public class CPU {
 			// Check if a VBlank interrupt occurred.
 			if ((interruptFlag & interruptEnable) == 0x01) {
 				reg.toggleIME(false);
+				mmu.writeByte(0xFF0F, BitUtil.setBit(interruptFlag, 0));
 				ControlFlow.instructPUSH("PC");
-				reg.write("PC", 0x0040);
+				reg.write("PC", 0x40);
 				cycles += 20; // According to The Cycle Accurate GameBoy Docs
+			}
+			else if ((interruptFlag & interruptEnable) == 0x04) {
+				reg.toggleIME(false);
+				mmu.writeByte(0xFF0F, BitUtil.setBit(interruptFlag, 2));
+				ControlFlow.instructPUSH("PC");
+				reg.write("PC", 0x50);
+				cycles += 20;
 			}
 		}
 		cpuCycles += cycles;
@@ -58,8 +67,13 @@ public class CPU {
 	 */
 	@SuppressWarnings("java:S1479")
 	public int nextInstruction() {
+		if (delayedEI) {
+			delayedEI = false;
+			ControlFlow.instructEI();
+		}
 		int instruction = fetchNextByte();
 		int cycles;
+		//logger.log(Level.INFO, String.format("Now executing instruction: 0x%X", instruction));
 		switch (instruction) {
 		case 0x00: // NOP
 			cycles = 4;
@@ -662,7 +676,7 @@ public class CPU {
 			cycles = 16;
 			break;
 		case 0xFB: // EI
-			ControlFlow.instructEI();
+			delayedEI = true;
 			cycles = 4;
 			break;
 		case 0xFE: // CP A, u8
