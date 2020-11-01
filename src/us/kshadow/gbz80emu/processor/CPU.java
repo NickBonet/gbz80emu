@@ -33,8 +33,9 @@ public class CPU {
 
 	/**
 	 * Handles checking for interrupts after normal GPU/CPU steps.
+	 * @return The number of cycles taken (to pass off to GPu for timekeeping)
 	 */
-	public void handleInterrupt() {
+	public int handleInterrupt() {
 		int cycles = 0;
 		if (reg.getIME() && mmu.readByte(0xFFFF) != 0 && mmu.readByte(0xFF0F) != 0) {
 			int interruptFlag = mmu.readByte(0xFF0F);
@@ -49,6 +50,7 @@ public class CPU {
 			}
 		}
 		cpuCycles += cycles;
+		return cycles;
 	}
 
 	/**

@@ -229,4 +229,8 @@ public class GPU {
 		this.bgPalette = bgPalette;
 	}
 
+	public void addCycles(int cycles) {
+		systemCycles += cycles;
+	}
+
 }
