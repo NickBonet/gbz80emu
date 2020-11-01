@@ -31,10 +31,7 @@ public class GPU {
 	// to display in our BufferedImage each frame.
 	private final int[][] framebuffer;
 
-	/*
-		TODO: Implement reading from both tile sets and BG maps,
-		which would result in making use of LCDC.
-	 */
+	// TODO: Implement reading from both tile sets and BG maps, which would result in making use of LCDC.
 
 	/**
 	 * Initializer for the emulated GPU/PPU.
@@ -55,7 +52,8 @@ public class GPU {
 			int elementIndex = (rowIndex * 32) + columnIndex;
 			int tileIndex = mmu.readByte(0x9800 + elementIndex);
 			int relativeLine = (line % 8);
-			drawTileToFramebuffer(framebuffer,0x8000+(tileIndex*0x10), columnIndex, rowIndex, relativeLine, relativeLine+1, scrollX, scrollY);
+			int address = (BitUtil.checkBitSet(lcdControl, 4)) ? 0x8000 + (tileIndex*0x10) : 0x9000 + (((byte) tileIndex) * 0x10);
+			drawTileToFramebuffer(framebuffer,address, columnIndex, rowIndex, relativeLine, relativeLine+1, scrollX, scrollY);
 		}
 	}
 
