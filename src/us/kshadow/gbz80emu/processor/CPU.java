@@ -49,6 +49,7 @@ public class CPU {
 				reg.write("PC", 0x40);
 				cycles += 20; // According to The Cycle Accurate GameBoy Docs
 			}
+			// Timer overflow interrupt (or should be)
 			else if ((interruptFlag & interruptEnable) == 0x04) {
 				reg.toggleIME(false);
 				mmu.writeByte(0xFF0F, BitUtil.setBit(interruptFlag, 2));
@@ -448,12 +449,28 @@ public class CPU {
 			reg.write("A", mmu.readByte(reg.read("HL")));
 			cycles = 8;
 			break;
+		case 0x80: // ADD A, B
+			ALU.instructADD(reg.read("B"));
+			cycles = 4;
+			break;
+		case 0x81: // ADD A, C
+			ALU.instructADD(reg.read("C"));
+			cycles = 4;
+			break;
+		case 0x82: // ADD A, D
+			ALU.instructADD(reg.read("D"));
+			cycles = 4;
+			break;
 		case 0x83: // ADD A, E
 			ALU.instructADD(reg.read("E"));
 			cycles = 4;
 			break;
 		case 0x84: // ADD A, H
 			ALU.instructADD(reg.read("H"));
+			cycles = 4;
+			break;
+		case 0x85: // ADD A, L
+			ALU.instructADD(reg.read("L"));
 			cycles = 4;
 			break;
 		case 0x86: // ADD A, (HL)
