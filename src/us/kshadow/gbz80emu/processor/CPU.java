@@ -33,7 +33,7 @@ public class CPU {
 
 	/**
 	 * Handles checking for interrupts after normal GPU/CPU steps.
-	 * @return The number of cycles taken (to pass off to GPu for timekeeping)
+	 * @return The number of cycles taken (to pass off to GPU for timekeeping)
 	 */
 	public int handleInterrupt() {
 		int cycles = 0;
