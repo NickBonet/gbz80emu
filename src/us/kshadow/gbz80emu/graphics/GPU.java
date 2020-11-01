@@ -50,7 +50,8 @@ public class GPU {
 		int rowIndex = (line / 8);
 		for (int columnIndex = 0; columnIndex < 20; columnIndex++) {
 			int elementIndex = (rowIndex * 32) + columnIndex;
-			int tileIndex = mmu.readByte(0x9800 + elementIndex);
+			int bgTileMapPointer = BitUtil.checkBitSet(lcdControl, 3) ? 0x9C00 : 0x9800;
+			int tileIndex = mmu.readByte(bgTileMapPointer + elementIndex);
 			int relativeLine = (line % 8);
 			int address = (BitUtil.checkBitSet(lcdControl, 4)) ? 0x8000 + (tileIndex*0x10) : 0x9000 + (((byte) tileIndex) * 0x10);
 			drawTileToFramebuffer(framebuffer,address, columnIndex, rowIndex, relativeLine, relativeLine+1, scrollX, scrollY);
@@ -114,12 +115,15 @@ public class GPU {
 				if (systemCycles >= 204) {
 					lineY++;
 					if (lineY > 143) {
+						// Disabled for now, need to figure out why this is slowing down rendering.
+						/*
 						int interruptEnable = mmu.readByte(0xFFFF);
 						if (reg.getIME() && BitUtil.checkBitSet(interruptEnable, 0)) {
 							int interruptFlag = mmu.readByte((0xFF0F));
 							interruptFlag = BitUtil.setBit(interruptFlag, 0);
 							mmu.writeByte(0xFF0F, interruptFlag);
 						}
+						*/
 						gpuMode = 1;
 					} else {
 						gpuMode = 2;

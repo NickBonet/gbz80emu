@@ -37,12 +37,11 @@ public class CPU {
 	 */
 	public int handleInterrupt() {
 		int cycles = 0;
-		if (reg.getIME() && mmu.readByte(0xFFFF) != 0 && mmu.readByte(0xFF0F) != 0) {
-			int interruptFlag = mmu.readByte(0xFF0F);
-			int interruptEnable = mmu.readByte(0xFFFF);
-
+		int interruptFlag = mmu.readByte(0xFF0F);
+		int interruptEnable = mmu.readByte(0xFFFF);
+		if (reg.getIME() && interruptEnable > 0 && interruptFlag > 0) {
 			// Check if a VBlank interrupt occurred.
-			if (BitUtil.checkBitSet(interruptFlag, 0) && BitUtil.checkBitSet(interruptEnable, 0)) {
+			if ((interruptFlag & interruptEnable) == 0x01) {
 				reg.toggleIME(false);
 				ControlFlow.instructPUSH("PC");
 				reg.write("PC", 0x0040);

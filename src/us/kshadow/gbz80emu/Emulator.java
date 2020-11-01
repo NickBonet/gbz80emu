@@ -21,7 +21,7 @@ public class Emulator extends JPanel {
 	private final transient CPU cpu;
 	private static final GPU gpu = GPU.getInstance();
 	private final transient ROMParser testROM = new ROMParser();
-	private transient BufferedImage gbDisplay;
+	private transient final BufferedImage gbDisplay;
 	private boolean emuRunning;
 
 	/**
@@ -57,6 +57,7 @@ public class Emulator extends JPanel {
 					cpu.resetCyclesAfterFrame();
 					repaint();
 				}
+
 				try {
 					Thread.sleep(16);
 				} catch (InterruptedException e) {
