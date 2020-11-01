@@ -518,7 +518,10 @@ public class CPU {
 			ControlFlow.instructJP(fetchNextWord());
 			cycles = 16;
 			break;
+		case 0xCC: // CALL Z, u16
 		case 0xC4: // CALL NZ, u16
+		case 0xD4: // CALL NC, u16
+		case 0xDC: // CALL C, u16
 			cycles = ControlFlow.instructCondCALL(instruction, fetchNextWord());
 			break;
 		case 0xC5: // PUSH BC
@@ -529,12 +532,25 @@ public class CPU {
 			ALU.instructADD(fetchNextByte());
 			cycles = 8;
 			break;
+		case 0xC7: // RST 00
+		case 0xCF: // RST 08
+		case 0xD7: // RST 10
+		case 0xDF: // RST 18
+		case 0xE7: // RST 20
+		case 0xEF: // RST 28
+		case 0xF7: // RST 30
+		case 0xFF :// RST 38
+			ControlFlow.instructRST(instruction);
+			cycles = 16;
+			break;
 		case 0xC9: // RET
 			ControlFlow.instructRET();
 			cycles = 16;
 			break;
 		case 0xC2: // JP NZ, u16
 		case 0xCA: // JP Z, u16
+		case 0xD2: // JP NC, u16
+		case 0xDA: // JP C, u16
 			cycles = ControlFlow.instructCondJP(instruction, fetchNextWord());
 			break;
 		case 0xCB: // send to CB handling function
@@ -549,6 +565,7 @@ public class CPU {
 			cycles = 8;
 			break;
 		case 0xC8: // RET Z
+		case 0xC0: // RET NZ
 		case 0xD8: // RET C
 		case 0xD0: // RET NC
 			cycles = ControlFlow.instructCondRET(instruction);
