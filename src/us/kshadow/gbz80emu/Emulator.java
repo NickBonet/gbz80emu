@@ -32,7 +32,7 @@ public class Emulator extends JPanel {
 		emuRunning = true;
 		cpu = new CPU();
 		try {
-			testROM.loadROM("test_roms/01-special.gb");
+			testROM.loadROM("test_roms/11-op a,(hl).gb");
 			cpu.getMMU().loadROM(testROM.getROMAsArray());
 			cpu.getMMU().toggleBootROM(false);
 			cpu.getRegisters().setInitValues();

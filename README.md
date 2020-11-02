@@ -5,13 +5,21 @@ A (potential) Gameboy emulator written in Java, for learning purposes.
 - [x] CPU register implementation
 - [x] MMU implementation (mostly complete, few address ranges dependent on later additions)
 - [x] Most CPU instructions implemented. Need to implement the following still:
-  - [ ] EI
-  - [ ] DI
   - [ ] HALT
-  - [x] STOP
-  - [ ] RETI
-  - [ ] DAA
+  - [ ] STOP (do it properly)
 - [ ] Fetch-Decode-Execute Cycle (in progress now).
+- [ ] Blargg's CPU instruction tests passing:
+    - [x] 01-special
+    - [ ] 02-interrupts (need to implement timer for this one)
+    - [x] 03-op sp, hl
+    - [ ] 04-op r, imm
+    - [x] 05-op rp
+    - [ ] 06-ld r, r
+    - [x] 07-jr,jp,call,ret,rst
+    - [ ] 08-misc instrs
+    - [ ] 09-op r,r
+    - [ ] 10-bit ops
+    - [ ] 11-op a, (hl)
 - [x] Able to execute bootROM fully.
 - [x] PPU implementation.
   - [x] Able to draw tiles line by line to framebuffer.
