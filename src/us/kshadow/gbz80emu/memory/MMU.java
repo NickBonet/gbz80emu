@@ -117,6 +117,7 @@ public class MMU {
 				
 				// GPU hookups
 				else if (address == 0xFF40) { return gpu.getLCDC(); }
+				else if (address == 0xFF41) { return gpu.getSTAT(); }
 				else if (address == 0xFF42) { return gpu.getSCY(); }
 				else if (address == 0xFF43) { return gpu.getSCX(); }
 				else if (address == 0xFF44) { return gpu.getLY(); }
@@ -185,6 +186,7 @@ public class MMU {
 
 				// GPU hookups
 				else if (address == 0xFF40) { gpu.setLCDC(value); }
+				else if (address == 0xFF41) { gpu.setSTAT(value); }
 				else if (address == 0xFF42) { gpu.setSCY(value); }
 				else if (address == 0xFF43) { gpu.setSCX(value); }
 				else if (address == 0xFF44) { gpu.resetLY(); }

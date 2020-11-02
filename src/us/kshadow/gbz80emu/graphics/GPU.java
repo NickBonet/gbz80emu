@@ -18,9 +18,9 @@ public class GPU {
 	private static final GPU instance = new GPU();
 	private static final CPURegisters reg = CPURegisters.getInstance();
 	private static final MMU mmu = MMU.getInstance();
-	//private static int lcdStatus; // 0xFF41 - LCDC Status
 	private int[] currentPalette;
 	private int lcdControl; // 0xFF40 - LCD/GPU control
+	private int lcdStatus = 0; // 0xFF41 - LCDC Status
 	private int scrollY; // 0xFF42
 	private int scrollX; // 0xFF43
 	private int lineY; // 0xFF44
@@ -121,18 +121,19 @@ public class GPU {
 							interruptFlag = BitUtil.setBit(interruptFlag, 0);
 							mmu.writeByte(0xFF0F, interruptFlag);
 						}
-						gpuMode = 1;
+						setGpuMode(1);
 					} else {
-						gpuMode = 2;
+						setGpuMode(2);
 					}
 					systemCycles -= 204;
 				}
+
 				break;
 			case 1: // VBlank mode
 				if (systemCycles >= 456) {
 					lineY++;
 					if(lineY > 153) {
-						gpuMode = 2;
+						setGpuMode(2);
 						lineY = 0;
 					}
 					systemCycles -= 456;
@@ -140,13 +141,13 @@ public class GPU {
 				break;
 			case 2: // Searching OAM
 				if (systemCycles >= 80) {
-					gpuMode = 3;
+					setGpuMode(3);
 					systemCycles -= 80;
 				}
 				break;
 			case 3: // Transfer data to display
 				if (systemCycles >= 172) {
-					gpuMode = 0;
+					setGpuMode(0);
 					// render scanline here
 					renderScanLine(lineY);
 					systemCycles -= 172;
@@ -213,6 +214,14 @@ public class GPU {
 		this.scrollX = scrollX;
 	}
 
+	public int getSTAT() {
+		return lcdStatus;
+	}
+
+	public void setSTAT(int lcdStatus) {
+		this.lcdStatus = lcdStatus;
+	}
+
 	public int getBGP() {
 		return bgPalette;
 	}
@@ -226,6 +235,30 @@ public class GPU {
 		currentPalette[1] = DMG_COLORS[(bgPalette & 0xC) >> 2];
 		currentPalette[0] = DMG_COLORS[bgPalette & 0x3];
 		this.bgPalette = bgPalette;
+	}
+
+	public void setGpuMode(int gpuMode) {
+		this.gpuMode = gpuMode;
+		switch(gpuMode) {
+			case 0:
+				lcdStatus &= ~(1 << 1);
+				lcdStatus &= ~(1 << 0);
+				break;
+			case 1:
+				lcdStatus &= ~(1 << 1);
+				lcdStatus |= (1 << 0);
+				break;
+			case 2:
+				lcdStatus |= (1 << 1);
+				lcdStatus &= ~(1 << 0);
+				break;
+			case 3:
+				lcdStatus |= (1 << 1);
+				lcdStatus |= (1 << 0);
+				break;
+			default:
+				break;
+		}
 	}
 
 	public void addCycles(int cycles) {
