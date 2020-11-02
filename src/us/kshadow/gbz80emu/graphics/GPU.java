@@ -31,8 +31,6 @@ public class GPU {
 	// to display in our BufferedImage each frame.
 	private final int[][] framebuffer;
 
-	// TODO: Implement reading from both tile sets and BG maps, which would result in making use of LCDC.
-
 	/**
 	 * Initializer for the emulated GPU/PPU.
 	 */

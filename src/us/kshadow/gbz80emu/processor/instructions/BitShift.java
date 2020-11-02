@@ -31,7 +31,7 @@ public class BitShift {
 		fr.setC(false);
 		fr.setN(false);
 		fr.setH(false);
-		reg.write(register, result);
+		writeValue(register, result);
 	}
 	
 	/**

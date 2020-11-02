@@ -203,10 +203,10 @@ public class CPU {
 			BitShift.instructRRA();
 			cycles = 4;
 			break;
-		/*case 0x27: // DAA
-			TODO: handle DAA here
+		case 0x27: // DAA
+			ALU.instructDAA();
 			cycles = 4;
-			break;*/
+			break;
 		case 0x20: // JR NZ,s8
 		case 0x28: // JR Z, s8
 		case 0x30: // JR NC,s8
@@ -533,8 +533,20 @@ public class CPU {
 			ALU.instructOR(reg.read("A"));
 			cycles = 4;
 			break;
+		case 0xB8: // CP A, B
+			ALU.instructSUB(reg.read("B"), true);
+			cycles = 4;
+			break;
 		case 0xB9: // CP A, C
 			ALU.instructSUB(reg.read("C"), true);
+			cycles = 4;
+			break;
+		case 0xBA: // CP A, D
+			ALU.instructSUB(reg.read("D"), true);
+			cycles = 4;
+			break;
+		case 0xBB: // CP A, E
+			ALU.instructSUB(reg.read("E"), true);
 			cycles = 4;
 			break;
 		case 0xBE: // CP A, (HL)
@@ -738,6 +750,38 @@ public class CPU {
 			break;
 		case 0x1B: // RR E
 			BitShift.instructRR("E");
+			cycles = 8;
+			break;
+		case 0x30: // SWAP B
+			BitShift.instructSWAP("B");
+			cycles = 8;
+			break;
+		case 0x31: // SWAP C
+			BitShift.instructSWAP("C");
+			cycles = 8;
+			break;
+		case 0x32: // SWAP D
+			BitShift.instructSWAP("D");
+			cycles = 8;
+			break;
+		case 0x33: // SWAP E
+			BitShift.instructSWAP("E");
+			cycles = 8;
+			break;
+		case 0x34: // SWAP H
+			BitShift.instructSWAP("H");
+			cycles = 8;
+			break;
+		case 0x35: // SWAP L
+			BitShift.instructSWAP("L");
+			cycles = 8;
+			break;
+		case 0x36: // SWAP (HL)
+			BitShift.instructSWAP("HL");
+			cycles = 16;
+			break;
+		case 0x37: // SWAP A
+			BitShift.instructSWAP("A");
 			cycles = 8;
 			break;
 		case 0x38: // SRL B
