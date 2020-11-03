@@ -21,7 +21,7 @@ public class Emulator extends JPanel {
 	private final transient CPU cpu;
 	private static final GPU gpu = GPU.getInstance();
 	private final transient ROMParser testROM = new ROMParser();
-	private transient final BufferedImage gbDisplay;
+	private final transient BufferedImage gbDisplay;
 	private boolean emuRunning;
 
 	/**
@@ -32,10 +32,10 @@ public class Emulator extends JPanel {
 		emuRunning = true;
 		cpu = new CPU();
 		try {
-			testROM.loadROM("test_roms/11-op a,(hl).gb");
+			testROM.loadROM("test_roms/09-op r,r.gb");
 			cpu.getMMU().loadROM(testROM.getROMAsArray());
-			cpu.getMMU().toggleBootROM(false);
-			cpu.getRegisters().setInitValues();
+			//cpu.getMMU().toggleBootROM(false);
+			//cpu.getRegisters().setInitValues();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

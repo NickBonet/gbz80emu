@@ -74,7 +74,6 @@ public class CPU {
 		}
 		int instruction = fetchNextByte();
 		int cycles;
-		//logger.log(Level.INFO, String.format("Now executing instruction: 0x%X", instruction));
 		switch (instruction) {
 		case 0x00: // NOP
 			cycles = 4;
@@ -192,7 +191,7 @@ public class CPU {
 			cycles = 4;
 			break;
 		case 0x1D: // DEC E
-			ALU.instructDECu16("E");
+			ALU.instructDECu8("E");
 			cycles = 4;
 			break;
 		case 0x1E: // LD E, u8
@@ -292,6 +291,10 @@ public class CPU {
 			mmu.writeByte(reg.read("HL"), fetchNextByte());
 			cycles = 12;
 			break;
+		case 0x37: // SCF
+			ALU.instructSCF();
+			cycles = 4;
+			break;
 		case 0x39: // ADD HL, SP
 			ALU.instructADDu16("SP");
 			cycles = 8;
@@ -316,6 +319,10 @@ public class CPU {
 		case 0x3E: // LD A, u8
 			reg.write("A", fetchNextByte());
 			cycles = 8;
+			break;
+		case 0x3F: // CCF
+			ALU.instructCCF();
+			cycles = 4;
 			break;
 		case 0x42: // LD B, D
 			reg.write("B", reg.read("D"));
@@ -481,12 +488,132 @@ public class CPU {
 			ALU.instructADD(reg.read("A"));
 			cycles = 4;
 			break;
+		case 0x88: // ADC A, B
+			ALU.instructADC(reg.read("B"));
+			cycles = 4;
+			break;
+		case 0x89: // ADC A, C
+			ALU.instructADC(reg.read("C"));
+			cycles = 4;
+			break;
+		case 0x8A: // ADC A, D
+			ALU.instructADC(reg.read("D"));
+			cycles = 4;
+			break;
+		case 0x8B: // ADC A, E
+			ALU.instructADC(reg.read("E"));
+			cycles = 4;
+			break;
+		case 0x8C: // ADC A, H
+			ALU.instructADC(reg.read("H"));
+			cycles = 4;
+			break;
+		case 0x8D: // ADC A, L
+			ALU.instructADC(reg.read("L"));
+			cycles = 4;
+			break;
+		case 0x8E: // ADC A, (HL)
+			ALU.instructADC(mmu.readByte(reg.read("HL")));
+			cycles = 8;
+			break;
+		case 0x8F: // ADC A, A
+			ALU.instructADC(reg.read("A"));
+			cycles = 4;
+			break;
 		case 0x90: // SUB A, B
 			ALU.instructSUB(reg.read("B"), false);
 			cycles = 4;
 			break;
+		case 0x91: // SUB A, C
+			ALU.instructSUB(reg.read("C"), false);
+			cycles = 4;
+			break;
+		case 0x92: // SUB A, D
+			ALU.instructSUB(reg.read("D"), false);
+			cycles = 4;
+			break;
+		case 0x93: // SUB A, E
+			ALU.instructSUB(reg.read("E"), false);
+			cycles = 4;
+			break;
+		case 0x94: // SUB A, H
+			ALU.instructSUB(reg.read("H"), false);
+			cycles = 4;
+			break;
+		case 0x95: // SUB A, L
+			ALU.instructSUB(reg.read("L"), false);
+			cycles = 4;
+			break;
+		case 0x97: // SUB A, A
+			ALU.instructSUB(reg.read("A"), false);
+			cycles = 4;
+			break;
+		case 0x98: // SBC B
+			ALU.instructSBC(reg.read("B"));
+			cycles = 4;
+			break;
+		case 0x99: // SBC C
+			ALU.instructSBC(reg.read("C"));
+			cycles = 4;
+			break;
+		case 0x9A: // SBC D
+			ALU.instructSBC(reg.read("D"));
+			cycles = 4;
+			break;
+		case 0x9B: // SBC E
+			ALU.instructSBC(reg.read("E"));
+			cycles = 4;
+			break;
+		case 0x9C: // SBC H
+			ALU.instructSBC(reg.read("H"));
+			cycles = 4;
+			break;
+		case 0x9D: // SBC L
+			ALU.instructSBC(reg.read("L"));
+			cycles = 4;
+			break;
+		case 0x9F: // SBC A
+			ALU.instructSBC(reg.read("A"));
+			cycles = 4;
+			break;
+		case 0xA0: // AND B
+			ALU.instructAND(reg.read("B"));
+			cycles = 4;
+			break;
+		case 0xA1: // AND C
+			ALU.instructAND(reg.read("C"));
+			cycles = 4;
+			break;
+		case 0xA2: // AND D
+			ALU.instructAND(reg.read("D"));
+			cycles = 4;
+			break;
+		case 0xA3: // AND E
+			ALU.instructAND(reg.read("E"));
+			cycles = 4;
+			break;
+		case 0xA4: // AND H
+			ALU.instructAND(reg.read("H"));
+			cycles = 4;
+			break;
+		case 0xA5: // AND L
+			ALU.instructAND(reg.read("L"));
+			cycles = 4;
+			break;
+		case 0xA7: // AND A
+			ALU.instructAND(reg.read("A"));
+			cycles = 4;
+			break;
 		case 0xA8: // XOR A, B
 			ALU.instructXOR(reg.read("B"));
+			cycles = 4;
+			break;
+		case 0xAB: // XOR A, E
+			ALU.instructXOR(reg.read("E"));
+			cycles = 4;
+			break;
+		case 0xAC: // XOR A, H
+			ALU.instructXOR(reg.read("H"));
 			cycles = 4;
 			break;
 		case 0xAD: // XOR A, L
@@ -525,6 +652,14 @@ public class CPU {
 			ALU.instructOR(reg.read("E"));
 			cycles = 4;
 			break;
+		case 0xB4: // OR A, H
+			ALU.instructOR(reg.read("H"));
+			cycles = 4;
+			break;
+		case 0xB5: // OR A, L
+			ALU.instructOR(reg.read("L"));
+			cycles = 4;
+			break;
 		case 0xB6: // OR A, (HL)
 			ALU.instructOR(mmu.readByte(reg.read("HL")));
 			cycles = 8;
@@ -549,9 +684,21 @@ public class CPU {
 			ALU.instructSUB(reg.read("E"), true);
 			cycles = 4;
 			break;
+		case 0xBC: // CP A, H
+			ALU.instructSUB(reg.read("H"), true);
+			cycles = 4;
+			break;
+		case 0xBD: // CP A, L
+			ALU.instructSUB(reg.read("L"), true);
+			cycles = 4;
+			break;
 		case 0xBE: // CP A, (HL)
 			ALU.instructSUB(mmu.readByte(reg.read("HL")), true);
 			cycles = 8;
+			break;
+		case 0xBF: // CP A, A
+			ALU.instructSUB(reg.read("A"), true);
+			cycles = 4;
 			break;
 		case 0xC1: // POP BC
 			ControlFlow.instructPOP("BC");
@@ -628,6 +775,10 @@ public class CPU {
 		case 0xD9: // RETI
 			ControlFlow.instructRETI();
 			cycles = 16;
+			break;
+		case 0xDE: // SBC A, u8
+			ALU.instructSBC(fetchNextByte());
+			cycles = 8;
 			break;
 		case 0xE0: // LD ($FF00+n), A
 			mmu.writeByte(0xFF00 + fetchNextByte(), reg.read("A"));
@@ -713,7 +864,7 @@ public class CPU {
 			cycles = 8;
 			break;
 		default:
-			throw new IllegalArgumentException(String.format("Unhandled CPU instruction 0x%x", instruction));
+			throw new IllegalArgumentException(String.format("Unhandled CPU instruction 0x%X", instruction));
 		}
 		cpuCycles += cycles;
 		return cycles;
@@ -728,6 +879,74 @@ public class CPU {
 		int instruction = fetchNextByte();
 		int cycles;
 		switch(instruction) {
+		case 0x00: // RLC B
+			BitShift.instructRLC("B");
+			cycles = 8;
+			break;
+		case 0x01: // RLC C
+			BitShift.instructRLC("C");
+			cycles = 8;
+			break;
+		case 0x02: // RLC D
+			BitShift.instructRLC("D");
+			cycles = 8;
+			break;
+		case 0x03: // RLC E
+			BitShift.instructRLC("E");
+			cycles = 8;
+			break;
+		case 0x04: // RLC H
+			BitShift.instructRLC("H");
+			cycles = 8;
+			break;
+		case 0x05: // RLC L
+			BitShift.instructRLC("L");
+			cycles = 8;
+			break;
+		case 0x06: // RLC (HL)
+			BitShift.instructRLC("HL");
+			cycles = 16;
+			break;
+		case 0x07: // RLC A
+			BitShift.instructRLC("A");
+			cycles = 8;
+			break;
+		case 0x08: // RRC B
+			BitShift.instructRRC("B");
+			cycles = 8;
+			break;
+		case 0x09: // RRC C
+			BitShift.instructRRC("C");
+			cycles = 8;
+			break;
+		case 0x0A: // RRC D
+			BitShift.instructRRC("D");
+			cycles = 8;
+			break;
+		case 0x0B: // RRC E
+			BitShift.instructRRC("E");
+			cycles = 8;
+			break;
+		case 0x0C: // RRC H
+			BitShift.instructRRC("H");
+			cycles = 8;
+			break;
+		case 0x0D: // RRC L
+			BitShift.instructRRC("L");
+			cycles = 8;
+			break;
+		case 0x0E: // RRC (HL)
+			BitShift.instructRRC("HL");
+			cycles = 16;
+			break;
+		case 0x0F: // RRC A
+			BitShift.instructRRC("A");
+			cycles = 8;
+			break;
+		case 0x10: // RL B
+			BitShift.instructRL("B");
+			cycles = 8;
+			break;
 		case 0x11: // RL C
 			BitShift.instructRL("C");
 			cycles = 8;
@@ -740,6 +959,26 @@ public class CPU {
 			BitShift.instructRL("E");
 			cycles = 8;
 			break;
+		case 0x14: // RL H
+			BitShift.instructRL("H");
+			cycles = 8;
+			break;
+		case 0x15: // RL L
+			BitShift.instructRL("L");
+			cycles = 8;
+			break;
+		case 0x16: // RL (HL)
+			BitShift.instructRL("HL");
+			cycles = 16;
+			break;
+		case 0x17: // RL A
+			BitShift.instructRL("A");
+			cycles = 8;
+			break;
+		case 0x18: // RR B
+			BitShift.instructRR("B");
+			cycles = 8;
+			break;
 		case 0x19: // RR C
 			BitShift.instructRR("C");
 			cycles = 8;
@@ -750,6 +989,86 @@ public class CPU {
 			break;
 		case 0x1B: // RR E
 			BitShift.instructRR("E");
+			cycles = 8;
+			break;
+		case 0x1C: // RR H
+			BitShift.instructRR("H");
+			cycles = 8;
+			break;
+		case 0x1D: // RR L
+			BitShift.instructRR("L");
+			cycles = 8;
+			break;
+		case 0x1E: // RR (HL)
+			BitShift.instructRR("E");
+			cycles = 16;
+			break;
+		case 0x1F: // RR A
+			BitShift.instructRR("A");
+			cycles = 8;
+			break;
+		case 0x20: // SLA B
+			BitShift.instructSLA("B");
+			cycles = 8;
+			break;
+		case 0x21: // SLA C
+			BitShift.instructSLA("C");
+			cycles = 8;
+			break;
+		case 0x22: // SLA D
+			BitShift.instructSLA("D");
+			cycles = 8;
+			break;
+		case 0x23: // SLA E
+			BitShift.instructSLA("E");
+			cycles = 8;
+			break;
+		case 0x24: // SLA H
+			BitShift.instructSLA("H");
+			cycles = 8;
+			break;
+		case 0x25: // SLA L
+			BitShift.instructSLA("L");
+			cycles = 8;
+			break;
+		case 0x26: // SLA (HL)
+			BitShift.instructSLA("E");
+			cycles = 16;
+			break;
+		case 0x27: // SLA A
+			BitShift.instructSLA("A");
+			cycles = 8;
+			break;
+		case 0x28: // SRA B
+			BitShift.instructSRA("B");
+			cycles = 8;
+			break;
+		case 0x29: // SRA C
+			BitShift.instructSRA("C");
+			cycles = 8;
+			break;
+		case 0x2A: // SRA D
+			BitShift.instructSRA("D");
+			cycles = 8;
+			break;
+		case 0x2B: // SRA E
+			BitShift.instructSRA("E");
+			cycles = 8;
+			break;
+		case 0x2C: // SRA H
+			BitShift.instructSRA("H");
+			cycles = 8;
+			break;
+		case 0x2D: // SRA L
+			BitShift.instructSRA("L");
+			cycles = 8;
+			break;
+		case 0x2E: // SRA (HL)
+			BitShift.instructSRA("E");
+			cycles = 16;
+			break;
+		case 0x2F: // SRA A
+			BitShift.instructSRA("A");
 			cycles = 8;
 			break;
 		case 0x30: // SWAP B
@@ -788,6 +1107,34 @@ public class CPU {
 			BitShift.instructSRL("B");
 			cycles = 8;
 			break;
+		case 0x39: // SRL C
+			BitShift.instructSRL("C");
+			cycles = 8;
+			break;
+		case 0x3A: // SRL D
+			BitShift.instructSRL("D");
+			cycles = 8;
+			break;
+		case 0x3B: // SRL E
+			BitShift.instructSRL("E");
+			cycles = 8;
+			break;
+		case 0x3C: // SRL H
+			BitShift.instructSRL("H");
+			cycles = 8;
+			break;
+		case 0x3D: // SRL L
+			BitShift.instructSRL("L");
+			cycles = 8;
+			break;
+		case 0x3E: // SRL (HL)
+			BitShift.instructSRL("E");
+			cycles = 16;
+			break;
+		case 0x3F: // SRL A
+			BitShift.instructSRL("A");
+			cycles = 8;
+			break;
 		case 0x42: // BIT 0, D
 			BitShift.instructBIT("D", 0);
 			cycles = 8;
@@ -817,7 +1164,7 @@ public class CPU {
 			cycles = 8;
 			break;
 		default:
-			throw new IllegalArgumentException(String.format("Unhandled CB instruction 0x%x", instruction));
+			throw new IllegalArgumentException(String.format("Unhandled CB instruction 0x%X", instruction));
 		}
 		return cycles;
 	}

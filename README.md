@@ -12,12 +12,12 @@ A (potential) Gameboy emulator written in Java, for learning purposes.
     - [x] 01-special
     - [ ] 02-interrupts (need to implement timer for this one)
     - [x] 03-op sp, hl
-    - [ ] 04-op r, imm
+    - [x] 04-op r, imm
     - [x] 05-op rp
     - [ ] 06-ld r, r
     - [x] 07-jr,jp,call,ret,rst
     - [ ] 08-misc instrs
-    - [ ] 09-op r,r
+    - [x] 09-op r,r
     - [ ] 10-bit ops
     - [ ] 11-op a, (hl)
 - [x] Able to execute bootROM fully.

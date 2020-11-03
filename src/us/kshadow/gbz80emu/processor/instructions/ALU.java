@@ -112,7 +112,7 @@ public class ALU {
 		int result = (regVal - 1) & 0xFF; // two's complement if number reaches negative
 		fr.setZ(result == 0);
 		fr.setN(true);
-		fr.setH(checkHalfCarrySub(regVal, 1, false));
+		fr.setH(checkHalfCarrySub(regVal, 1));
 		writeValue(register, result);
 	}
 	
@@ -151,8 +151,8 @@ public class ALU {
 		int result = (reg.read("A") - arg) & 0xFF;
 		fr.setZ(result == 0);
 		fr.setN(true);
-		fr.setH(checkHalfCarrySub(reg.read("A"), arg, false));
-		fr.setC(checkCarrySub(reg.read("A"), arg, false));
+		fr.setH(checkHalfCarrySub(reg.read("A"), arg));
+		fr.setC(checkCarrySub(reg.read("A"), arg));
 		if (!cp) { reg.write("A", result); }
 	}
 	
@@ -161,12 +161,13 @@ public class ALU {
 	 * @param arg - Value to be subtracted from register A.
 	 */
 	public static void instructSBC(int arg) {
-		int result = (reg.read("A") - arg - (fr.isC() ? 1 : 0)) & 0xFF;
-		fr.setZ(result == 0);
+		int carry = (fr.isC() ? 1 : 0);
+		int result = (reg.read("A") - arg - carry);
+		fr.setZ((result & 0xFF) == 0);
 		fr.setN(true);
-		fr.setH(checkHalfCarrySub(reg.read("A"), arg, fr.isC()));
-		fr.setC(checkCarrySub(reg.read("A"), arg, fr.isC()));
-		reg.write("A", result);
+		fr.setH(((reg.read("A") ^ arg ^ (result & 0xFF)) & (1 << 4)) != 0);
+		fr.setC(arg + carry > reg.read("A"));
+		reg.write("A", result & 0xFF);
 	}
 	
 	// 16-Bit Arithmetic
