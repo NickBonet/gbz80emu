@@ -32,7 +32,7 @@ public class Emulator extends JPanel {
 		emuRunning = true;
 		cpu = new CPU();
 		try {
-			testROM.loadROM("Minesweeper (J).gb");
+			testROM.loadROM("tetris.gb");
 			cpu.getMMU().loadROM(testROM.getROMAsArray());
 			//cpu.getMMU().toggleBootROM(false);
 			//cpu.getRegisters().setInitValues();

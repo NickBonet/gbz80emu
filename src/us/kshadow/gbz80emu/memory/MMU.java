@@ -44,7 +44,7 @@ public class MMU {
 	
 	// 0xFEA0 - 0xFEFF - unused range
 	// TODO: 0xFF00 - 0xFF7F - I/O registers
-	private int joypadThing = 0;
+	private int joypadThing = 1;
 	
 	// 0xFF80 - 0xFFFE - Zero Page RAM
 	private int[] zeroPage = new int[0x7F];
