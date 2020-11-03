@@ -324,12 +324,28 @@ public class CPU {
 			ALU.instructCCF();
 			cycles = 4;
 			break;
+		case 0x40: // LD B, B
+			reg.write("B", reg.read("B"));
+			cycles = 4;
+			break;
+		case 0x41: // LD B, C
+			reg.write("B", reg.read("C"));
+			cycles = 4;
+			break;
 		case 0x42: // LD B, D
 			reg.write("B", reg.read("D"));
 			cycles = 4;
 			break;
+		case 0x43: // LD B, E
+			reg.write("B", reg.read("E"));
+			cycles = 4;
+			break;
 		case 0x44: // LD B, H
 			reg.write("B", reg.read("H"));
+			cycles = 4;
+			break;
+		case 0x45: // LD B, L
+			reg.write("B", reg.read("L"));
 			cycles = 4;
 			break;
 		case 0x46: // LD B, (HL)
@@ -340,8 +356,24 @@ public class CPU {
 			reg.write("B", reg.read("A"));
 			cycles = 4;
 			break;
+		case 0x48: // LD C, B
+			reg.write("C", reg.read("B"));
+			cycles = 4;
+			break;
+		case 0x49: // LD C, C
+			reg.write("C", reg.read("C"));
+			cycles = 4;
+			break;
+		case 0x4A: // LD C, D
+			reg.write("C", reg.read("D"));
+			cycles = 4;
+			break;
 		case 0x4B: // LD C, E
 			reg.write("C", reg.read("E"));
+			cycles = 4;
+			break;
+		case 0x4C: // LD C, H
+			reg.write("C", reg.read("H"));
 			cycles = 4;
 			break;
 		case 0x4D: // LD C, L
@@ -356,8 +388,28 @@ public class CPU {
 			reg.write("C", reg.read("A"));
 			cycles = 4;
 			break;
+		case 0x50: // LD D, B
+			reg.write("D", reg.read("B"));
+			cycles = 4;
+			break;
+		case 0x51: // LD D, C
+			reg.write("D", reg.read("C"));
+			cycles = 4;
+			break;
+		case 0x52: // LD D, D
+			reg.write("D", reg.read("D"));
+			cycles = 4;
+			break;
+		case 0x53: // LD D, E
+			reg.write("D", reg.read("E"));
+			cycles = 4;
+			break;
 		case 0x54: // LD D, H
 			reg.write("D", reg.read("H"));
+			cycles = 4;
+			break;
+		case 0x55: // LD D, L
+			reg.write("D", reg.read("L"));
 			cycles = 4;
 			break;
 		case 0x56: // LD D, (HL)
@@ -366,6 +418,26 @@ public class CPU {
 			break;
 		case 0x57: // LD D, A
 			reg.write("D", reg.read("A"));
+			cycles = 4;
+			break;
+		case 0x58: // LD E, B
+			reg.write("E", reg.read("B"));
+			cycles = 4;
+			break;
+		case 0x59: // LD E, C
+			reg.write("E", reg.read("C"));
+			cycles = 4;
+			break;
+		case 0x5A: // LD E, D
+			reg.write("E", reg.read("D"));
+			cycles = 4;
+			break;
+		case 0x5B: // LD E, E
+			reg.write("E", reg.read("E"));
+			cycles = 4;
+			break;
+		case 0x5C: // LD E, H
+			reg.write("E", reg.read("H"));
 			cycles = 4;
 			break;
 		case 0x5D: // LD E, L
@@ -380,11 +452,31 @@ public class CPU {
 			reg.write("E", reg.read("A"));
 			cycles = 4;
 			break;
+		case 0x60: // LD H, B
+			reg.write("H", reg.read("B"));
+			cycles = 4;
+			break;
+		case 0x61: // LD H, C
+			reg.write("H", reg.read("C"));
+			cycles = 4;
+			break;
 		case 0x62: // LD H, D
 			reg.write("H", reg.read("D"));
 			cycles = 4;
 			break;
-		case 0x66: // LD B, u8
+		case 0x63: // LD H, E
+			reg.write("H", reg.read("E"));
+			cycles = 4;
+			break;
+		case 0x64: // LD H, H
+			reg.write("H", reg.read("H"));
+			cycles = 4;
+			break;
+		case 0x65: // LD H, L
+			reg.write("H", reg.read("L"));
+			cycles = 4;
+			break;
+		case 0x66: // LD H, (HL)
 			reg.write("H", mmu.readByte(reg.read("HL")));
 			cycles = 8;
 			break;
@@ -392,8 +484,28 @@ public class CPU {
 			reg.write("H", reg.read("A"));
 			cycles = 4;
 			break;
-		case 0x6b: // LD L, E
+		case 0x68: // LD L, B
+			reg.write("L", reg.read("B"));
+			cycles = 4;
+			break;
+		case 0x69: // LD L, C
+			reg.write("L", reg.read("C"));
+			cycles = 4;
+			break;
+		case 0x6A: // LD L, D
+			reg.write("L", reg.read("D"));
+			cycles = 4;
+			break;
+		case 0x6B: // LD L, E
 			reg.write("L", reg.read("E"));
+			cycles = 4;
+			break;
+		case 0x6C: // LD L, H
+			reg.write("L", reg.read("H"));
+			cycles = 4;
+			break;
+		case 0x6D: // LD L, L
+			reg.write("L", reg.read("L"));
 			cycles = 4;
 			break;
 		case 0x6E: // LD L, (HL)
@@ -418,6 +530,14 @@ public class CPU {
 			break;
 		case 0x73: // LD (HL), E
 			mmu.writeByte(reg.read("HL"), reg.read("E"));
+			cycles = 8;
+			break;
+		case 0x74: // LD (HL), H
+			mmu.writeByte(reg.read("HL"), reg.read("H"));
+			cycles = 8;
+			break;
+		case 0x75: // LD (HL), L
+			mmu.writeByte(reg.read("HL"), reg.read("L"));
 			cycles = 8;
 			break;
 		case 0x76: // HALT
@@ -455,6 +575,10 @@ public class CPU {
 		case 0x7E: // LD A, (HL)
 			reg.write("A", mmu.readByte(reg.read("HL")));
 			cycles = 8;
+			break;
+		case 0x7F: // LD A, A
+			reg.write("A", reg.read("A"));
+			cycles = 4;
 			break;
 		case 0x80: // ADD A, B
 			ALU.instructADD(reg.read("B"));
@@ -823,6 +947,10 @@ public class CPU {
 		case 0xF1: // POP AF
 			ControlFlow.instructPOP("AF");
 			cycles = 12;
+			break;
+		case 0xF2: // LD A, (FF00+C)
+			reg.write("A", mmu.readByte(reg.read("C") + 0xFF00));
+			cycles = 8;
 			break;
 		case 0xF3: // DI
 			ControlFlow.instructDI();

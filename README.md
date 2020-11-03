@@ -14,7 +14,7 @@ A (potential) Gameboy emulator written in Java, for learning purposes.
     - [x] 03-op sp, hl
     - [x] 04-op r, imm
     - [x] 05-op rp
-    - [ ] 06-ld r, r
+    - [x] 06-ld r, r
     - [x] 07-jr,jp,call,ret,rst
     - [ ] 08-misc instrs
     - [x] 09-op r,r
