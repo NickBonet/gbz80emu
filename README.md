@@ -18,8 +18,8 @@ A (potential) Gameboy emulator written in Java, for learning purposes.
     - [x] 07-jr,jp,call,ret,rst
     - [x] 08-misc instrs
     - [x] 09-op r,r
-    - [ ] 10-bit ops
-    - [ ] 11-op a, (hl)
+    - [x] 10-bit ops
+    - [x] 11-op a, (hl)
 - [x] Able to execute bootROM fully.
 - [x] PPU implementation.
   - [x] Able to draw tiles line by line to framebuffer.

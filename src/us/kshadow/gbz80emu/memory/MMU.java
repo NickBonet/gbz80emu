@@ -44,6 +44,7 @@ public class MMU {
 	
 	// 0xFEA0 - 0xFEFF - unused range
 	// TODO: 0xFF00 - 0xFF7F - I/O registers
+	private int joypadThing = 0;
 	
 	// 0xFF80 - 0xFFFE - Zero Page RAM
 	private int[] zeroPage = new int[0x7F];
@@ -114,6 +115,8 @@ public class MMU {
 				if (address < 0xFE00) { return workRam[address & 0x1FFF]; }
 				else if (address >= 0xFE00 && address < 0xFEA0) { return oam[address & 0x9F]; }
 				else if (address >= 0xFF80 && address < 0xFFFF) { return zeroPage[address & 0x7F]; }
+
+				else if (address == 0xFF00) { return joypadThing; }
 				
 				// GPU hookups
 				else if (address == 0xFF40) { return gpu.getLCDC(); }
@@ -184,6 +187,8 @@ public class MMU {
 				else if (address >= 0xFE00 && address < 0xFEA0) { oam[address & 0x9F] = value; }
 				else if (address >= 0xFF80 && address < 0xFFFF) { zeroPage[address & 0x7F] = value; }
 
+				else if (address == 0xFF00) { break; }
+
 				// GPU hookups
 				else if (address == 0xFF40) { gpu.setLCDC(value); }
 				else if (address == 0xFF41) { gpu.setSTAT(value); }
@@ -236,7 +241,7 @@ public class MMU {
 	
 	/**
 	 * Toggles whether or not the boot ROM is currently accessible.
-	 * @param - Desired state of the boot ROM (true for enabled, false for disabled)
+	 * @param state - Desired state of the boot ROM (true for enabled, false for disabled)
 	 */
 	public void toggleBootROM(boolean state) {
 		bootRomEnabled = state;
