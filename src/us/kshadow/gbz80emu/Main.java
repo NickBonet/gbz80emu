@@ -26,6 +26,7 @@ public class Main extends JFrame implements KeyListener {
 		frame.add(emu);
 		frame.pack();
 		frame.setVisible(true);
+		frame.setResizable(false);
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		emuRunnable = () -> emu.runEmulator();
 		Thread emuThread = new Thread(emuRunnable);

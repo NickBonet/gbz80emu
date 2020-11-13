@@ -44,7 +44,7 @@ public class MMU {
 	
 	// 0xFEA0 - 0xFEFF - unused range
 	// TODO: 0xFF00 - 0xFF7F - I/O registers
-	private int joypadThing = 1;
+	private int joyPadRegister = 0xF1;
 	
 	// 0xFF80 - 0xFFFE - Zero Page RAM
 	private int[] zeroPage = new int[0x7F];
@@ -116,7 +116,7 @@ public class MMU {
 				else if (address >= 0xFE00 && address < 0xFEA0) { return oam[address & 0x9F]; }
 				else if (address >= 0xFF80 && address < 0xFFFF) { return zeroPage[address & 0x7F]; }
 
-				else if (address == 0xFF00) { return joypadThing; }
+				else if (address == 0xFF00) { return joyPadRegister; }
 				
 				// GPU hookups
 				else if (address == 0xFF40) { return gpu.getLCDC(); }

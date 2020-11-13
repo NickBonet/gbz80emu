@@ -218,7 +218,7 @@ public class CPU {
 			break;
 		case 0x22: // LD (HL+), A
 			mmu.writeByte(reg.read("HL"), reg.read("A"));
-			reg.write("HL", reg.read("HL") + 1);
+			ALU.instructINCu16("HL");
 			cycles = 8;
 			break;
 		case 0x23: // INC HL
@@ -243,7 +243,7 @@ public class CPU {
 			break;
 		case 0x2A: // LD A, (HL+)
 			reg.write("A", mmu.readByte(reg.read("HL")));
-			reg.write("HL", reg.read("HL") + 1);
+			ALU.instructINCu16("HL");
 			cycles = 8;
 			break;
 		case 0x2B: // DEC HL
@@ -272,7 +272,7 @@ public class CPU {
 			break;
 		case 0x32: // LD (HL-), A
 			mmu.writeByte(reg.read("HL"), reg.read("A"));
-			reg.write("HL", reg.read("HL") - 1);
+			ALU.instructDECu16("HL");
 			cycles = 8;
 			break;
 		case 0x33: // INC SP
@@ -301,7 +301,7 @@ public class CPU {
 			break;
 		case 0x3A: // LD A, (HL-)
 			reg.write("A", mmu.readByte(reg.read("HL")));
-			reg.write("HL", reg.read("HL") - 1);
+			ALU.instructDECu16("HL");
 			cycles = 8;
 			break;
 		case 0x3B: // DEC SP
