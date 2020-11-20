@@ -18,8 +18,7 @@ public class ALU {
 	private static final MMU mmu = MMU.getInstance();
 	
 	private ALU() {}
-	// TODO: Implement DAA instruction.
-	
+
 	// Misc. instructions.
 	
 	/**
@@ -113,7 +112,7 @@ public class ALU {
 		int result = (regVal - 1) & 0xFF; // two's complement if number reaches negative
 		fr.setZ(result == 0);
 		fr.setN(true);
-		fr.setH(checkHalfCarrySub(regVal, 1, false));
+		fr.setH(checkHalfCarrySub(regVal, 1));
 		writeValue(register, result);
 	}
 	
@@ -152,8 +151,8 @@ public class ALU {
 		int result = (reg.read("A") - arg) & 0xFF;
 		fr.setZ(result == 0);
 		fr.setN(true);
-		fr.setH(checkHalfCarrySub(reg.read("A"), arg, false));
-		fr.setC(checkCarrySub(reg.read("A"), arg, false));
+		fr.setH(checkHalfCarrySub(reg.read("A"), arg));
+		fr.setC(checkCarrySub(reg.read("A"), arg));
 		if (!cp) { reg.write("A", result); }
 	}
 	
@@ -162,12 +161,13 @@ public class ALU {
 	 * @param arg - Value to be subtracted from register A.
 	 */
 	public static void instructSBC(int arg) {
-		int result = (reg.read("A") - arg - (fr.isC() ? 1 : 0)) & 0xFF;
-		fr.setZ(result == 0);
+		int carry = (fr.isC() ? 1 : 0);
+		int result = (reg.read("A") - arg - carry);
+		fr.setZ((result & 0xFF) == 0);
 		fr.setN(true);
-		fr.setH(checkHalfCarrySub(reg.read("A"), arg, fr.isC()));
-		fr.setC(checkCarrySub(reg.read("A"), arg, fr.isC()));
-		reg.write("A", result);
+		fr.setH(((reg.read("A") ^ arg ^ (result & 0xFF)) & (1 << 4)) != 0);
+		fr.setC(arg + carry > reg.read("A"));
+		reg.write("A", result & 0xFF);
 	}
 	
 	// 16-Bit Arithmetic
@@ -219,7 +219,28 @@ public class ALU {
 		int result = (regVal - 1) & 0xFFFF;
 		reg.write(register, result);
 	}
-	
+
+	/**
+	 * DAA - Decimal adjust Register A
+	 * Adapted from https://ehaskins.com/2018-01-30%20Z80%20DAA/
+	 */
+	public static void instructDAA() {
+		int regAValue = reg.read("A");
+		int correction = 0;
+		if (fr.isH() || (!fr.isN() && (regAValue & 0xF) > 0x9))
+			correction |= 0x6;
+		if (fr.isC() || (!fr.isN() && regAValue > 0x99)) {
+			correction |= 0x60;
+			fr.setC(true);
+		}
+
+		regAValue += fr.isN() ? -correction : correction;
+		regAValue &= 0xFF;
+		fr.setZ(regAValue == 0);
+		fr.setH(false);
+		reg.write("A", regAValue);
+	}
+
 	/**
 	 * Writes changed value to its proper register or address in memory.
 	 * @param register - register/pointer to write to.

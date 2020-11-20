@@ -1,6 +1,6 @@
 /bin/
 .classpath
-*.gb
+/*.gb
 /.settings/
 *.bin
 /.idea/sonarlint/issuestore/index.pb

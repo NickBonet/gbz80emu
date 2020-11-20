@@ -21,7 +21,7 @@ public class Emulator extends JPanel {
 	private final transient CPU cpu;
 	private static final GPU gpu = GPU.getInstance();
 	private final transient ROMParser testROM = new ROMParser();
-	private transient BufferedImage gbDisplay;
+	private final transient BufferedImage gbDisplay;
 	private boolean emuRunning;
 
 	/**
@@ -32,8 +32,10 @@ public class Emulator extends JPanel {
 		emuRunning = true;
 		cpu = new CPU();
 		try {
-			testROM.loadROM("03-op sp,hl.gb");
+			testROM.loadROM("tetris.gb");
 			cpu.getMMU().loadROM(testROM.getROMAsArray());
+			//cpu.getMMU().toggleBootROM(false);
+			//cpu.getRegisters().setInitValues();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -48,13 +50,15 @@ public class Emulator extends JPanel {
 			if(cpu.isRunning()) { // for STOP instruction
 				while (cpu.getCycles() <= 70224) {
 					int cycles = cpu.nextInstruction();
-					if (cycles == 0) break;
 					gpu.nextStep(cycles);
+					cycles = cpu.handleInterrupt();
+					gpu.addCycles(cycles);
 				}
 				if (cpu.getCycles() >= 70224) {
 					cpu.resetCyclesAfterFrame();
 					repaint();
 				}
+
 				try {
 					Thread.sleep(16);
 				} catch (InterruptedException e) {

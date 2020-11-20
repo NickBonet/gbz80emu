@@ -31,7 +31,7 @@ public class BitShift {
 		fr.setC(false);
 		fr.setN(false);
 		fr.setH(false);
-		reg.write(register, result);
+		writeValue(register, result);
 	}
 	
 	/**
@@ -153,7 +153,6 @@ public class BitShift {
 	public static void instructSLA(String register) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = ((regVal << 1) & 0xFF);
-		if (!checkBitSet(result, 0)) { setBit(result, 0); } // set bit 0 to 0 if it's not already.
 		fr.setC(checkBitSet(regVal, 7));
 		fr.setH(false);
 		fr.setN(false);
@@ -167,7 +166,7 @@ public class BitShift {
 	 */
 	public static void instructSRA(String register) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
-		int result = ((regVal >> 1) & 0xFF);
+		int result = ((regVal >> 1) & 0xFF) | (regVal & (1 << 7));
 		fr.setN(false);
 		fr.setH(false);
 		fr.setZ(result == 0);
@@ -182,7 +181,6 @@ public class BitShift {
 	public static void instructSRL(String register) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		int result = ((regVal >> 1) & 0xFF);
-		if (!checkBitSet(result, 7)) { setBit(result, 7); } // set bit 7 to 0 if it's not already.
 		fr.setN(false);
 		fr.setH(false);
 		fr.setZ(result == 0);
@@ -213,7 +211,7 @@ public class BitShift {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		if (bitPos < 8) {
 			int result = regVal;
-			if (!checkBitSet(result, bitPos)) { setBit(result, bitPos); }
+			if (!checkBitSet(result, bitPos)) { result = setBit(result, bitPos); }
 			writeValue(register, result);
 		}
 	}
@@ -227,7 +225,7 @@ public class BitShift {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		if (bitPos < 8) {
 			int result = regVal;
-			if (checkBitSet(result, bitPos)) { setBit(result, bitPos); }
+			if (checkBitSet(result, bitPos)) { result = setBit(result, bitPos); }
 			writeValue(register, result);
 		}
 	}

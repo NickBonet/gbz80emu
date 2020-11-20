@@ -24,7 +24,11 @@ public class CPURegisters {
 	private int c;
 	private int e;
 	private int l;
-	
+
+	// The interrupt master enable flag
+	private boolean ime;
+
+	// Instance of the flag register.
 	private static final FlagRegister flagRegister = FlagRegister.getInstance();
 	
 	// Program counter register, holds address data for next instruction to be executed by the CPU.
@@ -55,7 +59,7 @@ public class CPURegisters {
 	 * Simple method for printing register values to console.
 	 */
 	public void print() {
-		String registers = String.format("A: 0x%x  B: 0x%x  D: 0x%x  H: 0x%x  C: 0x%x  E: 0x%x  L: 0x%x  PC: 0x%x  SP: 0x%x", 
+		String registers = String.format("A: 0x%X  B: 0x%X  D: 0x%X  H: 0x%X  C: 0x%X  E: 0x%X  L: 0x%X  PC: 0x%X  SP: 0x%X",
 				a, b, d, h, c, e, l, pc, sp);
 		String flags = String.format("[FR]: Zero: %s, Negative: %s, Carry: %s, HalfCarry: %s", 
 				getFR().isZ(), getFR().isN(), getFR().isC(), getFR().isH());
@@ -218,4 +222,13 @@ public class CPURegisters {
 	public FlagRegister getFR() {
 		return flagRegister;
 	}
+
+	public boolean getIME() {
+		return ime;
+	}
+
+	public void toggleIME(boolean ime) {
+		this.ime = ime;
+	}
+
 }

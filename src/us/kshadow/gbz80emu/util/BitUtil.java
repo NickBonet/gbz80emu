@@ -56,7 +56,6 @@ public class BitUtil {
 	 * Checks for a carry from bit 3 to bit 4 during addition.
 	 * @param a - First byte being tested.
 	 * @param b - Second byte being tested.
-	 * @param carryFlag - For ADC: If carry flag is 1, set true, false if 0
 	 */
 	public static boolean checkHalfCarryAdd(int a, int b, boolean carryFlag) {
 		int innerExp = (a & 0xF) + (b & 0xF) + (carryFlag ? 1 : 0); // mask off upper halves of bytes as we're really only interested in 4 bit addition for this
@@ -64,16 +63,6 @@ public class BitUtil {
 											// and return whether the result equals 0x10 or not
 	}
 
-	/**
-	 * Checks for a carry from bit 3 to bit 4 during subtraction.
-	 * @param a - First byte being tested.
-	 * @param b - Second byte being tested.
-	 * @param carryFlag - For SBC: If carry flag is 1, set true, false if 0
-	 */
-	public static boolean checkHalfCarrySub(int a, int b, boolean carryFlag) {
-		return ((a & 0xF) < ((b & 0xF) + (carryFlag ? 1 : 0))); // very basic carry check, if lower half of first number if less than lower half of second, a half carry will be required.
-	}
-	
 	/**
 	 * Checks for a carry from bit 7 to bit 8 during addition.
 	 * @param a - First byte being tested.
@@ -83,15 +72,23 @@ public class BitUtil {
 	public static boolean checkCarryAdd(int a, int b, boolean carryFlag) {
 		return ((a + b + (carryFlag ? 1 : 0)) > 0xFF);
 	}
+
+	/**
+	 * Checks for a carry from bit 3 to bit 4 during subtraction.
+	 * @param a - First byte being tested.
+	 * @param b - Second byte being tested.
+	 */
+	public static boolean checkHalfCarrySub(int a, int b) {
+		return ((a & 0xF) < (b & 0xF)); // very basic carry check, if lower half of first number if less than lower half of second, a half carry will be required.
+	}
 	
 	/**
 	 * Checks for a carry from bit 7 to bit 8 during subtraction.
 	 * @param a - First byte being tested.
 	 * @param b - Second byte being tested.
-	 * @param carryFlag - For SBC: If carry flag is 1, set true, false if 0
 	 */
-	public static boolean checkCarrySub(int a, int b, boolean carryFlag) {
-		return (b - (carryFlag ? 1 : 0) > a);
+	public static boolean checkCarrySub(int a, int b) {
+		return (b > a);
 	}
 	
 }

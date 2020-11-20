@@ -44,11 +44,13 @@ public class MMU {
 	
 	// 0xFEA0 - 0xFEFF - unused range
 	// TODO: 0xFF00 - 0xFF7F - I/O registers
+	private int joyPadRegister = 0xF1;
 	
 	// 0xFF80 - 0xFFFE - Zero Page RAM
 	private int[] zeroPage = new int[0x7F];
-	
-	// TODO: 0xFFFF - Interrupt Enabled Register
+
+	private int interruptFlag = 0; // 0xFF0F
+	private int interruptEnable = 0; // 0xFFFF
 	
 	/**
 	 * MMU constructor. Simply loads the boot ROM.
@@ -113,14 +115,20 @@ public class MMU {
 				if (address < 0xFE00) { return workRam[address & 0x1FFF]; }
 				else if (address >= 0xFE00 && address < 0xFEA0) { return oam[address & 0x9F]; }
 				else if (address >= 0xFF80 && address < 0xFFFF) { return zeroPage[address & 0x7F]; }
+
+				else if (address == 0xFF00) { return joyPadRegister; }
 				
 				// GPU hookups
 				else if (address == 0xFF40) { return gpu.getLCDC(); }
+				else if (address == 0xFF41) { return gpu.getSTAT(); }
 				else if (address == 0xFF42) { return gpu.getSCY(); }
 				else if (address == 0xFF43) { return gpu.getSCX(); }
 				else if (address == 0xFF44) { return gpu.getLY(); }
-				else if (address == 0xFF47) { return gpu.getBGP(); }
-				
+
+				// Interrupt Flag/Enable
+				else if (address == 0xFFFF) { return interruptEnable; }
+				else if (address == 0xFF0F) { return interruptFlag; }
+
 				// If address = unused range, I/O registers, or interrupt register, return 0 for now.
 				return 0;
 			
@@ -179,12 +187,19 @@ public class MMU {
 				else if (address >= 0xFE00 && address < 0xFEA0) { oam[address & 0x9F] = value; }
 				else if (address >= 0xFF80 && address < 0xFFFF) { zeroPage[address & 0x7F] = value; }
 
+				else if (address == 0xFF00) { break; }
+
 				// GPU hookups
 				else if (address == 0xFF40) { gpu.setLCDC(value); }
+				else if (address == 0xFF41) { gpu.setSTAT(value); }
 				else if (address == 0xFF42) { gpu.setSCY(value); }
 				else if (address == 0xFF43) { gpu.setSCX(value); }
 				else if (address == 0xFF44) { gpu.resetLY(); }
 				else if (address == 0xFF47) { gpu.setBGP(value); }
+
+				// Interrupt Flag/Enable
+				else if (address == 0xFF0F) { interruptFlag = value; }
+				else if (address == 0xFFFF) { interruptEnable = value; }
 
 				// Boot ROM disable
 				else if (address == 0xFF50) { bootRomEnabled = false; }
@@ -226,7 +241,7 @@ public class MMU {
 	
 	/**
 	 * Toggles whether or not the boot ROM is currently accessible.
-	 * @param - Desired state of the boot ROM (true for enabled, false for disabled)
+	 * @param state - Desired state of the boot ROM (true for enabled, false for disabled)
 	 */
 	public void toggleBootROM(boolean state) {
 		bootRomEnabled = state;

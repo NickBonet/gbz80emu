@@ -17,7 +17,21 @@ public class ControlFlow {
 	
 	private ControlFlow() { }
 	
-	// TODO: Implement HALT, DI, EI instructions, and finish RETI. (relies on interrupts impl.)
+	// TODO: Implement HALT
+
+	/**
+	 * DI - Disables any potential interrupts
+	 */
+	public static void instructDI() {
+		reg.toggleIME(false);
+	}
+
+	/**
+	 * EI - Enable interrupts
+	 */
+	public static void instructEI() {
+		reg.toggleIME(true);
+	}
 	
 	/**
 	 * JP - Handles absolute jump instruction.
@@ -32,31 +46,37 @@ public class ControlFlow {
 	 * @param opcode - Opcode of the conditional jump.
 	 * @param address - Address to set PC to.
 	 */
-	public static void instructCondJP(int opcode, int address) {
+	public static int instructCondJP(int opcode, int address) {
+		int cycles = 12;
 		switch(opcode) {
 		case 0xC2:
 			if (!fr.isZ()) {
 				instructJP(address);
+				cycles += 4;
 			}
 			break;
 		case 0xCA:
 			if (fr.isZ()) {
 				instructJP(address);
+				cycles += 4;
 			}
 			break;
 		case 0xD2:
 			if (!fr.isC()) {
 				instructJP(address);
+				cycles += 4;
 			}
 			break;
 		case 0xDA:
 			if (fr.isC()) {
 				instructJP(address);
+				cycles += 4;
 			}
 			break;
 		default:
 			break;
 		}
+		return cycles;
 	}
 	
 	/**
@@ -177,7 +197,7 @@ public class ControlFlow {
 	 */
 	public static void instructRETI() {
 		instructRET();
-		// TODO: Enable interrupts here when they are implemented.
+		instructEI();
 	}
 	
 	/**
