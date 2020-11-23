@@ -23,6 +23,7 @@ public class Emulator extends JPanel {
 	private final transient ROMParser testROM = new ROMParser();
 	private final transient BufferedImage gbDisplay;
 	private boolean emuRunning;
+	private String currentRomFile = "test_roms/cpu_instrs.gb";
 
 	/**
 	 * Initializer for the Emulator panel.
@@ -31,11 +32,13 @@ public class Emulator extends JPanel {
 		gbDisplay = new BufferedImage(160, 144, BufferedImage.TYPE_INT_RGB);
 		emuRunning = true;
 		cpu = new CPU();
+		setupEmuROM(currentRomFile);
+	}
+
+	private void setupEmuROM(String currentRomFile) {
 		try {
-			testROM.loadROM("tetris.gb");
+			testROM.loadROM(currentRomFile);
 			cpu.getMMU().loadROM(testROM.getROMAsArray());
-			//cpu.getMMU().toggleBootROM(false);
-			//cpu.getRegisters().setInitValues();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -133,5 +136,10 @@ public class Emulator extends JPanel {
 
 	public boolean getEmuRunning() {
 		return emuRunning;
+	}
+
+	public void setCurrentRomFile(String currentRomFile) {
+		this.currentRomFile = currentRomFile;
+		setupEmuROM(currentRomFile);
 	}
 }
