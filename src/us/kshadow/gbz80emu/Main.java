@@ -21,7 +21,7 @@ public class Main extends JFrame implements KeyListener {
 
 	public static void main(String[] args) {
 		JFrame frame = new Main("GBZ80Emu");
-		emu.setCurrentRomFile(args[0]);
+		if (args.length > 0) emu.setCurrentRomFile(args[0]);
 		emu.setBackground(Color.white);
 		emu.setPreferredSize(new Dimension(Emulator.WINDOW_WIDTH, Emulator.WINDOW_HEIGHT));
 		frame.add(emu);
