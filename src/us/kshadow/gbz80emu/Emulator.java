@@ -90,6 +90,7 @@ public class Emulator extends JPanel {
 	 * the defined width/height.
 	 * @return The resized BufferedImage.
 	 */
+	// TODO: Remove setRGB, and make this more efficient.
 	public BufferedImage renderFrame() {
 		for (int x = 0; x < 160; x++) {
 			for (int y = 0; y < 144; y++) {
