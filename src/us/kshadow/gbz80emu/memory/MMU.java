@@ -80,60 +80,63 @@ public class MMU {
 	 */
 	public int readByte(int address) {
 		BitUtil.checkIsWord(address);
-		switch(address & 0xF000) 
-		{
-			case 0x0000:
+		switch (address & 0xF000) {
+			case 0x0000 -> {
 				if (address < 0x100) {
 					return bootRomEnabled ? bootRom[address] : romBank0[address];
 				}
 				return romBank0[address];
-			case 0x1000:
-			case 0x2000:
-			case 0x3000:
+			}
+			case 0x1000, 0x2000, 0x3000 -> {
 				return romBank0[address];
-			
-			case 0x4000:
-			case 0x5000:
-			case 0x6000:
-			case 0x7000:
+			}
+			case 0x4000, 0x5000, 0x6000, 0x7000 -> {
 				return romBank1[address & 0x3FFF];
-			
-			case 0x8000:
-			case 0x9000:
+			}
+			case 0x8000, 0x9000 -> {
 				return videoRam[address & 0x1FFF];
-				
-			case 0xA000:
-			case 0xB000:
+			}
+			case 0xA000, 0xB000 -> {
 				return extRam[address & 0x1FFF];
-				
-			case 0xC000:
-			case 0xD000:
-			case 0xE000:
+			}
+			case 0xC000, 0xD000, 0xE000 -> {
 				return workRam[address & 0x1FFF];
-			
-			case 0xF000:
-				if (address < 0xFE00) { return workRam[address & 0x1FFF]; }
-				else if (address >= 0xFE00 && address < 0xFEA0) { return oam[address & 0x9F]; }
-				else if (address >= 0xFF80 && address < 0xFFFF) { return zeroPage[address & 0x7F]; }
+			}
+			case 0xF000 -> {
+				if (address < 0xFE00) {
+					return workRam[address & 0x1FFF];
+				} else if (address < 0xFEA0) {
+					return oam[address & 0x9F];
+				} else if (address >= 0xFF80 && address < 0xFFFF) {
+					return zeroPage[address & 0x7F];
+				} else if (address == 0xFF00) {
+					return joyPadRegister;
+				}
 
-				else if (address == 0xFF00) { return joyPadRegister; }
-				
 				// GPU hookups
-				else if (address == 0xFF40) { return gpu.getLCDC(); }
-				else if (address == 0xFF41) { return gpu.getSTAT(); }
-				else if (address == 0xFF42) { return gpu.getSCY(); }
-				else if (address == 0xFF43) { return gpu.getSCX(); }
-				else if (address == 0xFF44) { return gpu.getLY(); }
+				else if (address == 0xFF40) {
+					return gpu.getLCDC();
+				} else if (address == 0xFF41) {
+					return gpu.getSTAT();
+				} else if (address == 0xFF42) {
+					return gpu.getSCY();
+				} else if (address == 0xFF43) {
+					return gpu.getSCX();
+				} else if (address == 0xFF44) {
+					return gpu.getLY();
+				}
 
 				// Interrupt Flag/Enable
-				else if (address == 0xFFFF) { return interruptEnable; }
-				else if (address == 0xFF0F) { return interruptFlag; }
+				else if (address == 0xFFFF) {
+					return interruptEnable;
+				} else if (address == 0xFF0F) {
+					return interruptFlag;
+				}
 
 				// If address = unused range, I/O registers, or interrupt register, return 0 for now.
 				return 0;
-			
-			default:
-				throw new IllegalArgumentException("Unhandled memory read at address: " + address);
+			}
+			default -> throw new IllegalArgumentException("Unhandled memory read at address: " + address);
 		}
 	}
 	
@@ -156,35 +159,24 @@ public class MMU {
 		BitUtil.checkIsByte(value);
 		switch(address & 0xF000)
 		{
-			case 0x0000:
-			case 0x1000:
-			case 0x2000:
-			case 0x3000:
-			case 0x4000:
-			case 0x5000:
-			case 0x6000:
-			case 0x7000:
+			case 0x0000, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000, 0x6000, 0x7000:
 				break; // we don't write to ROM!
-			
-			case 0x8000:
-			case 0x9000:
+
+			case 0x8000, 0x9000:
 				videoRam[address & 0x1FFF] = value;
 				break;
-				
-			case 0xA000:
-			case 0xB000:
+
+			case 0xA000, 0xB000:
 				extRam[address & 0x1FFF] = value;
 				break;
-				
-			case 0xC000:
-			case 0xD000:
-			case 0xE000:
+
+			case 0xC000, 0xD000, 0xE000:
 				workRam[address & 0x1FFF] = value;
 				break;
 				
 			case 0xF000:
 				if (address < 0xFE00) { workRam[address & 0x1FFF] = value; }
-				else if (address >= 0xFE00 && address < 0xFEA0) { oam[address & 0x9F] = value; }
+				else if (address < 0xFEA0) { oam[address & 0x9F] = value; }
 				else if (address >= 0xFF80 && address < 0xFFFF) { zeroPage[address & 0x7F] = value; }
 
 				else if (address == 0xFF00) { break; }
@@ -240,7 +232,7 @@ public class MMU {
 	}
 	
 	/**
-	 * Toggles whether or not the boot ROM is currently accessible.
+	 * Toggles whether the boot ROM is currently accessible.
 	 * @param state - Desired state of the boot ROM (true for enabled, false for disabled)
 	 */
 	public void toggleBootROM(boolean state) {
@@ -248,7 +240,7 @@ public class MMU {
 	}
 	
 	/**
-	 * Fills all of the memory region arrays with 0, effectively resetting them.
+	 * Fills all the memory region arrays with 0, effectively resetting them.
 	 */
 	public void clearMemory() {
 		Arrays.fill(romBank0, 0);

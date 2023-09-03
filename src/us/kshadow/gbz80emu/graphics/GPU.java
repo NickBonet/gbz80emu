@@ -139,6 +139,7 @@ public class GPU {
 				break;
 			case 2: // Searching OAM
 				if (systemCycles >= 80) {
+					// TODO: should probably render sprites yeah?
 					setGpuMode(3);
 					systemCycles -= 80;
 				}
@@ -240,19 +241,19 @@ public class GPU {
 		switch(gpuMode) {
 			case 0:
 				lcdStatus &= ~(1 << 1);
-				lcdStatus &= ~(1 << 0);
+				lcdStatus &= ~(1);
 				break;
 			case 1:
 				lcdStatus &= ~(1 << 1);
-				lcdStatus |= (1 << 0);
+				lcdStatus |= (1);
 				break;
 			case 2:
 				lcdStatus |= (1 << 1);
-				lcdStatus &= ~(1 << 0);
+				lcdStatus &= ~(1);
 				break;
 			case 3:
 				lcdStatus |= (1 << 1);
-				lcdStatus |= (1 << 0);
+				lcdStatus |= (1);
 				break;
 			default:
 				break;
