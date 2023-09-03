@@ -1,6 +1,7 @@
 package us.kshadow.gbz80emu.util;
 
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 /**

@@ -1,6 +1,6 @@
 package us.kshadow.gbz80emu;
 
-import java.awt.*;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,6 @@ import us.kshadow.gbz80emu.util.MiscUtil;
 /**
  * Emulator - Where all the moving parts are tied together to load GB games.
  */
-@SuppressWarnings("serial")
 public class Emulator extends JPanel {
 	public static final int WINDOW_WIDTH = 480;
 	public static final int WINDOW_HEIGHT = 432;

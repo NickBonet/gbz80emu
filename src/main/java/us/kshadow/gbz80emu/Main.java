@@ -1,11 +1,11 @@
 package us.kshadow.gbz80emu;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-@SuppressWarnings("serial")
 public class Main extends JFrame implements KeyListener {
 	private static final Emulator emu = new Emulator();
 	private static Runnable emuRunnable;

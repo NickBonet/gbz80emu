@@ -32,24 +32,24 @@ public class MMU {
 	private int[] romBank1 = new int[0x4000];
 
 	// 0x8000 - 0x9FFF - VRAM (will be properly segmented later on)
-	private int[] videoRam = new int[0x2000];
+	private final int[] videoRam = new int[0x2000];
 
 	// 0xA000 - 0xBFFF - External Cart RAM
-	private int[] extRam = new int[0x2000];
+	private final int[] extRam = new int[0x2000];
 
 	// 0xC000 - 0xDFFF - Working RAM
 	// 0xE000 - 0xFDFF - Shadow of working RAM (last 512 bytes aren't shadowed)
-	private int[] workRam = new int[0x2000];
+	private final int[] workRam = new int[0x2000];
 
 	// 0xFE00 - 0xFE9F - Sprite Attribute Table (OAM)
-	private int[] oam = new int[0xA0];
+	private final int[] oam = new int[0xA0];
 
 	// 0xFEA0 - 0xFEFF - unused range
 	// TODO: 0xFF00 - 0xFF7F - I/O registers
 	private int joyPadRegister = 0xF1;
 
 	// 0xFF80 - 0xFFFE - Zero Page RAM
-	private int[] zeroPage = new int[0x7F];
+	private final int[] zeroPage = new int[0x7F];
 
 	private int interruptFlag = 0; // 0xFF0F
 	private int interruptEnable = 0; // 0xFFFF

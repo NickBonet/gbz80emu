@@ -25,10 +25,10 @@ class MMUTest {
 		mmu.clearMemory();
 	}
 
-	@Test
 	/**
 	 * Tests for proper reading/writing to ROM bank arrays.
 	 */
+	@Test
 	void testWriteThenReadROM() {
 		setup();
 		mmu.loadROM(testROM.getROMAsArray());
@@ -45,11 +45,11 @@ class MMUTest {
 		assertArrayEquals(Arrays.copyOfRange(testROM.getROMAsArray(), 0x4000, 0x8000), readBank1);
 	}
 
-	@Test
 	/**
 	 * Tests writeByte() and validates that it doesn't write to ROM arrays.
 	 * (0x0000-0x7FFF)
 	 */
+	@Test
 	void testWriteByteROMFails() {
 		setup();
 		for (int i = 0; i < testROM.getROMAsArray().length; i++) {
@@ -68,11 +68,11 @@ class MMUTest {
 		assertArrayEquals(emptyArr, readROMTest);
 	}
 
-	@Test
 	/**
 	 * Verifies that the unused range (0xFEA0-0xFEFF) cannot be written to/read
 	 * from.
 	 */
+	@Test
 	void testNoReadWriteUnusableRange() {
 		mmu.writeByte(0xFEA0, 25);
 		mmu.writeByte(0xFEFF, 82);
@@ -80,11 +80,11 @@ class MMUTest {
 		assertEquals(0, mmu.readByte(0xFEFF));
 	}
 
-	@Test
 	/**
 	 * Asserts that exceptions are thrown if address out of normal range is
 	 * specified for read/write.
 	 */
+	@Test
 	void outOfRangeTest() {
 		assertThrows(IllegalArgumentException.class, () -> mmu.readByte(0x10000));
 		assertThrows(IllegalArgumentException.class, () -> mmu.writeByte(0x10000, 21));
@@ -92,21 +92,21 @@ class MMUTest {
 		assertThrows(IllegalArgumentException.class, () -> mmu.writeWord(0x10000, 21));
 	}
 
-	@Test
 	/**
 	 * Tests readWord/writeWord, validating that they read as/write as little
 	 * endian.
 	 */
+	@Test
 	void readWriteWordTest() {
 		mmu.writeWord(0xC000, 0x150);
 		assertEquals(0x150, mmu.readWord(0xC000));
 	}
 
-	@Test
 	/**
 	 * FIlls each address range (besides ROM) with a differing value, and reads it
 	 * back. Also tests that echo RAM implementation works properly.
 	 */
+	@Test
 	void fillAndRead() {
 		int[] vRam = new int[0x2000];
 		int[] vRamFull = new int[0x2000];

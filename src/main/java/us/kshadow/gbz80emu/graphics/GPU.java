@@ -20,7 +20,7 @@ public class GPU {
 	private static final GPU instance = new GPU();
 	private static final CPURegisters reg = CPURegisters.getInstance();
 	private static final MMU mmu = MMU.getInstance();
-	private int[] currentPalette;
+	private final int[] currentPalette;
 	private int lcdControl; // 0xFF40 - LCD/GPU control
 	private int lcdStatus = 0; // 0xFF41 - LCDC Status
 	private int scrollY; // 0xFF42
@@ -38,7 +38,6 @@ public class GPU {
 	 */
 	private GPU() {
 		framebuffer = new int[256][256];
-		currentPalette = new int[4];
 		currentPalette = Arrays.copyOf(DMG_COLORS, 4);
 	}
 
@@ -96,23 +95,15 @@ public class GPU {
 				int lsb = ((bytes[row] >> (7 - column)) & 1);
 				int msb = ((bytes[row + 1] >> (7 - column)) & 1);
 				int colorValue = msb << 1 | lsb;
-				int x = (((column * 1) + (8 * columnIndex)) - scrollX) & 0xFF;
+				int x = (((column) + (8 * columnIndex)) - scrollX) & 0xFF;
 				int y = (((row / 2) + (8 * rowIndex)) - scrollY) & 0xFF;
 				switch (colorValue) {
-					case 0 :
-						framebuffer[x][y] = currentPalette[0];
-						break;
-					case 1 :
-						framebuffer[x][y] = currentPalette[1];
-						break;
-					case 2 :
-						framebuffer[x][y] = currentPalette[2];
-						break;
-					case 3 :
-						framebuffer[x][y] = currentPalette[3];
-						break;
-					default :
-						break;
+					case 0 -> framebuffer[x][y] = currentPalette[0];
+					case 1 -> framebuffer[x][y] = currentPalette[1];
+					case 2 -> framebuffer[x][y] = currentPalette[2];
+					case 3 -> framebuffer[x][y] = currentPalette[3];
+					default -> {
+					}
 				}
 			}
 		}
@@ -128,7 +119,7 @@ public class GPU {
 	public void nextStep(int cycles) {
 		systemCycles += cycles;
 		switch (gpuMode) {
-			case 0 : // HBlank mode
+			case 0 -> { // HBlank mode
 				if (systemCycles >= 204) {
 					lineY++;
 					if (lineY > 143) {
@@ -144,9 +135,8 @@ public class GPU {
 					}
 					systemCycles -= 204;
 				}
-
-				break;
-			case 1 : // VBlank mode
+			}
+			case 1 -> { // VBlank mode
 				if (systemCycles >= 456) {
 					lineY++;
 					if (lineY > 153) {
@@ -155,24 +145,24 @@ public class GPU {
 					}
 					systemCycles -= 456;
 				}
-				break;
-			case 2 : // Searching OAM
+			}
+			case 2 -> { // Searching OAM
 				if (systemCycles >= 80) {
 					// TODO: should probably render sprites yeah?
 					setGpuMode(3);
 					systemCycles -= 80;
 				}
-				break;
-			case 3 : // Transfer data to display
+			}
+			case 3 -> { // Transfer data to display
 				if (systemCycles >= 172) {
 					setGpuMode(0);
 					// render scanline here
 					renderScanLine(lineY);
 					systemCycles -= 172;
 				}
-				break;
-			default :
-				break;
+			}
+			default -> {
+			}
 		}
 	}
 
@@ -260,24 +250,24 @@ public class GPU {
 	public void setGpuMode(int gpuMode) {
 		this.gpuMode = gpuMode;
 		switch (gpuMode) {
-			case 0 :
+			case 0 -> {
 				lcdStatus &= ~(1 << 1);
 				lcdStatus &= ~1;
-				break;
-			case 1 :
+			}
+			case 1 -> {
 				lcdStatus &= ~(1 << 1);
 				lcdStatus |= 1;
-				break;
-			case 2 :
+			}
+			case 2 -> {
 				lcdStatus |= (1 << 1);
 				lcdStatus &= ~1;
-				break;
-			case 3 :
+			}
+			case 3 -> {
 				lcdStatus |= (1 << 1);
 				lcdStatus |= 1;
-				break;
-			default :
-				break;
+			}
+			default -> {
+			}
 		}
 	}
 

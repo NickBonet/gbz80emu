@@ -57,32 +57,32 @@ public class ControlFlow {
 	public static int instructCondJP(int opcode, int address) {
 		int cycles = 12;
 		switch (opcode) {
-			case 0xC2 :
+			case 0xC2 -> {
 				if (!fr.isZ()) {
 					instructJP(address);
 					cycles += 4;
 				}
-				break;
-			case 0xCA :
+			}
+			case 0xCA -> {
 				if (fr.isZ()) {
 					instructJP(address);
 					cycles += 4;
 				}
-				break;
-			case 0xD2 :
+			}
+			case 0xD2 -> {
 				if (!fr.isC()) {
 					instructJP(address);
 					cycles += 4;
 				}
-				break;
-			case 0xDA :
+			}
+			case 0xDA -> {
 				if (fr.isC()) {
 					instructJP(address);
 					cycles += 4;
 				}
-				break;
-			default :
-				break;
+			}
+			default -> {
+			}
 		}
 		return cycles;
 	}
@@ -108,32 +108,32 @@ public class ControlFlow {
 	public static int instructCondJR(int opcode, byte value) {
 		int cycles = 8;
 		switch (opcode) {
-			case 0x20 :
+			case 0x20 -> {
 				if (!fr.isZ()) {
 					instructJR(value);
 					cycles += 4;
 				}
-				break;
-			case 0x28 :
+			}
+			case 0x28 -> {
 				if (fr.isZ()) {
 					instructJR(value);
 					cycles += 4;
 				}
-				break;
-			case 0x30 :
+			}
+			case 0x30 -> {
 				if (!fr.isC()) {
 					instructJR(value);
 					cycles += 4;
 				}
-				break;
-			case 0x38 :
+			}
+			case 0x38 -> {
 				if (fr.isC()) {
 					instructJR(value);
 					cycles += 4;
 				}
-				break;
-			default :
-				break;
+			}
+			default -> {
+			}
 		}
 		return cycles;
 	}
@@ -181,32 +181,32 @@ public class ControlFlow {
 	public static int instructCondRET(int opcode) {
 		int cycles = 8;
 		switch (opcode) {
-			case 0xC0 :
+			case 0xC0 -> {
 				if (!fr.isZ()) {
 					instructRET();
 					cycles += 12;
 				}
-				break;
-			case 0xC8 :
+			}
+			case 0xC8 -> {
 				if (fr.isZ()) {
 					instructRET();
 					cycles += 12;
 				}
-				break;
-			case 0xD0 :
+			}
+			case 0xD0 -> {
 				if (!fr.isC()) {
 					instructRET();
 					cycles += 12;
 				}
-				break;
-			case 0xD8 :
+			}
+			case 0xD8 -> {
 				if (fr.isC()) {
 					instructRET();
 					cycles += 12;
 				}
-				break;
-			default :
-				break;
+			}
+			default -> {
+			}
 		}
 		return cycles;
 	}
@@ -228,32 +228,16 @@ public class ControlFlow {
 	public static void instructRST(int opcode) {
 		instructPUSH("PC");
 		switch (opcode) {
-			case 0xC7 :
-				reg.write("PC", 0x00);
-				break;
-			case 0xCF :
-				reg.write("PC", 0x08);
-				break;
-			case 0xD7 :
-				reg.write("PC", 0x10);
-				break;
-			case 0xDF :
-				reg.write("PC", 0x18);
-				break;
-			case 0xE7 :
-				reg.write("PC", 0x20);
-				break;
-			case 0xEF :
-				reg.write("PC", 0x28);
-				break;
-			case 0xF7 :
-				reg.write("PC", 0x30);
-				break;
-			case 0xFF :
-				reg.write("PC", 0x38);
-				break;
-			default :
-				break;
+			case 0xC7 -> reg.write("PC", 0x00);
+			case 0xCF -> reg.write("PC", 0x08);
+			case 0xD7 -> reg.write("PC", 0x10);
+			case 0xDF -> reg.write("PC", 0x18);
+			case 0xE7 -> reg.write("PC", 0x20);
+			case 0xEF -> reg.write("PC", 0x28);
+			case 0xF7 -> reg.write("PC", 0x30);
+			case 0xFF -> reg.write("PC", 0x38);
+			default -> {
+			}
 		}
 	}
 
@@ -279,32 +263,32 @@ public class ControlFlow {
 	public static int instructCondCALL(int opcode, int address) {
 		int cycles = 12;
 		switch (opcode) {
-			case 0xC4 :
+			case 0xC4 -> {
 				if (!fr.isZ()) {
 					instructCALL(address);
 					cycles += 12;
 				}
-				break;
-			case 0xCC :
+			}
+			case 0xCC -> {
 				if (fr.isZ()) {
 					instructCALL(address);
 					cycles += 12;
 				}
-				break;
-			case 0xD4 :
+			}
+			case 0xD4 -> {
 				if (!fr.isC()) {
 					instructCALL(address);
 					cycles += 12;
 				}
-				break;
-			case 0xDC :
+			}
+			case 0xDC -> {
 				if (fr.isC()) {
 					instructCALL(address);
 					cycles += 12;
 				}
-				break;
-			default :
-				break;
+			}
+			default -> {
+			}
 		}
 		return cycles;
 	}

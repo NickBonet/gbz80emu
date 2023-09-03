@@ -253,8 +253,8 @@ public class ALU {
 	}
 
 	/**
-	 * DAA - Decimal adjust Register A Adapted from
-	 * https://ehaskins.com/2018-01-30%20Z80%20DAA/
+	 * DAA - Decimal adjust Register A adapted from
+	 * <a href="https://ehaskins.com/2018-01-30%20Z80%20DAA/">...</a>
 	 */
 	public static void instructDAA() {
 		int regAValue = reg.read("A");

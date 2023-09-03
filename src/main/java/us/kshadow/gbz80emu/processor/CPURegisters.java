@@ -89,54 +89,33 @@ public class CPURegisters {
 			BitUtil.checkIsByte(value);
 		}
 		switch (register.toUpperCase()) {
-			case "A" :
-				this.a = value;
-				break;
-			case "B" :
-				this.b = value;
-				break;
-			case "C" :
-				this.c = value;
-				break;
-			case "D" :
-				this.d = value;
-				break;
-			case "H" :
-				this.h = value;
-				break;
-			case "E" :
-				this.e = value;
-				break;
-			case "F" :
-				flagRegister.setFlagsFromByte(value);
-				break;
-			case "L" :
-				this.l = value;
-				break;
-			case "PC" :
-				this.pc = value;
-				break;
-			case "SP" :
-				this.sp = value;
-				break;
-			case "AF" :
+			case "A" -> this.a = value;
+			case "B" -> this.b = value;
+			case "C" -> this.c = value;
+			case "D" -> this.d = value;
+			case "H" -> this.h = value;
+			case "E" -> this.e = value;
+			case "F" -> flagRegister.setFlagsFromByte(value);
+			case "L" -> this.l = value;
+			case "PC" -> this.pc = value;
+			case "SP" -> this.sp = value;
+			case "AF" -> {
 				a = value >> 8;
 				flagRegister.setFlagsFromByte(value & 0xFF);
-				break;
-			case "BC" :
+			}
+			case "BC" -> {
 				b = value >> 8;
 				c = value & 0xFF;
-				break;
-			case "DE" :
+			}
+			case "DE" -> {
 				d = value >> 8;
 				e = value & 0xFF;
-				break;
-			case "HL" :
+			}
+			case "HL" -> {
 				h = value >> 8;
 				l = value & 0xFF;
-				break;
-			default :
-				throw new IllegalArgumentException("Register write: Invalid register " + register);
+			}
+			default -> throw new IllegalArgumentException("Register write: Invalid register " + register);
 		}
 	}
 
@@ -149,58 +128,28 @@ public class CPURegisters {
 	 * @return Value of the register.
 	 */
 	public int read(String register) {
-		int regValue = 0;
-		switch (register.toUpperCase()) {
-			case "A" :
-				regValue = this.a;
-				break;
-			case "B" :
-				regValue = this.b;
-				break;
-			case "C" :
-				regValue = this.c;
-				break;
-			case "D" :
-				regValue = this.d;
-				break;
-			case "H" :
-				regValue = this.h;
-				break;
-			case "E" :
-				regValue = this.e;
-				break;
-			case "F" :
-				regValue = flagRegister.getFlagsAsByte();
-				break;
-			case "L" :
-				regValue = this.l;
-				break;
-			case "PC" :
-				regValue = this.pc;
-				break;
-			case "SP" :
-				regValue = this.sp;
-				break;
-			case "AF" :
+		return switch (register.toUpperCase()) {
+			case "A" -> this.a;
+			case "B" -> this.b;
+			case "C" -> this.c;
+			case "D" -> this.d;
+			case "H" -> this.h;
+			case "E" -> this.e;
+			case "F" -> flagRegister.getFlagsAsByte();
+			case "L" -> this.l;
+			case "PC" -> this.pc;
+			case "SP" -> this.sp;
+			case "AF" ->
 				// Move the 8 bits of the B register to the far left, which leaves us 0s on the
 				// right side.
 				// We then OR the bits from the C register against B, which effectively merges
 				// the two into a 16-bit number.
-				regValue = (a << 8) | flagRegister.getFlagsAsByte();
-				break;
-			case "BC" :
-				regValue = (b << 8) | c;
-				break;
-			case "DE" :
-				regValue = (d << 8) | e;
-				break;
-			case "HL" :
-				regValue = (h << 8) | l;
-				break;
-			default :
-				throw new IllegalArgumentException("Register read: Invalid register " + register);
-		}
-		return regValue;
+				(a << 8) | flagRegister.getFlagsAsByte();
+			case "BC" -> (b << 8) | c;
+			case "DE" -> (d << 8) | e;
+			case "HL" -> (h << 8) | l;
+			default -> throw new IllegalArgumentException("Register read: Invalid register " + register);
+		};
 	}
 
 	/**

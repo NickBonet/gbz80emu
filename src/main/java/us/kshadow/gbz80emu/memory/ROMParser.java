@@ -22,6 +22,7 @@ public class ROMParser {
 	 * @param file
 	 *            - The ROM file to load.
 	 * @throws IOException
+	 *             - occurs if there is an issue with the specified file
 	 */
 	@SuppressWarnings("squid:S2674")
 	public void loadROM(String file) throws IOException {
@@ -89,8 +90,8 @@ public class ROMParser {
 	 */
 	public boolean isCartridgeValid() {
 		int check = 0;
-		for (int i = 0; i < romArray.length; i++) {
-			check = (check + romArray[i]) & 0xFFFF;
+		for (int j : romArray) {
+			check = (check + j) & 0xFFFF;
 		}
 		check = check - romArray[0x14E] - romArray[0x14F];
 		int sumInCart = (romArray[0x14E] << 8) ^ romArray[0x14F];
