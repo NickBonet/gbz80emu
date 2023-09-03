@@ -2,26 +2,25 @@ package us.kshadow.gbz80emu.memory;
 
 import org.junit.jupiter.api.Test;
 
-import us.kshadow.gbz80emu.memory.ROMParser;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeAll;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
- * Class to test basic functions of ROMParser. Uses Tetris ROM as baseline for now.
+ * Class to test basic functions of ROMParser. Uses Tetris ROM as baseline for
+ * now.
+ * 
  * @author Nicholas Bonet
  */
 class ROMParserTest {
-	
+
 	private static final ROMParser testGoodROM = new ROMParser();
 	private static final ROMParser testBadROM = new ROMParser();
-	
-	private static final char[] testTitle = new char[] {
-			0x54, 0x45, 0x54, 0x52, 0x49, 0x53, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-	};
+
+	private static final char[] testTitle = new char[]{0x54, 0x45, 0x54, 0x52, 0x49, 0x53, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00};
 
 	@BeforeAll
 	public static void setup() {
@@ -32,9 +31,10 @@ class ROMParserTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * Tests against a known good Tetris ROM for valid title, checksums, matching logo bitmap, and SGB function support.
+	 * Tests against a known good Tetris ROM for valid title, checksums, matching
+	 * logo bitmap, and SGB function support.
 	 */
 	@Test
 	void testValidROM() {
@@ -44,9 +44,10 @@ class ROMParserTest {
 		assertTrue(testGoodROM.isCartridgeValid());
 		assertTrue(testGoodROM.isHeaderValid());
 	}
-	
+
 	/**
-	 * Tests against a malformed/edited Tetris ROM, to make sure checksum tests fail, as well as logo and title.
+	 * Tests against a malformed/edited Tetris ROM, to make sure checksum tests
+	 * fail, as well as logo and title.
 	 */
 	@Test
 	void testBadROM() {

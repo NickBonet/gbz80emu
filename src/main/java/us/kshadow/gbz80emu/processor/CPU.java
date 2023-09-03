@@ -8,8 +8,9 @@ import us.kshadow.gbz80emu.processor.instructions.BitShift;
 import us.kshadow.gbz80emu.processor.instructions.ControlFlow;
 import us.kshadow.gbz80emu.util.BitUtil;
 
-/** 
+/**
  * Takes care of the actual fetch-decode-execute logic for the emulator.
+ * 
  * @author Nicholas Bonet
  */
 
@@ -34,6 +35,7 @@ public class CPU {
 
 	/**
 	 * Handles checking for interrupts after normal GPU/CPU steps.
+	 * 
 	 * @return The number of cycles taken (to pass off to GPU for timekeeping)
 	 */
 	public int handleInterrupt() {
@@ -64,6 +66,7 @@ public class CPU {
 
 	/**
 	 * Fetches the next byte in memory and executes the associated instruction.
+	 * 
 	 * @return The number of cycles for the executed instruction.
 	 */
 	@SuppressWarnings("java:S1479")
@@ -76,7 +79,7 @@ public class CPU {
 		int cycles;
 		switch (instruction) {
 			case 0x00 -> // NOP
-					cycles = 4;
+				cycles = 4;
 			case 0x01 -> { // LD BC, u16
 				reg.write("BC", fetchNextWord());
 				cycles = 12;
@@ -205,10 +208,10 @@ public class CPU {
 				ALU.instructDAA();
 				cycles = 4;
 			} // JR NZ,s8
-			// JR Z, s8
-			// JR NC,s8
+				// JR Z, s8
+				// JR NC,s8
 			case 0x20, 0x28, 0x30, 0x38 -> // JR C, s8
-					cycles = ControlFlow.instructCondJR(instruction, (byte) fetchNextByte());
+				cycles = ControlFlow.instructCondJR(instruction, (byte) fetchNextByte());
 			case 0x21 -> { // LD HL,u16
 				reg.write("HL", fetchNextWord());
 				cycles = 12;
@@ -840,10 +843,10 @@ public class CPU {
 				ControlFlow.instructJP(fetchNextWord());
 				cycles = 16;
 			} // CALL Z, u16
-			// CALL NZ, u16
-			// CALL NC, u16
+				// CALL NZ, u16
+				// CALL NC, u16
 			case 0xCC, 0xC4, 0xD4, 0xDC -> // CALL C, u16
-					cycles = ControlFlow.instructCondCALL(instruction, fetchNextWord());
+				cycles = ControlFlow.instructCondCALL(instruction, fetchNextWord());
 			case 0xC5 -> { // PUSH BC
 				ControlFlow.instructPUSH("BC");
 				cycles = 16;
@@ -852,12 +855,12 @@ public class CPU {
 				ALU.instructADD(fetchNextByte());
 				cycles = 8;
 			} // RST 00
-			// RST 08
-			// RST 10
-			// RST 18
-			// RST 20
-			// RST 28
-			// RST 30
+				// RST 08
+				// RST 10
+				// RST 18
+				// RST 20
+				// RST 28
+				// RST 30
 			case 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF -> {// RST 38
 				ControlFlow.instructRST(instruction);
 				cycles = 16;
@@ -866,12 +869,12 @@ public class CPU {
 				ControlFlow.instructRET();
 				cycles = 16;
 			} // JP NZ, u16
-			// JP Z, u16
-			// JP NC, u16
+				// JP Z, u16
+				// JP NC, u16
 			case 0xC2, 0xCA, 0xD2, 0xDA -> // JP C, u16
-					cycles = ControlFlow.instructCondJP(instruction, fetchNextWord());
+				cycles = ControlFlow.instructCondJP(instruction, fetchNextWord());
 			case 0xCB -> // send to CB handling function
-					cycles = nextCBInstruction();
+				cycles = nextCBInstruction();
 			case 0xCD -> { // CALL u16
 				ControlFlow.instructCALL(fetchNextWord());
 				cycles = 24;
@@ -880,10 +883,10 @@ public class CPU {
 				ALU.instructADC(fetchNextByte());
 				cycles = 8;
 			} // RET Z
-			// RET NZ
-			// RET C
+				// RET NZ
+				// RET C
 			case 0xC8, 0xC0, 0xD8, 0xD0 -> // RET NC
-					cycles = ControlFlow.instructCondRET(instruction);
+				cycles = ControlFlow.instructCondRET(instruction);
 			case 0xD1 -> { // POP DE
 				ControlFlow.instructPOP("DE");
 				cycles = 12;
@@ -999,6 +1002,7 @@ public class CPU {
 
 	/**
 	 * Fetches the next byte in memory and executes the associated CB instruction.
+	 * 
 	 * @return The number of cycles for the executed CB instruction.
 	 */
 	@SuppressWarnings("java:S1479")
@@ -2037,6 +2041,7 @@ public class CPU {
 
 	/**
 	 * Fetches the next byte and increments PC by 1.
+	 * 
 	 * @return The next byte in memory.
 	 */
 	public int fetchNextByte() {
@@ -2047,6 +2052,7 @@ public class CPU {
 
 	/**
 	 * Fetches the next 2 bytes and increments PC by 2.
+	 * 
 	 * @return The next 2 bytes in memory.
 	 */
 	public int fetchNextWord() {
@@ -2055,11 +2061,11 @@ public class CPU {
 		reg.incPC();
 		return result;
 	}
-	
+
 	public CPURegisters getRegisters() {
 		return reg;
 	}
-	
+
 	public MMU getMMU() {
 		return mmu;
 	}

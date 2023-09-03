@@ -8,7 +8,9 @@ import us.kshadow.gbz80emu.processor.CPURegisters;
 import us.kshadow.gbz80emu.util.BitUtil;
 
 /**
- * GPU - An emulation of the graphical operations the GameBoy performs to draw to its LCD.
+ * GPU - An emulation of the graphical operations the GameBoy performs to draw
+ * to its LCD.
+ * 
  * @author Nicholas Bonet
  *
  */
@@ -42,7 +44,9 @@ public class GPU {
 
 	/**
 	 * Draws a horizontal line for the Gameboy display.
-	 * @param line - Line to draw. (0-143)
+	 * 
+	 * @param line
+	 *            - Line to draw. (0-143)
 	 */
 	public void renderScanLine(int line) {
 		int rowIndex = (line / 8);
@@ -51,24 +55,37 @@ public class GPU {
 			int bgTileMapPointer = BitUtil.checkBitSet(lcdControl, 3) ? 0x9C00 : 0x9800;
 			int tileIndex = mmu.readByte(bgTileMapPointer + elementIndex);
 			int relativeLine = (line % 8);
-			int address = (BitUtil.checkBitSet(lcdControl, 4)) ? 0x8000 + (tileIndex*0x10) : 0x9000 + (((byte) tileIndex) * 0x10);
-			drawTileToFramebuffer(framebuffer,address, columnIndex, rowIndex, relativeLine, relativeLine+1, scrollX, scrollY);
+			int address = BitUtil.checkBitSet(lcdControl, 4)
+					? 0x8000 + (tileIndex * 0x10)
+					: 0x9000 + (((byte) tileIndex) * 0x10);
+			drawTileToFramebuffer(framebuffer, address, columnIndex, rowIndex, relativeLine, relativeLine + 1, scrollX,
+					scrollY);
 		}
 	}
 
 	/**
 	 * As the name states, draws a tile onto the framebuffer.
-	 * @param framebuffer - Framebuffer to write pixel data to.
-	 * @param address - Address of the tile to draw.
-	 * @param columnIndex - Column index of the tile in relation to the tile map.
-	 * @param rowIndex - Row index of the tile in relation to the tile map.
-	 * @param startAtLine - Line of tile to start drawing at.
-	 * @param endBeforeLine - Line of tile to end drawing before.
-	 * @param scrollX  - SCX offset (if needed).
-	 * @param scrollY  - SCY offset (if needed).
+	 * 
+	 * @param framebuffer
+	 *            - Framebuffer to write pixel data to.
+	 * @param address
+	 *            - Address of the tile to draw.
+	 * @param columnIndex
+	 *            - Column index of the tile in relation to the tile map.
+	 * @param rowIndex
+	 *            - Row index of the tile in relation to the tile map.
+	 * @param startAtLine
+	 *            - Line of tile to start drawing at.
+	 * @param endBeforeLine
+	 *            - Line of tile to end drawing before.
+	 * @param scrollX
+	 *            - SCX offset (if needed).
+	 * @param scrollY
+	 *            - SCY offset (if needed).
 	 */
 	@SuppressWarnings("java:S107")
-	private void drawTileToFramebuffer(int[][] framebuffer, int address, int columnIndex, int rowIndex, int startAtLine, int endBeforeLine, int scrollX, int scrollY) {
+	private void drawTileToFramebuffer(int[][] framebuffer, int address, int columnIndex, int rowIndex, int startAtLine,
+			int endBeforeLine, int scrollX, int scrollY) {
 		int[] bytes = new int[16];
 		// Loop through every 2 bytes (2 bytes = 1 row of tile).
 		for (int row = startAtLine * 2; row < endBeforeLine * 2; row += 2) {
@@ -76,25 +93,25 @@ public class GPU {
 			bytes[row + 1] = mmu.readByte(address + row + 1);
 			// Loop through bits of each byte to get color information.
 			for (int column = 0; column < 8; column++) {
-				int lsb = ((bytes[row] >> 7 - column) & 1);
-				int msb = ((bytes[row + 1] >> 7 - column) & 1);
+				int lsb = ((bytes[row] >> (7 - column)) & 1);
+				int msb = ((bytes[row + 1] >> (7 - column)) & 1);
 				int colorValue = msb << 1 | lsb;
-				int x = (((column*1)+(8*columnIndex))-scrollX) & 0xFF;
-				int y = (((row/2)+(8*rowIndex))-scrollY) & 0xFF;
+				int x = (((column * 1) + (8 * columnIndex)) - scrollX) & 0xFF;
+				int y = (((row / 2) + (8 * rowIndex)) - scrollY) & 0xFF;
 				switch (colorValue) {
-					case 0:
+					case 0 :
 						framebuffer[x][y] = currentPalette[0];
 						break;
-					case 1:
+					case 1 :
 						framebuffer[x][y] = currentPalette[1];
 						break;
-					case 2:
+					case 2 :
 						framebuffer[x][y] = currentPalette[2];
 						break;
-					case 3:
+					case 3 :
 						framebuffer[x][y] = currentPalette[3];
 						break;
-					default:
+					default :
 						break;
 				}
 			}
@@ -103,19 +120,21 @@ public class GPU {
 
 	/**
 	 * Similar to CPU's nextInstruction(), except for GPU operations.
-	 * @param cycles - CPU cycles to add to internal GPU cycle count.
+	 * 
+	 * @param cycles
+	 *            - CPU cycles to add to internal GPU cycle count.
 	 */
 	@SuppressWarnings("java:S3776")
 	public void nextStep(int cycles) {
 		systemCycles += cycles;
-		switch(gpuMode) {
-			case 0: // HBlank mode
+		switch (gpuMode) {
+			case 0 : // HBlank mode
 				if (systemCycles >= 204) {
 					lineY++;
 					if (lineY > 143) {
 						int interruptEnable = mmu.readByte(0xFFFF);
 						if (reg.getIME() && BitUtil.checkBitSet(interruptEnable, 0)) {
-							int interruptFlag = mmu.readByte((0xFF0F));
+							int interruptFlag = mmu.readByte(0xFF0F);
 							interruptFlag = BitUtil.setBit(interruptFlag, 0);
 							mmu.writeByte(0xFF0F, interruptFlag);
 						}
@@ -127,24 +146,24 @@ public class GPU {
 				}
 
 				break;
-			case 1: // VBlank mode
+			case 1 : // VBlank mode
 				if (systemCycles >= 456) {
 					lineY++;
-					if(lineY > 153) {
+					if (lineY > 153) {
 						setGpuMode(2);
 						lineY = 0;
 					}
 					systemCycles -= 456;
 				}
 				break;
-			case 2: // Searching OAM
+			case 2 : // Searching OAM
 				if (systemCycles >= 80) {
 					// TODO: should probably render sprites yeah?
 					setGpuMode(3);
 					systemCycles -= 80;
 				}
 				break;
-			case 3: // Transfer data to display
+			case 3 : // Transfer data to display
 				if (systemCycles >= 172) {
 					setGpuMode(0);
 					// render scanline here
@@ -152,14 +171,16 @@ public class GPU {
 					systemCycles -= 172;
 				}
 				break;
-			default:
+			default :
 				break;
 		}
 	}
 
 	/**
 	 * Reads a tile at a given address in VRAM, and renders it as a BufferedImage.
-	 * @param address - The address to read the tile data from.
+	 * 
+	 * @param address
+	 *            - The address to read the tile data from.
 	 * @return The tile as a BufferedImage.
 	 */
 	public BufferedImage tileToImage(int address) {
@@ -238,24 +259,24 @@ public class GPU {
 
 	public void setGpuMode(int gpuMode) {
 		this.gpuMode = gpuMode;
-		switch(gpuMode) {
-			case 0:
+		switch (gpuMode) {
+			case 0 :
 				lcdStatus &= ~(1 << 1);
-				lcdStatus &= ~(1);
+				lcdStatus &= ~1;
 				break;
-			case 1:
+			case 1 :
 				lcdStatus &= ~(1 << 1);
-				lcdStatus |= (1);
+				lcdStatus |= 1;
 				break;
-			case 2:
+			case 2 :
 				lcdStatus |= (1 << 1);
-				lcdStatus &= ~(1);
+				lcdStatus &= ~1;
 				break;
-			case 3:
+			case 3 :
 				lcdStatus |= (1 << 1);
-				lcdStatus |= (1);
+				lcdStatus |= 1;
 				break;
-			default:
+			default :
 				break;
 		}
 	}

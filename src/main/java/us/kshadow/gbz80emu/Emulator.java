@@ -50,7 +50,7 @@ public class Emulator extends JPanel {
 	@SuppressWarnings("java:S3776")
 	public void runEmulator() {
 		while (emuRunning) {
-			if(cpu.isRunning()) { // for STOP instruction
+			if (cpu.isRunning()) { // for STOP instruction
 				while (cpu.getCycles() <= 70224) {
 					int cycles = cpu.nextInstruction();
 					gpu.nextStep(cycles);
@@ -79,15 +79,16 @@ public class Emulator extends JPanel {
 		int cycles = cpu.nextInstruction();
 		cpu.getRegisters().print();
 		gpu.nextStep(cycles);
-		if (cpu.getCycles() >= 70224) { 
+		if (cpu.getCycles() >= 70224) {
 			cpu.resetCyclesAfterFrame();
 			repaint();
 		}
 	}
 
 	/**
-	 * Renders the next frame for the emulator view, and resizes it to
-	 * the defined width/height.
+	 * Renders the next frame for the emulator view, and resizes it to the defined
+	 * width/height.
+	 * 
 	 * @return The resized BufferedImage.
 	 */
 	// TODO: Remove setRGB, and make this more efficient.
@@ -108,7 +109,7 @@ public class Emulator extends JPanel {
 		int y = 0;
 		BufferedImage fullTileSet = new BufferedImage(256, 384, BufferedImage.TYPE_INT_RGB);
 		Graphics g = fullTileSet.getGraphics();
-		for (int i = 0x8000; i <= 0x97FF; i+= 0x10) {
+		for (int i = 0x8000; i <= 0x97FF; i += 0x10) {
 			BufferedImage tile = gpu.tileToImage(i);
 			if (x == 256) {
 				x = 0;

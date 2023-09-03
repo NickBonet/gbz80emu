@@ -18,7 +18,8 @@ public class Main extends JFrame implements KeyListener {
 
 	public static void main(String[] args) {
 		JFrame frame = new Main("GBZ80Emu");
-		if (args.length > 0) emu.setCurrentRomFile(args[0]);
+		if (args.length > 0)
+			emu.setCurrentRomFile(args[0]);
 		emu.setBackground(Color.white);
 		emu.setPreferredSize(new Dimension(Emulator.WINDOW_WIDTH, Emulator.WINDOW_HEIGHT));
 		frame.add(emu);
@@ -49,7 +50,7 @@ public class Main extends JFrame implements KeyListener {
 				}
 			}
 			case KeyEvent.VK_PAGE_DOWN -> // save tile set to file
-					emu.dumpTileSetFromVRAM();
+				emu.dumpTileSetFromVRAM();
 			default -> {
 			}
 		}

@@ -3,8 +3,7 @@
 /*.gb
 /.settings/
 *.bin
-/.idea/sonarlint/issuestore/index.pb
-/.idea/**
+*.iml
 build/
 .gradle
 !gradle-wrapper.jar

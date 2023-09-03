@@ -1,3 +1,7 @@
 # Default ignored files
 /shelf/
+/sonarlint/
+/libraries/*.xml
 /workspace.xml
+/usage.statistics.xml
+/gradle.xml

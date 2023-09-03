@@ -8,7 +8,9 @@ import static us.kshadow.gbz80emu.util.BitUtil.setBit;
 import us.kshadow.gbz80emu.memory.MMU;
 
 /**
- * Instructions relating to bit shifts/rotations. (Mostly used in CB prefix instructions.)
+ * Instructions relating to bit shifts/rotations. (Mostly used in CB prefix
+ * instructions.)
+ * 
  * @author Nicholas Bonet
  */
 
@@ -17,12 +19,15 @@ public class BitShift {
 	private static final CPURegisters reg = CPURegisters.getInstance();
 	private static final FlagRegister fr = reg.getFR();
 	private static final MMU mmu = MMU.getInstance();
-	
-	private BitShift() { }
-	
+
+	private BitShift() {
+	}
+
 	/**
 	 * SWAP - For swapping upper/lower halves in 8-bit registers.
-	 * @param register - register/pointer for SWAP operation.
+	 * 
+	 * @param register
+	 *            - register/pointer for SWAP operation.
 	 */
 	public static void instructSWAP(String register) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
@@ -33,9 +38,10 @@ public class BitShift {
 		fr.setH(false);
 		writeValue(register, result);
 	}
-	
+
 	/**
-	 * RLCA - Rotate A left. Bit 7 from initial value goes into carry flag and bit 0.
+	 * RLCA - Rotate A left. Bit 7 from initial value goes into carry flag and bit
+	 * 0.
 	 */
 	public static void instructRLCA() {
 		int result = ((reg.read("A") << 1) & 0xFF);
@@ -46,7 +52,7 @@ public class BitShift {
 		fr.setZ(false);
 		reg.write("A", result);
 	}
-	
+
 	/**
 	 * RLA - Rotate A register left through carry flag.
 	 */
@@ -57,11 +63,12 @@ public class BitShift {
 		fr.setH(false);
 		fr.setN(false);
 		fr.setZ(false);
-		reg.write("A", result); 
+		reg.write("A", result);
 	}
-	
+
 	/**
-	 * RRCA - Rotate A right. Bit 0 from original value is moved to bit 7 and also stored as carry flag.
+	 * RRCA - Rotate A right. Bit 0 from original value is moved to bit 7 and also
+	 * stored as carry flag.
 	 */
 	public static void instructRRCA() {
 		int result = ((reg.read("A") >> 1) & 0xFF);
@@ -72,7 +79,7 @@ public class BitShift {
 		fr.setZ(false);
 		reg.write("A", result);
 	}
-	
+
 	/**
 	 * RRA - Rotate A right through carry.
 	 */
@@ -85,10 +92,13 @@ public class BitShift {
 		fr.setC(checkBitSet(reg.read("A"), 0));
 		reg.write("A", result);
 	}
-	
+
 	/**
-	 * RLC - Rotate register left. Bit 7 from initial value goes into carry flag and bit 0.
-	 * @param register - register/pointer for RLC operation.
+	 * RLC - Rotate register left. Bit 7 from initial value goes into carry flag and
+	 * bit 0.
+	 * 
+	 * @param register
+	 *            - register/pointer for RLC operation.
 	 */
 	public static void instructRLC(String register) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
@@ -100,10 +110,12 @@ public class BitShift {
 		fr.setZ(result == 0);
 		writeValue(register, result);
 	}
-	
+
 	/**
 	 * RL - Rotate left through carry flag.
-	 * @param register - register/pointer for RL operation.
+	 * 
+	 * @param register
+	 *            - register/pointer for RL operation.
 	 */
 	public static void instructRL(String register) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
@@ -115,10 +127,13 @@ public class BitShift {
 		fr.setZ(result == 0);
 		writeValue(register, result);
 	}
-	
+
 	/**
-	 * RRC - Rotate register right. Bit 0 from original value is moved to bit 7 and also stored as carry flag.
-	 * @param register - register/pointer for RRC operation.
+	 * RRC - Rotate register right. Bit 0 from original value is moved to bit 7 and
+	 * also stored as carry flag.
+	 * 
+	 * @param register
+	 *            - register/pointer for RRC operation.
 	 */
 	public static void instructRRC(String register) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
@@ -130,10 +145,12 @@ public class BitShift {
 		fr.setZ(result == 0);
 		writeValue(register, result);
 	}
-	
+
 	/**
 	 * RR - Rotate register right through carry.
-	 * @param register - register/pointer for RR operation.
+	 * 
+	 * @param register
+	 *            - register/pointer for RR operation.
 	 */
 	public static void instructRR(String register) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
@@ -145,10 +162,12 @@ public class BitShift {
 		fr.setC(checkBitSet(regVal, 0));
 		writeValue(register, result);
 	}
-	
+
 	/**
 	 * SLA - Similar to RL, except bit 0 is set to 0.
-	 * @param register - register/pointer for SLA operation.
+	 * 
+	 * @param register
+	 *            - register/pointer for SLA operation.
 	 */
 	public static void instructSLA(String register) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
@@ -159,10 +178,12 @@ public class BitShift {
 		fr.setZ(result == 0);
 		writeValue(register, result);
 	}
-	
+
 	/**
 	 * SRA - Similar to RR, except bit 7 remains unmodified.
-	 * @param register - register/pointer for SRA operation.
+	 * 
+	 * @param register
+	 *            - register/pointer for SRA operation.
 	 */
 	public static void instructSRA(String register) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
@@ -173,10 +194,12 @@ public class BitShift {
 		fr.setC(checkBitSet(regVal, 0));
 		writeValue(register, result);
 	}
-	
+
 	/**
 	 * SRL - Similar to SRA, except bit 7 is zeroed.
-	 * @param register - register/pointer for SRL operation.
+	 * 
+	 * @param register
+	 *            - register/pointer for SRL operation.
 	 */
 	public static void instructSRL(String register) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
@@ -187,11 +210,15 @@ public class BitShift {
 		fr.setC(checkBitSet(regVal, 0));
 		writeValue(register, result);
 	}
-	
+
 	/**
-	 * BIT - Tests specified bit in register, sets zero flag to 0 if bit tested is 0.
-	 * @param register - register/pointer for BIT operation.
-	 * @param bitPos - position of bit to test.
+	 * BIT - Tests specified bit in register, sets zero flag to 0 if bit tested is
+	 * 0.
+	 * 
+	 * @param register
+	 *            - register/pointer for BIT operation.
+	 * @param bitPos
+	 *            - position of bit to test.
 	 */
 	public static void instructBIT(String register, int bitPos) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
@@ -201,42 +228,55 @@ public class BitShift {
 			fr.setH(true);
 		}
 	}
-	
+
 	/**
 	 * SET - Sets specified bit in byte to 1.
-	 * @param register - register/pointer for SET operation.
-	 * @param bitPos - position of bit to set.
+	 * 
+	 * @param register
+	 *            - register/pointer for SET operation.
+	 * @param bitPos
+	 *            - position of bit to set.
 	 */
 	public static void instructSET(String register, int bitPos) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		if (bitPos < 8) {
 			int result = regVal;
-			if (!checkBitSet(result, bitPos)) { result = setBit(result, bitPos); }
+			if (!checkBitSet(result, bitPos)) {
+				result = setBit(result, bitPos);
+			}
 			writeValue(register, result);
 		}
 	}
-	
+
 	/**
 	 * RES - Sets specified bit in byte to 0.
-	 * @param register - register/pointer for RES operation.
-	 * @param bitPos - position of bit to set.
+	 * 
+	 * @param register
+	 *            - register/pointer for RES operation.
+	 * @param bitPos
+	 *            - position of bit to set.
 	 */
 	public static void instructRES(String register, int bitPos) {
 		int regVal = register.equals("HL") ? mmu.readByte(reg.read("HL")) : reg.read(register);
 		if (bitPos < 8) {
 			int result = regVal;
-			if (checkBitSet(result, bitPos)) { result = setBit(result, bitPos); }
+			if (checkBitSet(result, bitPos)) {
+				result = setBit(result, bitPos);
+			}
 			writeValue(register, result);
 		}
 	}
-	
+
 	/**
 	 * Writes changed value to its proper register or address in memory.
-	 * @param register - register/pointer to write to.
-	 * @param result - Value to write to register/pointer.
+	 * 
+	 * @param register
+	 *            - register/pointer to write to.
+	 * @param result
+	 *            - Value to write to register/pointer.
 	 */
 	private static void writeValue(String register, int result) {
-		if(register.equals("HL")) {
+		if (register.equals("HL")) {
 			mmu.writeByte(reg.read("HL"), result);
 		} else {
 			reg.write(register, result);

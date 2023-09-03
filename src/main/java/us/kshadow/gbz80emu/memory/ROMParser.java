@@ -9,17 +9,18 @@ public class ROMParser {
 
 	// Integer array that the ROM file is loaded into.
 	private int[] romArray;
-	
+
 	// Array of bytes that make up the Nintendo logo.
-	private static final int[] logoArray = new int[] {
-			 0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D,
-			 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99,
-			 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E
-	};
+	private static final int[] logoArray = new int[]{0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00,
+			0x83, 0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6, 0xDD,
+			0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33,
+			0x3E};
 
 	/**
 	 * Loads a Gameboy ROM into an integer array.
-	 * @param file - The ROM file to load.
+	 * 
+	 * @param file
+	 *            - The ROM file to load.
 	 * @throws IOException
 	 */
 	@SuppressWarnings("squid:S2674")
@@ -31,11 +32,14 @@ public class ROMParser {
 			for (int i = 0; i < romByteArray.length; i++) {
 				romArray[i] = romByteArray[i] & 0xFF;
 			}
-		} catch (IOException ex) { ex.printStackTrace(); }
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	/**
 	 * Gets title of the current loaded ROM from its header.
+	 * 
 	 * @return Title from ROM header.
 	 */
 	public String getTitle() {
@@ -47,7 +51,9 @@ public class ROMParser {
 	}
 
 	/**
-	 * Checks if the embedded Nintendo logo in the header matches the normal logo bytes.
+	 * Checks if the embedded Nintendo logo in the header matches the normal logo
+	 * bytes.
+	 * 
 	 * @return True or false depending on above.
 	 */
 	public boolean isLogoValid() {
@@ -56,6 +62,7 @@ public class ROMParser {
 
 	/**
 	 * Checks if the ROM has SGB support.
+	 * 
 	 * @return True or false depending on the above.
 	 */
 	public boolean hasSgbFuncSupport() {
@@ -64,6 +71,7 @@ public class ROMParser {
 
 	/**
 	 * Checks if the ROM header is valid.
+	 * 
 	 * @return True or false depending on the above.
 	 */
 	public boolean isHeaderValid() {
@@ -76,6 +84,7 @@ public class ROMParser {
 
 	/**
 	 * Checks if the ROM itself is valid.
+	 * 
 	 * @return True or false depending on the above.
 	 */
 	public boolean isCartridgeValid() {
