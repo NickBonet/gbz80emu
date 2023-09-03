@@ -95,7 +95,7 @@ public class GPU {
 				int lsb = ((bytes[row] >> (7 - column)) & 1);
 				int msb = ((bytes[row + 1] >> (7 - column)) & 1);
 				int colorValue = msb << 1 | lsb;
-				int x = (((column) + (8 * columnIndex)) - scrollX) & 0xFF;
+				int x = ((column + (8 * columnIndex)) - scrollX) & 0xFF;
 				int y = (((row / 2) + (8 * rowIndex)) - scrollY) & 0xFF;
 				switch (colorValue) {
 					case 0 -> framebuffer[x][y] = currentPalette[0];

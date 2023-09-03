@@ -24,11 +24,10 @@ tasks.named("compileJava") {
     dependsOn 'spotlessApply'
 }
 
-tasks.named('test', Test) {
+test {
     useJUnitPlatform()
-
     testLogging {
-        events "passed"
+        events "passed", "skipped", "failed"
     }
 }
 
