@@ -5,3 +5,6 @@
 *.bin
 /.idea/sonarlint/issuestore/index.pb
 /.idea/**
+build/
+.gradle
+!gradle-wrapper.jar
