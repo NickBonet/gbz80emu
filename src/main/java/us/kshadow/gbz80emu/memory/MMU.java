@@ -12,6 +12,7 @@ import us.kshadow.gbz80emu.util.BitUtil;
  * @author Nicholas Bonet
  */
 
+@SuppressWarnings("java:S6548")
 public class MMU {
 
 	private static final MMU instance = new MMU();

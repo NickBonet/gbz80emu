@@ -14,6 +14,8 @@ import us.kshadow.gbz80emu.util.BitUtil;
  * @author Nicholas Bonet
  *
  */
+
+@SuppressWarnings("java:S6548")
 public class GPU {
 	// Lightest green, light green, dark green, darkest green.
 	private static final int[] DMG_COLORS = {0xe0f8d0, 0x88c070, 0x346856, 0x081820};

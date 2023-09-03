@@ -13,6 +13,7 @@ import us.kshadow.gbz80emu.util.BitUtil;
  * @author Nicholas Bonet
  */
 
+@SuppressWarnings("java:S6548")
 public class CPURegisters {
 
 	private static final CPURegisters instance = new CPURegisters();

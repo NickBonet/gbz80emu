@@ -9,6 +9,7 @@ import us.kshadow.gbz80emu.util.BitUtil;
  * @author Nicholas Bonet
  */
 
+@SuppressWarnings("java:S6548")
 public class FlagRegister {
 
 	private static final FlagRegister instance = new FlagRegister();
