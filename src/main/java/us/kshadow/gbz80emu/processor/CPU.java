@@ -8,6 +8,9 @@ import us.kshadow.gbz80emu.processor.instructions.BitShift;
 import us.kshadow.gbz80emu.processor.instructions.ControlFlow;
 import us.kshadow.gbz80emu.util.BitUtil;
 
+import static us.kshadow.gbz80emu.constants.MemoryAddresses.INTERRUPT_ENABLE;
+import static us.kshadow.gbz80emu.constants.MemoryAddresses.INTERRUPT_FLAG;
+
 /**
  * Takes care of the actual fetch-decode-execute logic for the emulator.
  * 
@@ -41,13 +44,13 @@ public class CPU {
 	 */
 	public int handleInterrupt() {
 		int cycles = 0;
-		int interruptFlag = mmu.readByte(0xFF0F);
-		int interruptEnable = mmu.readByte(0xFFFF);
+		int interruptFlag = mmu.readByte(INTERRUPT_FLAG);
+		int interruptEnable = mmu.readByte(INTERRUPT_ENABLE);
 		if (reg.getIME() && interruptEnable > 0 && interruptFlag > 0) {
 			// Check if a VBlank interrupt occurred.
 			if ((interruptFlag & interruptEnable) == 0x01) {
 				reg.toggleIME(false);
-				mmu.writeByte(0xFF0F, BitUtil.setBit(interruptFlag, 0));
+				mmu.writeByte(INTERRUPT_FLAG, BitUtil.setBit(interruptFlag, 0));
 				ControlFlow.instructPUSH("PC");
 				reg.write("PC", 0x40);
 				cycles += 20; // According to The Cycle Accurate GameBoy Docs
@@ -55,7 +58,7 @@ public class CPU {
 			// Timer overflow interrupt (or should be)
 			else if ((interruptFlag & interruptEnable) == 0x04) {
 				reg.toggleIME(false);
-				mmu.writeByte(0xFF0F, BitUtil.setBit(interruptFlag, 2));
+				mmu.writeByte(INTERRUPT_FLAG, BitUtil.setBit(interruptFlag, 2));
 				ControlFlow.instructPUSH("PC");
 				reg.write("PC", 0x50);
 				cycles += 20;

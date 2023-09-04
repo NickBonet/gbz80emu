@@ -8,6 +8,7 @@ import static us.kshadow.gbz80emu.constants.MemoryAddresses.TIMER_DIV_REGISTER;
 import static us.kshadow.gbz80emu.constants.MemoryAddresses.TIMER_TAC_REGISTER;
 import static us.kshadow.gbz80emu.constants.MemoryAddresses.TIMER_TIMA_REGISTER;
 import static us.kshadow.gbz80emu.constants.MemoryAddresses.TIMER_TMA_REGISTER;
+import static us.kshadow.gbz80emu.util.BitUtil.checkBitSet;
 
 /**
  * Provides emulation of the Game Boy's system clock, which are accessed via the
@@ -101,7 +102,7 @@ public class SystemTimer {
 		incrementDIVRegister(cycles);
 
 		// Tick TIMA if TAC allows it.
-		if ((tacRegister & 0x4) == 4) {
+		if (checkBitSet(tacRegister, 2)) {
 			switch (tacRegister & 0x3) {
 				case 0x00 -> incrementTIMARegister(cycles, 1024);
 				case 0x01 -> incrementTIMARegister(cycles, 16);
@@ -133,7 +134,7 @@ public class SystemTimer {
 			if (timaRegister == 0xFF) {
 				timaRegister = tmaRegister;
 				int interruptFlag = mmu.readByte(INTERRUPT_FLAG);
-				if (!BitUtil.checkBitSet(interruptFlag, 2)) {
+				if (!checkBitSet(interruptFlag, 2)) {
 					mmu.writeByte(INTERRUPT_FLAG, BitUtil.setBit(interruptFlag, 2));
 				}
 			}

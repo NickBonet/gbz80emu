@@ -7,11 +7,7 @@ import us.kshadow.gbz80emu.graphics.GPU;
 import us.kshadow.gbz80emu.sysclock.SystemTimer;
 import us.kshadow.gbz80emu.util.BitUtil;
 
-import static us.kshadow.gbz80emu.constants.MemoryAddresses.INTERRUPT_ENABLE;
-import static us.kshadow.gbz80emu.constants.MemoryAddresses.INTERRUPT_FLAG;
-import static us.kshadow.gbz80emu.constants.MemoryAddresses.JOY_PAD_REGISTER;
-import static us.kshadow.gbz80emu.constants.MemoryAddresses.TIMER_DIV_REGISTER;
-import static us.kshadow.gbz80emu.constants.MemoryAddresses.TIMER_TAC_REGISTER;
+import static us.kshadow.gbz80emu.constants.MemoryAddresses.*;
 
 /**
  * A basic memory management unit abstraction.
@@ -123,27 +119,27 @@ public class MMU {
 					return workRam[address & 0x1FFF];
 				} else if (address < 0xFEA0) {
 					return oam[address & 0x9F];
-				} else if (address >= 0xFF80 && address < 0xFFFF) {
+				} else if (address >= 0xFF80 && address < INTERRUPT_ENABLE) {
 					return zeroPage[address & 0x7F];
 				} else if (address == JOY_PAD_REGISTER) {
 					return joyPadRegister;
 				}
 
 				// GPU hookups
-				else if (address == 0xFF40) {
+				else if (address == LCD_CONTROL) {
 					return gpu.getLCDC();
-				} else if (address == 0xFF41) {
+				} else if (address == LCD_STATUS) {
 					return gpu.getSTAT();
-				} else if (address == 0xFF42) {
+				} else if (address == SCROLL_Y) {
 					return gpu.getSCY();
-				} else if (address == 0xFF43) {
+				} else if (address == SCROLL_X) {
 					return gpu.getSCX();
-				} else if (address == 0xFF44) {
+				} else if (address == LINE_Y) {
 					return gpu.getLY();
 				}
 
 				// ignore CGB speed switch
-				else if (address == 0xFF4D) {
+				else if (address == CGB_SPEED_SWITCH) {
 					return 0xFF;
 				}
 
@@ -202,23 +198,23 @@ public class MMU {
 					workRam[address & 0x1FFF] = value;
 				} else if (address < 0xFEA0) {
 					oam[address & 0x9F] = value;
-				} else if (address >= 0xFF80 && address < 0xFFFF) {
+				} else if (address >= 0xFF80 && address < INTERRUPT_ENABLE) {
 					zeroPage[address & 0x7F] = value;
 				} else if (address == JOY_PAD_REGISTER) {
 				}
 
 				// GPU hookups
-				else if (address == 0xFF40) {
+				else if (address == LCD_CONTROL) {
 					gpu.setLCDC(value);
-				} else if (address == 0xFF41) {
+				} else if (address == LCD_STATUS) {
 					gpu.setSTAT(value);
-				} else if (address == 0xFF42) {
+				} else if (address == SCROLL_Y) {
 					gpu.setSCY(value);
-				} else if (address == 0xFF43) {
+				} else if (address == SCROLL_X) {
 					gpu.setSCX(value);
-				} else if (address == 0xFF44) {
+				} else if (address == LINE_Y) {
 					gpu.resetLY();
-				} else if (address == 0xFF47) {
+				} else if (address == BG_PALETTE) {
 					gpu.setBGP(value);
 				}
 
@@ -230,7 +226,7 @@ public class MMU {
 				}
 
 				// Boot ROM disable
-				else if (address == 0xFF50) {
+				else if (address == BOOT_ROM_TOGGLE) {
 					bootRomEnabled = false;
 				}
 

@@ -7,6 +7,9 @@ import us.kshadow.gbz80emu.memory.MMU;
 import us.kshadow.gbz80emu.processor.CPURegisters;
 import us.kshadow.gbz80emu.util.BitUtil;
 
+import static us.kshadow.gbz80emu.constants.MemoryAddresses.INTERRUPT_ENABLE;
+import static us.kshadow.gbz80emu.constants.MemoryAddresses.INTERRUPT_FLAG;
+
 /**
  * GPU - An emulation of the graphical operations the GameBoy performs to draw
  * to its LCD.
@@ -125,11 +128,11 @@ public class GPU {
 				if (systemCycles >= 204) {
 					lineY++;
 					if (lineY > 143) {
-						int interruptEnable = mmu.readByte(0xFFFF);
+						int interruptEnable = mmu.readByte(INTERRUPT_ENABLE);
 						if (reg.getIME() && BitUtil.checkBitSet(interruptEnable, 0)) {
-							int interruptFlag = mmu.readByte(0xFF0F);
+							int interruptFlag = mmu.readByte(INTERRUPT_FLAG);
 							interruptFlag = BitUtil.setBit(interruptFlag, 0);
-							mmu.writeByte(0xFF0F, interruptFlag);
+							mmu.writeByte(INTERRUPT_FLAG, interruptFlag);
 						}
 						setGpuMode(1);
 					} else {
