@@ -46,7 +46,7 @@ public class Main extends JFrame implements KeyListener {
 			}
 			case KeyEvent.VK_N -> { // next step
 				if (!emu.getEmuRunning()) {
-					emu.nextStep();
+					emu.nextDebugStep();
 				}
 			}
 			case KeyEvent.VK_PAGE_DOWN -> // save tile set to file

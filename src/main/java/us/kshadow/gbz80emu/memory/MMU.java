@@ -4,7 +4,14 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import us.kshadow.gbz80emu.graphics.GPU;
+import us.kshadow.gbz80emu.sysclock.SystemTimer;
 import us.kshadow.gbz80emu.util.BitUtil;
+
+import static us.kshadow.gbz80emu.constants.MemoryAddresses.INTERRUPT_ENABLE;
+import static us.kshadow.gbz80emu.constants.MemoryAddresses.INTERRUPT_FLAG;
+import static us.kshadow.gbz80emu.constants.MemoryAddresses.JOY_PAD_REGISTER;
+import static us.kshadow.gbz80emu.constants.MemoryAddresses.TIMER_DIV_REGISTER;
+import static us.kshadow.gbz80emu.constants.MemoryAddresses.TIMER_TAC_REGISTER;
 
 /**
  * A basic memory management unit abstraction.
@@ -16,9 +23,11 @@ import us.kshadow.gbz80emu.util.BitUtil;
 public class MMU {
 
 	private static final MMU instance = new MMU();
+	private static final SystemTimer timer = SystemTimer.getInstance();
 	private static final GPU gpu = GPU.getInstance();
 
-	// Gets switched out at end of actual Gameboy boot up, when $FF50 is written to.
+	// Gets switched out at end of actual Game Boy boot up, when $FF50 is written
+	// to.
 	private int[] bootRom = new int[0xFF];
 	private boolean bootRomEnabled = true;
 
@@ -59,7 +68,7 @@ public class MMU {
 	 * MMU constructor. Simply loads the boot ROM.
 	 */
 	private MMU() {
-		ROMParser bootROM = new ROMParser();
+		ROMParser bootROM = ROMParser.getInstance();
 		try {
 			bootROM.loadROM("dmg_boot.bin");
 			loadBootROM(bootROM.getROMAsArray());
@@ -80,7 +89,7 @@ public class MMU {
 	/**
 	 * Handles reading a byte from the correct region of memory, based on memory
 	 * address.
-	 * 
+	 *
 	 * @param address
 	 *            - Address of the byte to read from memory.
 	 * @return The byte from memory.
@@ -116,7 +125,7 @@ public class MMU {
 					return oam[address & 0x9F];
 				} else if (address >= 0xFF80 && address < 0xFFFF) {
 					return zeroPage[address & 0x7F];
-				} else if (address == 0xFF00) {
+				} else if (address == JOY_PAD_REGISTER) {
 					return joyPadRegister;
 				}
 
@@ -133,11 +142,21 @@ public class MMU {
 					return gpu.getLY();
 				}
 
+				// ignore CGB speed switch
+				else if (address == 0xFF4D) {
+					return 0xFF;
+				}
+
 				// Interrupt Flag/Enable
-				else if (address == 0xFFFF) {
+				else if (address == INTERRUPT_ENABLE) {
 					return interruptEnable;
-				} else if (address == 0xFF0F) {
+				} else if (address == INTERRUPT_FLAG) {
 					return interruptFlag;
+				}
+
+				// Timer register read
+				else if (address >= TIMER_DIV_REGISTER && address <= TIMER_TAC_REGISTER) {
+					return timer.readSystemTimerRegister(address);
 				}
 
 				// If address = unused range, I/O registers, or interrupt register, return 0 for
@@ -171,32 +190,21 @@ public class MMU {
 		BitUtil.checkIsWord(address);
 		BitUtil.checkIsByte(value);
 		switch (address & 0xF000) {
-			case 0x0000, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000, 0x6000, 0x7000 :
-				break; // we don't write to ROM!
+			case 0x0000, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000, 0x6000, 0x7000 -> System.out.println(
+					String.format("Attempted write to ROM, MBC1? Address: 0x%X | Value: 0x%X", address, value));
+			// we don't write to ROM!
 
-			case 0x8000, 0x9000 :
-				videoRam[address & 0x1FFF] = value;
-				break;
-
-			case 0xA000, 0xB000 :
-				extRam[address & 0x1FFF] = value;
-				break;
-
-			case 0xC000, 0xD000, 0xE000 :
-				workRam[address & 0x1FFF] = value;
-				break;
-
-			case 0xF000 :
+			case 0x8000, 0x9000 -> videoRam[address & 0x1FFF] = value;
+			case 0xA000, 0xB000 -> extRam[address & 0x1FFF] = value;
+			case 0xC000, 0xD000, 0xE000 -> workRam[address & 0x1FFF] = value;
+			case 0xF000 -> {
 				if (address < 0xFE00) {
 					workRam[address & 0x1FFF] = value;
 				} else if (address < 0xFEA0) {
 					oam[address & 0x9F] = value;
 				} else if (address >= 0xFF80 && address < 0xFFFF) {
 					zeroPage[address & 0x7F] = value;
-				}
-
-				else if (address == 0xFF00) {
-					break;
+				} else if (address == JOY_PAD_REGISTER) {
 				}
 
 				// GPU hookups
@@ -215,9 +223,9 @@ public class MMU {
 				}
 
 				// Interrupt Flag/Enable
-				else if (address == 0xFF0F) {
+				else if (address == INTERRUPT_FLAG) {
 					interruptFlag = value;
-				} else if (address == 0xFFFF) {
+				} else if (address == INTERRUPT_ENABLE) {
 					interruptEnable = value;
 				}
 
@@ -226,10 +234,12 @@ public class MMU {
 					bootRomEnabled = false;
 				}
 
-				break;
-
-			default :
-				throw new IllegalArgumentException("Unhandled memory write at address: " + address);
+				// Timer register write
+				else if (address >= TIMER_DIV_REGISTER && address <= TIMER_TAC_REGISTER) {
+					timer.writeSystemTimerRegister(address, value);
+				}
+			}
+			default -> throw new IllegalArgumentException("Unhandled memory write at address: " + address);
 		}
 	}
 

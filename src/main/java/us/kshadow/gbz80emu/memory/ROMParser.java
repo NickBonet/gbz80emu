@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+@SuppressWarnings("java:S6548")
 public class ROMParser {
+
+	private static final ROMParser instance = new ROMParser();
 
 	// Integer array that the ROM file is loaded into.
 	private int[] romArray;
@@ -100,5 +103,9 @@ public class ROMParser {
 
 	public int[] getROMAsArray() {
 		return romArray;
+	}
+
+	public static ROMParser getInstance() {
+		return instance;
 	}
 }

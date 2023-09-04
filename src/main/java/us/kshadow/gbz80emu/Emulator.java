@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import us.kshadow.gbz80emu.memory.ROMParser;
 import us.kshadow.gbz80emu.processor.CPU;
 import us.kshadow.gbz80emu.graphics.GPU;
+import us.kshadow.gbz80emu.sysclock.SystemTimer;
 import us.kshadow.gbz80emu.util.MiscUtil;
 
 /**
@@ -19,7 +20,8 @@ public class Emulator extends JPanel {
 	public static final int WINDOW_HEIGHT = 432;
 	private final transient CPU cpu;
 	private static final GPU gpu = GPU.getInstance();
-	private final transient ROMParser testROM = new ROMParser();
+	private static final SystemTimer timer = SystemTimer.getInstance();
+	private final transient ROMParser testROM = ROMParser.getInstance();
 	private final transient BufferedImage gbDisplay;
 	private boolean emuRunning;
 	private String currentRomFile = "test_roms/cpu_instrs.gb";
@@ -51,11 +53,9 @@ public class Emulator extends JPanel {
 		while (emuRunning) {
 			if (cpu.isRunning()) { // for STOP instruction
 				while (cpu.getCycles() <= 70224) {
-					int cycles = cpu.nextInstruction();
-					gpu.nextStep(cycles);
-					cycles = cpu.handleInterrupt();
-					gpu.addCycles(cycles);
+					nextSystemStep();
 				}
+
 				if (cpu.getCycles() >= 70224) {
 					cpu.resetCyclesAfterFrame();
 					repaint();
@@ -72,12 +72,14 @@ public class Emulator extends JPanel {
 	}
 
 	/**
-	 * Allows for a single step of the system to be executed. (CPU/GPU)
+	 * Allows for a single step of the system to be executed. Intended for debug
+	 * (CPU/GPU)
 	 */
-	public void nextStep() {
-		int cycles = cpu.nextInstruction();
+	public void nextDebugStep() {
+		nextInstructionStep();
 		cpu.getRegisters().print();
-		gpu.nextStep(cycles);
+		nextInterruptStep();
+
 		if (cpu.getCycles() >= 70224) {
 			cpu.resetCyclesAfterFrame();
 			repaint();
@@ -142,5 +144,32 @@ public class Emulator extends JPanel {
 	public void setCurrentRomFile(String currentRomFile) {
 		this.currentRomFile = currentRomFile;
 		setupEmuROM(currentRomFile);
+	}
+
+	/**
+	 * Run next CPU instruction and subsystems steps as well.
+	 */
+	private void nextInstructionStep() {
+		int cycles = cpu.nextInstruction();
+		timer.handleTimerTick(cycles);
+		gpu.nextStep(cycles);
+	}
+
+	/**
+	 * Handle interrupts and subsystem steps as well.
+	 */
+	private void nextInterruptStep() {
+		int cycles = cpu.handleInterrupt();
+		timer.handleTimerTick(cycles);
+		gpu.addCycles(cycles);
+	}
+
+	/**
+	 * Next step in the system as a whole, both instruction processing & interrupt
+	 * handling. Can add onto this as needed.
+	 */
+	private void nextSystemStep() {
+		nextInstructionStep();
+		nextInterruptStep();
 	}
 }
