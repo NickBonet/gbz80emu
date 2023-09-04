@@ -20,8 +20,6 @@ public class ControlFlow {
 	private ControlFlow() {
 	}
 
-	// TODO: Implement HALT
-
 	/**
 	 * DI - Disables any potential interrupts
 	 */
