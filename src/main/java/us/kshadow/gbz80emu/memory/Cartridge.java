@@ -6,9 +6,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 @SuppressWarnings("java:S6548")
-public class ROMParser {
+public class Cartridge {
 
-	private static final ROMParser instance = new ROMParser();
+	private static final Cartridge instance = new Cartridge();
 
 	// Integer array that the ROM file is loaded into.
 	private int[] romArray;
@@ -19,8 +19,12 @@ public class ROMParser {
 			0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33,
 			0x3E};
 
+	private Cartridge() {
+
+	}
+
 	/**
-	 * Loads a Gameboy ROM into an integer array.
+	 * Loads a Game Boy ROM into an integer array.
 	 * 
 	 * @param file
 	 *            - The ROM file to load.
@@ -101,11 +105,11 @@ public class ROMParser {
 		return (sumInCart == check);
 	}
 
-	public int[] getROMAsArray() {
+	public int[] getROM() {
 		return romArray;
 	}
 
-	public static ROMParser getInstance() {
+	public static Cartridge getInstance() {
 		return instance;
 	}
 }

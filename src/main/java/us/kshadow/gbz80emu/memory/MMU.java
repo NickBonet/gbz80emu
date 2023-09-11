@@ -18,6 +18,7 @@ import static us.kshadow.gbz80emu.constants.MemoryAddresses.*;
 @SuppressWarnings("java:S6548")
 public class MMU {
 
+	private static final Cartridge cartridge = Cartridge.getInstance();
 	private static final MMU instance = new MMU();
 	private static final SystemTimer timer = SystemTimer.getInstance();
 	private static final GPU gpu = GPU.getInstance();
@@ -36,6 +37,8 @@ public class MMU {
 	// it's > 32kb.
 	// Else, this is just the 2nd bank of a 32kb ROM.
 	private int[] romBank1 = new int[0x4000];
+
+	private int currentBank = 1;
 
 	// 0x8000 - 0x9FFF - VRAM (will be properly segmented later on)
 	private final int[] videoRam = new int[0x2000];
@@ -64,10 +67,9 @@ public class MMU {
 	 * MMU constructor. Simply loads the boot ROM.
 	 */
 	private MMU() {
-		ROMParser bootROM = ROMParser.getInstance();
 		try {
-			bootROM.loadROM("dmg_boot.bin");
-			loadBootROM(bootROM.getROMAsArray());
+			cartridge.loadROM("dmg_boot.bin");
+			loadBootROM(cartridge.getROM());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -95,15 +97,19 @@ public class MMU {
 		switch (address & 0xF000) {
 			case 0x0000 -> {
 				if (address < 0x100) {
-					return bootRomEnabled ? bootRom[address] : romBank0[address];
+					return bootRomEnabled ? bootRom[address] : cartridge.getROM()[address];
 				}
-				return romBank0[address];
+				return cartridge.getROM()[address];
 			}
 			case 0x1000, 0x2000, 0x3000 -> {
-				return romBank0[address];
+				return cartridge.getROM()[address];
 			}
 			case 0x4000, 0x5000, 0x6000, 0x7000 -> {
-				return romBank1[address & 0x3FFF];
+				if (currentBank <= 1) {
+					return cartridge.getROM()[address];
+				} else {
+					return cartridge.getROM()[address + (0x4000 * (currentBank - 1))];
+				}
 			}
 			case 0x8000, 0x9000 -> {
 				return videoRam[address & 0x1FFF];
@@ -186,9 +192,16 @@ public class MMU {
 		BitUtil.checkIsWord(address);
 		BitUtil.checkIsByte(value);
 		switch (address & 0xF000) {
-			case 0x0000, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000, 0x6000, 0x7000 -> System.out.println(
-					String.format("Attempted write to ROM, MBC1? Address: 0x%X | Value: 0x%X", address, value));
-			// we don't write to ROM!
+			case 0x0000, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000, 0x6000, 0x7000 -> {
+				// we don't write to ROM! besides for MBC registers
+				if (address >= 0x2000 && address <= 0x3FFF) {
+					if (value == 0x00 || value == 0x20 || value == 0x40 || value == 0x60) {
+						currentBank = value + 1;
+					} else {
+						currentBank = value;
+					}
+				}
+			}
 
 			case 0x8000, 0x9000 -> videoRam[address & 0x1FFF] = value;
 			case 0xA000, 0xB000 -> extRam[address & 0x1FFF] = value;

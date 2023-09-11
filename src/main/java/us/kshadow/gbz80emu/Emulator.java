@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import us.kshadow.gbz80emu.memory.ROMParser;
+import us.kshadow.gbz80emu.memory.Cartridge;
 import us.kshadow.gbz80emu.processor.CPU;
 import us.kshadow.gbz80emu.graphics.GPU;
 import us.kshadow.gbz80emu.sysclock.SystemTimer;
@@ -21,7 +21,7 @@ public class Emulator extends JPanel {
 	private final transient CPU cpu;
 	private static final GPU gpu = GPU.getInstance();
 	private static final SystemTimer timer = SystemTimer.getInstance();
-	private final transient ROMParser testROM = ROMParser.getInstance();
+	private final transient Cartridge testROM = Cartridge.getInstance();
 	private final transient BufferedImage gbDisplay;
 	private boolean emuRunning;
 	private String currentRomFile = "test_roms/cpu_instrs.gb";
@@ -39,7 +39,7 @@ public class Emulator extends JPanel {
 	private void setupEmuROM(String currentRomFile) {
 		try {
 			testROM.loadROM(currentRomFile);
-			cpu.getMMU().loadROM(testROM.getROMAsArray());
+			cpu.getMMU().loadROM(testROM.getROM());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
