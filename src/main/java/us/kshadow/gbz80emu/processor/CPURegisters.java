@@ -17,7 +17,7 @@ import us.kshadow.gbz80emu.util.BitUtil;
 public class CPURegisters {
 
 	private static final CPURegisters instance = new CPURegisters();
-	private static final Logger logger = Logger.getLogger("GBZ80Emu");
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 
 	// The 8 basic 8-bit CPU registers.
 	private int a;

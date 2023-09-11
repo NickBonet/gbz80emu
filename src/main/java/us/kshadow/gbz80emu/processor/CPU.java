@@ -21,7 +21,7 @@ public class CPU {
 
 	private static final CPURegisters reg = CPURegisters.getInstance();
 	private static final MMU mmu = MMU.getInstance();
-	private static final Logger logger = Logger.getLogger("GBZ80Emu");
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	private int cpuCycles;
 	private boolean isRunning;
 	private boolean delayedEI;

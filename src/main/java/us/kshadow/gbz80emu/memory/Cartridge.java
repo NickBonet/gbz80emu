@@ -59,6 +59,15 @@ public class Cartridge {
 	}
 
 	/**
+	 * Get the current MBC type for the loaded ROM.
+	 * 
+	 * @return MBC type as int
+	 */
+	public int getMBCType() {
+		return romArray[0x147];
+	}
+
+	/**
 	 * Checks if the embedded Nintendo logo in the header matches the normal logo
 	 * bytes.
 	 * 
