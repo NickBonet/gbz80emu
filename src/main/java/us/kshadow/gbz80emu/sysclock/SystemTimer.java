@@ -59,7 +59,10 @@ public class SystemTimer {
 	 */
 	public void writeSystemTimerRegister(int address, int value) {
 		switch (address) {
-			case TIMER_DIV_REGISTER -> divRegister = 0;
+			case TIMER_DIV_REGISTER -> {
+				divRegister = 0;
+				timaRegister = 0;
+			}
 			case TIMER_TIMA_REGISTER -> timaRegister = value;
 			case TIMER_TMA_REGISTER -> tmaRegister = value;
 			case TIMER_TAC_REGISTER -> tacRegister = value;
