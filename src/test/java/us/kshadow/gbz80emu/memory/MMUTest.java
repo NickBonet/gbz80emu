@@ -31,7 +31,6 @@ class MMUTest {
 	@Test
 	void testWriteThenReadROM() {
 		setup();
-		mmu.loadROM(testROM.getROM());
 
 		int[] readBank0 = new int[0x4000];
 		int[] readBank1 = new int[0x4000];

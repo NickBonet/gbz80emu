@@ -2,6 +2,8 @@ package us.kshadow.gbz80emu.memory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import us.kshadow.gbz80emu.graphics.GPU;
 import us.kshadow.gbz80emu.sysclock.SystemTimer;
@@ -18,6 +20,7 @@ import static us.kshadow.gbz80emu.constants.MemoryAddresses.*;
 @SuppressWarnings("java:S6548")
 public class MMU {
 
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	private static final Cartridge cartridge = Cartridge.getInstance();
 	private static final MMU instance = new MMU();
 	private static final SystemTimer timer = SystemTimer.getInstance();
@@ -27,16 +30,6 @@ public class MMU {
 	// to.
 	private int[] bootRom = new int[0xFF];
 	private boolean bootRomEnabled = true;
-
-	// 0x0000 - 0x3FFF - ROM Bank 0
-	// This section of memory is mapped to the first 16kb of a GB ROM.
-	private int[] romBank0 = new int[0x4000];
-
-	// 0x4000 - 0x7FFF - ROM Bank 1
-	// This section can be dynamically switched to another section of a GB ROM if
-	// it's > 32kb.
-	// Else, this is just the 2nd bank of a 32kb ROM.
-	private int[] romBank1 = new int[0x4000];
 
 	private int currentBank = 1;
 
@@ -193,6 +186,7 @@ public class MMU {
 		BitUtil.checkIsByte(value);
 		switch (address & 0xF000) {
 			case 0x0000, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000, 0x6000, 0x7000 -> {
+				logger.log(Level.INFO, "MBC type: {0}", cartridge.getMBCType());
 				// we don't write to ROM! besides for MBC registers
 				if (address >= 0x2000 && address <= 0x3FFF) {
 					if (value == 0x00 || value == 0x20 || value == 0x40 || value == 0x60) {
@@ -267,17 +261,6 @@ public class MMU {
 	}
 
 	/**
-	 * Initial load of ROM into bank arrays.
-	 * 
-	 * @param romArray
-	 *            - ROM banks as array.
-	 */
-	public void loadROM(int[] romArray) {
-		romBank0 = Arrays.copyOfRange(romArray, 0x0000, 0x4000); // 0x0000 - 0x3FFF
-		romBank1 = Arrays.copyOfRange(romArray, 0x4000, 0x8000); // 0x4000 - 0x7FFF
-	}
-
-	/**
 	 * Initial load of boot ROM into its array.
 	 * 
 	 * @param boot
@@ -302,8 +285,6 @@ public class MMU {
 	 * Fills all the memory region arrays with 0, effectively resetting them.
 	 */
 	public void clearMemory() {
-		Arrays.fill(romBank0, 0);
-		Arrays.fill(romBank1, 0);
 		Arrays.fill(videoRam, 0);
 		Arrays.fill(extRam, 0);
 		Arrays.fill(workRam, 0);

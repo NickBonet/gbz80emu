@@ -39,7 +39,6 @@ public class Emulator extends JPanel {
 	private void setupEmuROM(String currentRomFile) {
 		try {
 			testROM.loadROM(currentRomFile);
-			cpu.getMMU().loadROM(testROM.getROM());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
