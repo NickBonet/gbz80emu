@@ -33,6 +33,10 @@ public class MMU {
 
 	private int currentBank = 1;
 
+	private int bankIndex1;
+
+	private int bankIndex2;
+
 	// 0x8000 - 0x9FFF - VRAM (will be properly segmented later on)
 	private final int[] videoRam = new int[0x2000];
 
@@ -101,7 +105,8 @@ public class MMU {
 				if (currentBank <= 1) {
 					return cartridge.getROM()[address];
 				} else {
-					return cartridge.getROM()[address + (0x4000 * (currentBank - 1))];
+					int correctedBankMask = (int) (Math.pow(2, cartridge.getROMSize() + 1.0)) - 1;
+					return cartridge.getROM()[address + (0x4000 * ((currentBank & correctedBankMask) - 1))];
 				}
 			}
 			case 0x8000, 0x9000 -> {
@@ -186,14 +191,33 @@ public class MMU {
 		BitUtil.checkIsByte(value);
 		switch (address & 0xF000) {
 			case 0x0000, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000, 0x6000, 0x7000 -> {
-				logger.log(Level.INFO, "MBC type: {0}", cartridge.getMBCType());
+
 				// we don't write to ROM! besides for MBC registers
+				if (address >= 0x0000 && address <= 0x1FFF) {
+					logger.log(Level.INFO, "MBC RAM Enable: {0}", value);
+				}
+
 				if (address >= 0x2000 && address <= 0x3FFF) {
-					if (value == 0x00 || value == 0x20 || value == 0x40 || value == 0x60) {
+					int maskedValue = value & 0b00011111;
+					if (maskedValue == 0x10 && cartridge.getROMSize() < 0x4) {
+						// specific case for ROMs < 256KiB in size according to Pan Docs
+						currentBank = 0;
+					}
+					if (value == 0x20 || value == 0x40 || value == 0x60) {
 						currentBank = value + 1;
 					} else {
-						currentBank = value;
+						currentBank = maskedValue;
 					}
+				}
+
+				if (address >= 0x4000 && address <= 0x5FFF) {
+					logger.log(Level.INFO, "MBC Bank2 Write Addr: {0} Value: {1}",
+							new Object[]{String.format("0x%X", address), value});
+				}
+
+				if (address >= 0x6000 && address <= 0x7FFF) {
+					logger.log(Level.INFO, "MBC Mode Write Addr: {0} Value: {1}",
+							new Object[]{String.format("0x%X", address), value});
 				}
 			}
 

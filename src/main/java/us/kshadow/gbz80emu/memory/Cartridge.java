@@ -68,6 +68,15 @@ public class Cartridge {
 	}
 
 	/**
+	 * Get the ROM size from the header for the loader ROM.
+	 *
+	 * @return ROM size as int
+	 */
+	public int getROMSize() {
+		return romArray[0x148];
+	}
+
+	/**
 	 * Checks if the embedded Nintendo logo in the header matches the normal logo
 	 * bytes.
 	 * 

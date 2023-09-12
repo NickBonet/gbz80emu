@@ -4,6 +4,8 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import us.kshadow.gbz80emu.memory.Cartridge;
@@ -16,6 +18,8 @@ import us.kshadow.gbz80emu.util.MiscUtil;
  * Emulator - Where all the moving parts are tied together to load GB games.
  */
 public class Emulator extends JPanel {
+
+	private final Logger logger = Logger.getLogger(getClass().getName());
 	public static final int WINDOW_WIDTH = 480;
 	public static final int WINDOW_HEIGHT = 432;
 	private final transient CPU cpu;
@@ -39,6 +43,8 @@ public class Emulator extends JPanel {
 	private void setupEmuROM(String currentRomFile) {
 		try {
 			testROM.loadROM(currentRomFile);
+			logger.log(Level.INFO, "ROM MBC type: {0} | ROM size: {1}",
+					new Object[]{testROM.getMBCType(), testROM.getROMSize()});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
