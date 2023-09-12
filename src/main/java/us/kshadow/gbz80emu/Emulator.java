@@ -50,6 +50,9 @@ public class Emulator extends JPanel {
 
 			if (testROM.getMBCType() >= 1 && testROM.getMBCType() <= 3) {
 				cpu.getMMU().setMBC(new MBC1());
+			} else {
+				// Unimplemented MBC
+				cpu.getMMU().setMBC(null);
 			}
 
 		} catch (IOException e) {
