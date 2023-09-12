@@ -68,12 +68,21 @@ public class Cartridge {
 	}
 
 	/**
-	 * Get the ROM size from the header for the loader ROM.
+	 * Get the ROM size from the header for the loaded ROM.
 	 *
 	 * @return ROM size as int
 	 */
 	public int getROMSize() {
 		return romArray[0x148];
+	}
+
+	/**
+	 * Get the RAM size from the header for the loaded ROM.
+	 *
+	 * @return RAM size as int
+	 */
+	public int getRAMSize() {
+		return romArray[0x149];
 	}
 
 	/**

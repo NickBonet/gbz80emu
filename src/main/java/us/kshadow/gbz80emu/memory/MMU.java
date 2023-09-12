@@ -40,11 +40,13 @@ public class MMU {
 
 	private int mbc1Mode = 0;
 
-	// 0x8000 - 0x9FFF - VRAM (will be properly segmented later on)
-	private final int[] videoRam = new int[0x2000];
+	private boolean extRamEnabled;
 
 	// 0xA000 - 0xBFFF - External Cart RAM
-	private final int[] extRam = new int[0x2000];
+	private final int[] extRam = new int[0x8000];
+
+	// 0x8000 - 0x9FFF - VRAM (will be properly segmented later on)
+	private final int[] videoRam = new int[0x2000];
 
 	// 0xC000 - 0xDFFF - Working RAM
 	// 0xE000 - 0xFDFF - Shadow of working RAM (last 512 bytes aren't shadowed)
@@ -110,7 +112,7 @@ public class MMU {
 			}
 			case 0x4000, 0x5000, 0x6000, 0x7000 -> {
 				if (cartridge.getROMSize() >= 5) {
-					// TODO: test mbc1m ROM, different formula
+					// TODO: test mbc1m ROM, differences in MBC handling
 					currentBank = (bankIndex2 << 5) | bankIndex1;
 				} else {
 					currentBank = bankIndex1;
@@ -131,7 +133,15 @@ public class MMU {
 				return videoRam[address & 0x1FFF];
 			}
 			case 0xA000, 0xB000 -> {
-				return extRam[address & 0x1FFF];
+				if (extRamEnabled) {
+					if (mbc1Mode == 1 && cartridge.getRAMSize() > 2) {
+						int translatedAddress = address & 0x1FFF;
+						return extRam[translatedAddress + (0x2000 * bankIndex2)];
+					} else {
+						return extRam[address & 0x1FFF];
+					}
+				}
+				return 0xFF;
 			}
 			case 0xC000, 0xD000, 0xE000 -> {
 				return workRam[address & 0x1FFF];
@@ -213,6 +223,7 @@ public class MMU {
 				// we don't write to ROM! besides for MBC registers
 				if (address >= 0x0000 && address <= 0x1FFF) {
 					logger.log(Level.INFO, "MBC RAM Enable: {0}", value);
+					extRamEnabled = ((value & 0xF) == 0xA);
 				}
 
 				if (address >= 0x2000 && address <= 0x3FFF) {
@@ -221,15 +232,26 @@ public class MMU {
 
 				if (address >= 0x4000 && address <= 0x5FFF) {
 					bankIndex2 = value & 0x3;
+					logger.log(Level.INFO, "MBC RAM Bank: {0}", bankIndex2);
 				}
 
 				if (address >= 0x6000 && address <= 0x7FFF) {
+					logger.log(Level.INFO, "MBC Mode: {0}", value);
 					mbc1Mode = value;
 				}
 			}
 
 			case 0x8000, 0x9000 -> videoRam[address & 0x1FFF] = value;
-			case 0xA000, 0xB000 -> extRam[address & 0x1FFF] = value;
+			case 0xA000, 0xB000 -> {
+				if (extRamEnabled) {
+					if (mbc1Mode == 1 && cartridge.getRAMSize() > 2) {
+						int translatedAddress = address & 0x1FFF;
+						extRam[translatedAddress + (0x2000 * (bankIndex2))] = value;
+					} else {
+						extRam[address & 0x1FFF] = value;
+					}
+				}
+			}
 			case 0xC000, 0xD000, 0xE000 -> workRam[address & 0x1FFF] = value;
 			case 0xF000 -> {
 				if (address < 0xFE00) {

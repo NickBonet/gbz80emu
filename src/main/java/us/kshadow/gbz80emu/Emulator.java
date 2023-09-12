@@ -43,8 +43,8 @@ public class Emulator extends JPanel {
 	private void setupEmuROM(String currentRomFile) {
 		try {
 			testROM.loadROM(currentRomFile);
-			logger.log(Level.INFO, "ROM MBC type: {0} | ROM size: {1}",
-					new Object[]{testROM.getMBCType(), testROM.getROMSize()});
+			logger.log(Level.INFO, "ROM MBC type: {0} | ROM size: {1} | RAM size: {2}",
+					new Object[]{testROM.getMBCType(), testROM.getROMSize(), testROM.getRAMSize()});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
