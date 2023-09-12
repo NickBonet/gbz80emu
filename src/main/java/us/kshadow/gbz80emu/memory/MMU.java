@@ -31,11 +31,14 @@ public class MMU {
 	private int[] bootRom = new int[0xFF];
 	private boolean bootRomEnabled = true;
 
+	// MBC1 variables, refactoring out of this class once logic is sound.
 	private int currentBank = 1;
 
 	private int bankIndex1;
 
 	private int bankIndex2;
+
+	private int mbc1Mode = 0;
 
 	// 0x8000 - 0x9FFF - VRAM (will be properly segmented later on)
 	private final int[] videoRam = new int[0x2000];
@@ -92,20 +95,35 @@ public class MMU {
 	public int readByte(int address) {
 		BitUtil.checkIsWord(address);
 		switch (address & 0xF000) {
-			case 0x0000 -> {
-				if (address < 0x100) {
-					return bootRomEnabled ? bootRom[address] : cartridge.getROM()[address];
+			case 0x0000, 0x1000, 0x2000, 0x3000 -> {
+				if (bootRomEnabled && address < 0x100) {
+					return bootRom[address];
 				}
-				return cartridge.getROM()[address];
-			}
-			case 0x1000, 0x2000, 0x3000 -> {
+
+				if (mbc1Mode == 1) {
+					currentBank = (bankIndex2 << 5);
+					int correctedBankMask = (int) Math.pow(2, cartridge.getROMSize() + 1.0) - 1;
+					return cartridge.getROM()[address + (0x4000 * (currentBank & correctedBankMask))];
+				}
+
 				return cartridge.getROM()[address];
 			}
 			case 0x4000, 0x5000, 0x6000, 0x7000 -> {
+				if (cartridge.getROMSize() >= 5) {
+					// TODO: test mbc1m ROM, different formula
+					currentBank = (bankIndex2 << 5) | bankIndex1;
+				} else {
+					currentBank = bankIndex1;
+				}
+
+				if (currentBank == 0x20 || currentBank == 0x40 || currentBank == 0x60) {
+					currentBank++;
+				}
+
 				if (currentBank <= 1) {
 					return cartridge.getROM()[address];
 				} else {
-					int correctedBankMask = (int) (Math.pow(2, cartridge.getROMSize() + 1.0)) - 1;
+					int correctedBankMask = (int) Math.pow(2, cartridge.getROMSize() + 1.0) - 1;
 					return cartridge.getROM()[address + (0x4000 * ((currentBank & correctedBankMask) - 1))];
 				}
 			}
@@ -198,26 +216,15 @@ public class MMU {
 				}
 
 				if (address >= 0x2000 && address <= 0x3FFF) {
-					int maskedValue = value & 0b00011111;
-					if (maskedValue == 0x10 && cartridge.getROMSize() < 0x4) {
-						// specific case for ROMs < 256KiB in size according to Pan Docs
-						currentBank = 0;
-					}
-					if (value == 0x20 || value == 0x40 || value == 0x60) {
-						currentBank = value + 1;
-					} else {
-						currentBank = maskedValue;
-					}
+					bankIndex1 = value & 0b00011111;
 				}
 
 				if (address >= 0x4000 && address <= 0x5FFF) {
-					logger.log(Level.INFO, "MBC Bank2 Write Addr: {0} Value: {1}",
-							new Object[]{String.format("0x%X", address), value});
+					bankIndex2 = value & 0x3;
 				}
 
 				if (address >= 0x6000 && address <= 0x7FFF) {
-					logger.log(Level.INFO, "MBC Mode Write Addr: {0} Value: {1}",
-							new Object[]{String.format("0x%X", address), value});
+					mbc1Mode = value;
 				}
 			}
 
