@@ -1,8 +1,7 @@
 package us.kshadow.gbz80emu.processor;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import us.kshadow.gbz80emu.util.BitUtil;
 
 /**
@@ -17,7 +16,7 @@ import us.kshadow.gbz80emu.util.BitUtil;
 public class CPURegisters {
 
 	private static final CPURegisters instance = new CPURegisters();
-	private final Logger logger = Logger.getLogger(this.getClass().getName());
+	private static final Logger logger = LoggerFactory.getLogger(CPURegisters.class);
 
 	// The 8 basic 8-bit CPU registers.
 	private int a;
@@ -70,7 +69,7 @@ public class CPURegisters {
 				l, pc, sp);
 		String flags = String.format("[FR]: Zero: %s, Negative: %s, Carry: %s, HalfCarry: %s", getFR().isZ(),
 				getFR().isN(), getFR().isC(), getFR().isH());
-		logger.log(Level.INFO, "{0} \n {1}", new Object[]{registers, flags});
+		logger.debug("{} \n {}", registers, flags);
 	}
 
 	/**

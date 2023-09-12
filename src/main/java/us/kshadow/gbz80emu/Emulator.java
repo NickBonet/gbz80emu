@@ -4,11 +4,13 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import us.kshadow.gbz80emu.memory.Cartridge;
+import us.kshadow.gbz80emu.memory.mbc.MBC1;
 import us.kshadow.gbz80emu.processor.CPU;
 import us.kshadow.gbz80emu.graphics.GPU;
 import us.kshadow.gbz80emu.sysclock.SystemTimer;
@@ -19,7 +21,7 @@ import us.kshadow.gbz80emu.util.MiscUtil;
  */
 public class Emulator extends JPanel {
 
-	private final Logger logger = Logger.getLogger(getClass().getName());
+	private static final Logger logger = LoggerFactory.getLogger(Emulator.class);
 	public static final int WINDOW_WIDTH = 480;
 	public static final int WINDOW_HEIGHT = 432;
 	private final transient CPU cpu;
@@ -43,8 +45,13 @@ public class Emulator extends JPanel {
 	private void setupEmuROM(String currentRomFile) {
 		try {
 			testROM.loadROM(currentRomFile);
-			logger.log(Level.INFO, "ROM MBC type: {0} | ROM size: {1} | RAM size: {2}",
-					new Object[]{testROM.getMBCType(), testROM.getROMSize(), testROM.getRAMSize()});
+			logger.info("ROM loaded! | MBC type: {} | ROM size: {} | RAM size: {}", testROM.getMBCType(),
+					testROM.getROMSize(), testROM.getRAMSize());
+
+			if (testROM.getMBCType() >= 1 && testROM.getMBCType() <= 3) {
+				cpu.getMMU().setMBC(new MBC1());
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

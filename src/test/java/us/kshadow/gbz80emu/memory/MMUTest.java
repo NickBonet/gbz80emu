@@ -110,9 +110,6 @@ class MMUTest {
 		int[] vRam = new int[0x2000];
 		int[] vRamFull = new int[0x2000];
 
-		int[] extRam = new int[0x8000];
-		int[] extRamFull = new int[0x8000];
-
 		int[] wRam = new int[0x2000];
 		int[] wRamFull = new int[0x2000];
 
@@ -125,7 +122,6 @@ class MMUTest {
 		int[] zeroPageFull = new int[0x7F];
 
 		Arrays.fill(vRamFull, 0x59);
-		// Arrays.fill(extRamFull, 0x74);
 		Arrays.fill(wRamFull, 0x87);
 		Arrays.fill(oamFull, 0x22);
 		Arrays.fill(zeroPageFull, 0x22);
@@ -134,8 +130,6 @@ class MMUTest {
 			mmu.writeByte(0x8000 + i, 0x59); // VRAM
 			vRam[i] = mmu.readByte(0x8000 + i);
 			mmu.writeByte(0xA000 + i, 0x74); // Ext RAM
-			extRam[i] = mmu.readByte(0xA000 + i);
-			extRamFull[i] = mmu.readByte(0xA000 + i);
 			mmu.writeByte(0xC000 + i, 0x87); // Working RAM
 			wRam[i] = mmu.readByte(0xC000 + i);
 		}
@@ -145,7 +139,6 @@ class MMUTest {
 		}
 
 		assertArrayEquals(vRam, vRamFull);
-		assertArrayEquals(extRam, extRamFull);
 		assertArrayEquals(wRam, wRamFull);
 		assertArrayEquals(Arrays.copyOfRange(wRam, 0, 0x1E00), echoRam);
 

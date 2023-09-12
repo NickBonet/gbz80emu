@@ -2,10 +2,9 @@ package us.kshadow.gbz80emu.memory;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import us.kshadow.gbz80emu.graphics.GPU;
+import us.kshadow.gbz80emu.memory.mbc.MBC;
 import us.kshadow.gbz80emu.sysclock.SystemTimer;
 import us.kshadow.gbz80emu.util.BitUtil;
 
@@ -20,30 +19,18 @@ import static us.kshadow.gbz80emu.constants.MemoryAddresses.*;
 @SuppressWarnings("java:S6548")
 public class MMU {
 
-	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	private static final Cartridge cartridge = Cartridge.getInstance();
+
 	private static final MMU instance = new MMU();
+
 	private static final SystemTimer timer = SystemTimer.getInstance();
+
 	private static final GPU gpu = GPU.getInstance();
 
 	// Gets switched out at end of actual Game Boy boot up, when $FF50 is written
 	// to.
 	private int[] bootRom = new int[0xFF];
 	private boolean bootRomEnabled = true;
-
-	// MBC1 variables, refactoring out of this class once logic is sound.
-	private int currentBank = 1;
-
-	private int bankIndex1;
-
-	private int bankIndex2;
-
-	private int mbc1Mode = 0;
-
-	private boolean extRamEnabled;
-
-	// 0xA000 - 0xBFFF - External Cart RAM
-	private final int[] extRam = new int[0x8000];
 
 	// 0x8000 - 0x9FFF - VRAM (will be properly segmented later on)
 	private final int[] videoRam = new int[0x2000];
@@ -64,6 +51,8 @@ public class MMU {
 
 	private int interruptFlag = 0; // 0xFF0F
 	private int interruptEnable = 0; // 0xFFFF
+
+	private MBC mbc;
 
 	/**
 	 * MMU constructor. Simply loads the boot ROM.
@@ -102,44 +91,25 @@ public class MMU {
 					return bootRom[address];
 				}
 
-				if (mbc1Mode == 1) {
-					currentBank = (bankIndex2 << 5);
-					int correctedBankMask = (int) Math.pow(2, cartridge.getROMSize() + 1.0) - 1;
-					return cartridge.getROM()[address + (0x4000 * (currentBank & correctedBankMask))];
+				if (mbc != null) {
+					return mbc.handleMBCReadROM(address);
+				} else {
+					return cartridge.getROM()[address];
 				}
-
-				return cartridge.getROM()[address];
 			}
 			case 0x4000, 0x5000, 0x6000, 0x7000 -> {
-				if (cartridge.getROMSize() >= 5) {
-					// TODO: test mbc1m ROM, differences in MBC handling
-					currentBank = (bankIndex2 << 5) | bankIndex1;
+				if (mbc != null) {
+					return mbc.handleMBCReadROM(address);
 				} else {
-					currentBank = bankIndex1;
-				}
-
-				if (currentBank == 0x20 || currentBank == 0x40 || currentBank == 0x60) {
-					currentBank++;
-				}
-
-				if (currentBank <= 1) {
 					return cartridge.getROM()[address];
-				} else {
-					int correctedBankMask = (int) Math.pow(2, cartridge.getROMSize() + 1.0) - 1;
-					return cartridge.getROM()[address + (0x4000 * ((currentBank & correctedBankMask) - 1))];
 				}
 			}
 			case 0x8000, 0x9000 -> {
 				return videoRam[address & 0x1FFF];
 			}
 			case 0xA000, 0xB000 -> {
-				if (extRamEnabled) {
-					if (mbc1Mode == 1 && cartridge.getRAMSize() > 2) {
-						int translatedAddress = address & 0x1FFF;
-						return extRam[translatedAddress + (0x2000 * bankIndex2)];
-					} else {
-						return extRam[address & 0x1FFF];
-					}
+				if (mbc != null) {
+					return mbc.handleMBCReadRAM(address);
 				}
 				return 0xFF;
 			}
@@ -219,37 +189,16 @@ public class MMU {
 		BitUtil.checkIsByte(value);
 		switch (address & 0xF000) {
 			case 0x0000, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000, 0x6000, 0x7000 -> {
-
 				// we don't write to ROM! besides for MBC registers
-				if (address >= 0x0000 && address <= 0x1FFF) {
-					logger.log(Level.INFO, "MBC RAM Enable: {0}", value);
-					extRamEnabled = ((value & 0xF) == 0xA);
-				}
-
-				if (address >= 0x2000 && address <= 0x3FFF) {
-					bankIndex1 = value & 0b00011111;
-				}
-
-				if (address >= 0x4000 && address <= 0x5FFF) {
-					bankIndex2 = value & 0x3;
-					logger.log(Level.INFO, "MBC RAM Bank: {0}", bankIndex2);
-				}
-
-				if (address >= 0x6000 && address <= 0x7FFF) {
-					logger.log(Level.INFO, "MBC Mode: {0}", value);
-					mbc1Mode = value;
+				if (mbc != null) {
+					mbc.handleMBCWriteROM(address, value);
 				}
 			}
 
 			case 0x8000, 0x9000 -> videoRam[address & 0x1FFF] = value;
 			case 0xA000, 0xB000 -> {
-				if (extRamEnabled) {
-					if (mbc1Mode == 1 && cartridge.getRAMSize() > 2) {
-						int translatedAddress = address & 0x1FFF;
-						extRam[translatedAddress + (0x2000 * (bankIndex2))] = value;
-					} else {
-						extRam[address & 0x1FFF] = value;
-					}
+				if (mbc != null) {
+					mbc.handleMBCWriteRAM(address, value);
 				}
 			}
 			case 0xC000, 0xD000, 0xE000 -> workRam[address & 0x1FFF] = value;
@@ -339,9 +288,18 @@ public class MMU {
 	 */
 	public void clearMemory() {
 		Arrays.fill(videoRam, 0);
-		Arrays.fill(extRam, 0);
 		Arrays.fill(workRam, 0);
 		Arrays.fill(oam, 0);
 		Arrays.fill(zeroPage, 0);
+	}
+
+	/**
+	 * Sets MBC instance to be used for emulation, based on loaded ROM.
+	 * 
+	 * @param mbc
+	 *            MBC instance for MMU to utilize
+	 */
+	public void setMBC(MBC mbc) {
+		this.mbc = mbc;
 	}
 }

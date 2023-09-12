@@ -1,7 +1,7 @@
 package us.kshadow.gbz80emu.processor;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import us.kshadow.gbz80emu.memory.MMU;
 import us.kshadow.gbz80emu.processor.instructions.ALU;
 import us.kshadow.gbz80emu.processor.instructions.BitShift;
@@ -21,7 +21,7 @@ public class CPU {
 
 	private static final CPURegisters reg = CPURegisters.getInstance();
 	private static final MMU mmu = MMU.getInstance();
-	private final Logger logger = Logger.getLogger(this.getClass().getName());
+	private static final Logger logger = LoggerFactory.getLogger(CPU.class);
 	private int cpuCycles;
 	private boolean isRunning;
 	private boolean delayedEI;
@@ -34,7 +34,7 @@ public class CPU {
 		cpuCycles = 0;
 		isRunning = true;
 		mmu.toggleBootROM(true);
-		logger.log(Level.INFO, "CPU execution started.");
+		logger.debug("CPU execution started.");
 	}
 
 	/**
