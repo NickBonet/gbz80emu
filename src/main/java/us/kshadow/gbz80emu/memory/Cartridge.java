@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-public class ROMParser {
+@SuppressWarnings("java:S6548")
+public class Cartridge {
+
+	private static final Cartridge instance = new Cartridge();
 
 	// Integer array that the ROM file is loaded into.
 	private int[] romArray;
@@ -16,8 +19,12 @@ public class ROMParser {
 			0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33,
 			0x3E};
 
+	private Cartridge() {
+
+	}
+
 	/**
-	 * Loads a Gameboy ROM into an integer array.
+	 * Loads a Game Boy ROM into an integer array.
 	 * 
 	 * @param file
 	 *            - The ROM file to load.
@@ -49,6 +56,33 @@ public class ROMParser {
 			title[i] = (char) romArray[i + 0x134];
 		}
 		return String.copyValueOf(title);
+	}
+
+	/**
+	 * Get the current MBC type for the loaded ROM.
+	 * 
+	 * @return MBC type as int
+	 */
+	public int getMBCType() {
+		return romArray[0x147];
+	}
+
+	/**
+	 * Get the ROM size from the header for the loaded ROM.
+	 *
+	 * @return ROM size as int
+	 */
+	public int getROMSize() {
+		return romArray[0x148];
+	}
+
+	/**
+	 * Get the RAM size from the header for the loaded ROM.
+	 *
+	 * @return RAM size as int
+	 */
+	public int getRAMSize() {
+		return romArray[0x149];
 	}
 
 	/**
@@ -98,7 +132,11 @@ public class ROMParser {
 		return (sumInCart == check);
 	}
 
-	public int[] getROMAsArray() {
+	public int[] getROM() {
 		return romArray;
+	}
+
+	public static Cartridge getInstance() {
+		return instance;
 	}
 }

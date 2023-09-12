@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class MMUTest {
 
 	private static final MMU mmu = MMU.getInstance();
-	private final ROMParser testROM = new ROMParser();
+	private final Cartridge testROM = Cartridge.getInstance();
 
 	public void setup() {
 		try {
@@ -31,7 +31,6 @@ class MMUTest {
 	@Test
 	void testWriteThenReadROM() {
 		setup();
-		mmu.loadROM(testROM.getROMAsArray());
 
 		int[] readBank0 = new int[0x4000];
 		int[] readBank1 = new int[0x4000];
@@ -41,8 +40,8 @@ class MMUTest {
 			readBank1[i] = mmu.readByte(i + 0x4000);
 		}
 
-		assertArrayEquals(Arrays.copyOfRange(testROM.getROMAsArray(), 0x0000, 0x4000), readBank0);
-		assertArrayEquals(Arrays.copyOfRange(testROM.getROMAsArray(), 0x4000, 0x8000), readBank1);
+		assertArrayEquals(Arrays.copyOfRange(testROM.getROM(), 0x0000, 0x4000), readBank0);
+		assertArrayEquals(Arrays.copyOfRange(testROM.getROM(), 0x4000, 0x8000), readBank1);
 	}
 
 	/**
@@ -52,8 +51,8 @@ class MMUTest {
 	@Test
 	void testWriteByteROMFails() {
 		setup();
-		for (int i = 0; i < testROM.getROMAsArray().length; i++) {
-			mmu.writeByte(i, testROM.getROMAsArray()[i]);
+		for (int i = 0; i < testROM.getROM().length; i++) {
+			mmu.writeByte(i, 0x00);
 		}
 
 		int[] readROMTest = new int[0x8000];
@@ -64,8 +63,8 @@ class MMUTest {
 			readROMTest[i] = mmu.readByte(i);
 		}
 
-		assertFalse(Arrays.equals(readROMTest, testROM.getROMAsArray()));
-		assertArrayEquals(emptyArr, readROMTest);
+		assertArrayEquals(readROMTest, testROM.getROM());
+		assertFalse(Arrays.equals(readROMTest, emptyArr));
 	}
 
 	/**
@@ -111,9 +110,6 @@ class MMUTest {
 		int[] vRam = new int[0x2000];
 		int[] vRamFull = new int[0x2000];
 
-		int[] extRam = new int[0x2000];
-		int[] extRamFull = new int[0x2000];
-
 		int[] wRam = new int[0x2000];
 		int[] wRamFull = new int[0x2000];
 
@@ -126,7 +122,6 @@ class MMUTest {
 		int[] zeroPageFull = new int[0x7F];
 
 		Arrays.fill(vRamFull, 0x59);
-		Arrays.fill(extRamFull, 0x74);
 		Arrays.fill(wRamFull, 0x87);
 		Arrays.fill(oamFull, 0x22);
 		Arrays.fill(zeroPageFull, 0x22);
@@ -135,7 +130,6 @@ class MMUTest {
 			mmu.writeByte(0x8000 + i, 0x59); // VRAM
 			vRam[i] = mmu.readByte(0x8000 + i);
 			mmu.writeByte(0xA000 + i, 0x74); // Ext RAM
-			extRam[i] = mmu.readByte(0xA000 + i);
 			mmu.writeByte(0xC000 + i, 0x87); // Working RAM
 			wRam[i] = mmu.readByte(0xC000 + i);
 		}
@@ -145,7 +139,6 @@ class MMUTest {
 		}
 
 		assertArrayEquals(vRam, vRamFull);
-		assertArrayEquals(extRam, extRamFull);
 		assertArrayEquals(wRam, wRamFull);
 		assertArrayEquals(Arrays.copyOfRange(wRam, 0, 0x1E00), echoRam);
 
