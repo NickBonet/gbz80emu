@@ -14,46 +14,35 @@ public class MBC1 implements MBC {
 	// Sized up array for extra RAM banks. May refactor.
 	private final int[] extRam = new int[0x8000];
 
-	// MBC1 registers.
-	private int bankIndex1;
+	private boolean extRamEnabled;
 
-	private int bankIndex2;
+	private int bankIndex1 = 1;
+
+	private int bankIndex2 = 0;
 
 	private int mbc1Mode = 0;
-
-	private boolean extRamEnabled;
 
 	@Override
 	public int handleMBCReadROM(int address) {
 		int currentBank;
+		int correctedBankMask = (int) Math.pow(2, cartridge.getROMSize() + 1.0) - 1;
 
 		switch (address & 0xF000) {
 			case 0x0000, 0x1000, 0x2000, 0x3000 -> {
 				if (mbc1Mode == 1) {
 					currentBank = (bankIndex2 << 5);
-					int correctedBankMask = (int) Math.pow(2, cartridge.getROMSize() + 1.0) - 1;
-					return cartridge.getROM()[address + (0x4000 * (currentBank & correctedBankMask))];
+					return cartridge.getROM()[(address & 0x3FFF) + (0x4000 * (currentBank & correctedBankMask))];
 				}
 			}
 
 			case 0x4000, 0x5000, 0x6000, 0x7000 -> {
-				if (cartridge.getROMSize() >= 5) {
-					// TODO: test mbc1m ROM, differences in MBC handling
-					currentBank = (bankIndex2 << 5) | bankIndex1;
-				} else {
-					currentBank = bankIndex1;
-				}
+				currentBank = cartridge.getROMSize() >= 5 ? (bankIndex2 << 5) | bankIndex1 : bankIndex1;
 
-				if (currentBank == 0x20 || currentBank == 0x40 || currentBank == 0x60) {
+				if (currentBank == 0x00 || currentBank == 0x20 || currentBank == 0x40 || currentBank == 0x60) {
 					currentBank++;
 				}
 
-				if (currentBank <= 1) {
-					return cartridge.getROM()[address];
-				} else {
-					int correctedBankMask = (int) Math.pow(2, cartridge.getROMSize() + 1.0) - 1;
-					return cartridge.getROM()[address + (0x4000 * ((currentBank & correctedBankMask) - 1))];
-				}
+				return cartridge.getROM()[(address & 0x3FFF) + (0x4000 * (currentBank & correctedBankMask))];
 			}
 
 			default -> throw new IllegalArgumentException("Unhandled MBC ROM read at address: " + address);
