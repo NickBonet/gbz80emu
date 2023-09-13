@@ -4,23 +4,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.kshadow.gbz80emu.memory.Cartridge;
 
+/**
+ * MBC1 implementation. Tested against Mooneye-GB test suite, and only failing
+ * the multi-cart ROM. Multi-cart MBC1 is handled by {@link MBC1M}
+ *
+ */
 public class MBC1 implements MBC {
 
-	private static final Logger logger = LoggerFactory.getLogger(MBC1.class);
+	protected static final Logger logger = LoggerFactory.getLogger(MBC1.class);
 
-	private static final Cartridge cartridge = Cartridge.getInstance();
+	protected static final Cartridge cartridge = Cartridge.getInstance();
 
 	// 0xA000 - 0xBFFF - External Cart RAM
 	// Sized up array for extra RAM banks. May refactor.
-	private final int[] extRam = new int[0x8000];
+	protected final int[] extRam = new int[0x8000];
 
-	private boolean extRamEnabled;
+	protected boolean extRamEnabled;
 
-	private int bankIndex1 = 1;
+	protected int bankIndex1 = 1;
 
-	private int bankIndex2 = 0;
+	protected int bankIndex2 = 0;
 
-	private int mbc1Mode = 0;
+	protected int mbc1Mode = 0;
 
 	@Override
 	public int handleMBCReadROM(int address) {
