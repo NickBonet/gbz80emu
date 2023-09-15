@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import us.kshadow.gbz80emu.graphics.GPU;
+import us.kshadow.gbz80emu.joypad.JoyPad;
 import us.kshadow.gbz80emu.memory.mbc.MBC;
 import us.kshadow.gbz80emu.sysclock.SystemTimer;
 import us.kshadow.gbz80emu.util.BitUtil;
@@ -20,12 +21,13 @@ import static us.kshadow.gbz80emu.constants.MemoryAddresses.*;
 public class MMU {
 
 	private static final Cartridge cartridge = Cartridge.getInstance();
-
 	private static final MMU instance = new MMU();
 
 	private static final SystemTimer timer = SystemTimer.getInstance();
 
 	private static final GPU gpu = GPU.getInstance();
+
+	private static final JoyPad joyPad = JoyPad.getInstance();
 
 	// Gets switched out at end of actual Game Boy boot up, when $FF50 is written
 	// to.
@@ -44,7 +46,6 @@ public class MMU {
 
 	// 0xFEA0 - 0xFEFF - unused range
 	// TODO: 0xFF00 - 0xFF7F - I/O registers
-	private int joyPadRegister = 0xF1;
 
 	// 0xFF80 - 0xFFFE - Zero Page RAM
 	private final int[] zeroPage = new int[0x7F];
@@ -124,7 +125,7 @@ public class MMU {
 				} else if (address >= 0xFF80 && address < INTERRUPT_ENABLE) {
 					return zeroPage[address & 0x7F];
 				} else if (address == JOY_PAD_REGISTER) {
-					return joyPadRegister;
+					return joyPad.getJoyPadRegister();
 				}
 
 				// GPU hookups
@@ -210,6 +211,7 @@ public class MMU {
 				} else if (address >= 0xFF80 && address < INTERRUPT_ENABLE) {
 					zeroPage[address & 0x7F] = value;
 				} else if (address == JOY_PAD_REGISTER) {
+					joyPad.setJoyPadSelectMode(value);
 				}
 
 				// GPU hookups

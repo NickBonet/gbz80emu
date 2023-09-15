@@ -1,6 +1,7 @@
 package us.kshadow.gbz80emu;
 
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +10,8 @@ import javax.swing.JPanel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import us.kshadow.gbz80emu.joypad.Input;
+import us.kshadow.gbz80emu.joypad.JoyPad;
 import us.kshadow.gbz80emu.memory.Cartridge;
 import us.kshadow.gbz80emu.memory.mbc.MBC1;
 import us.kshadow.gbz80emu.processor.CPU;
@@ -28,6 +31,7 @@ public class Emulator extends JPanel {
 	private static final GPU gpu = GPU.getInstance();
 	private static final SystemTimer timer = SystemTimer.getInstance();
 	private final transient Cartridge testROM = Cartridge.getInstance();
+	private static final JoyPad joyPad = JoyPad.getInstance();
 	private final transient BufferedImage gbDisplay;
 	private boolean emuRunning;
 	private String currentRomFile = "test_roms/cpu_instrs.gb";
@@ -56,7 +60,7 @@ public class Emulator extends JPanel {
 			}
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -79,7 +83,7 @@ public class Emulator extends JPanel {
 				try {
 					Thread.sleep(16);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					logger.error(e.getMessage());
 					Thread.currentThread().interrupt();
 				}
 			}
@@ -138,7 +142,7 @@ public class Emulator extends JPanel {
 		try {
 			ImageIO.write(fullTileSet, "png", tileOutputFile);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -186,5 +190,35 @@ public class Emulator extends JPanel {
 	private void nextSystemStep() {
 		nextInstructionStep();
 		nextInterruptStep();
+	}
+
+	@SuppressWarnings("java:S131")
+	public void handleJoyPadInput(int keyCode) {
+		switch (keyCode) {
+			case KeyEvent.VK_ENTER -> joyPad.inputPressed(Input.START);
+			case KeyEvent.VK_Z -> joyPad.inputPressed(Input.A);
+			case KeyEvent.VK_X -> joyPad.inputPressed(Input.B);
+			case KeyEvent.VK_BACK_SPACE -> joyPad.inputPressed(Input.SELECT);
+
+			case KeyEvent.VK_DOWN -> joyPad.inputPressed(Input.DOWN);
+			case KeyEvent.VK_UP -> joyPad.inputPressed(Input.UP);
+			case KeyEvent.VK_LEFT -> joyPad.inputPressed(Input.LEFT);
+			case KeyEvent.VK_RIGHT -> joyPad.inputPressed(Input.RIGHT);
+		}
+	}
+
+	@SuppressWarnings("java:S131")
+	public void handleJoyPadInputReleased(int keyCode) {
+		switch (keyCode) {
+			case KeyEvent.VK_ENTER -> joyPad.inputReleased(Input.START);
+			case KeyEvent.VK_Z -> joyPad.inputReleased(Input.A);
+			case KeyEvent.VK_X -> joyPad.inputReleased(Input.B);
+			case KeyEvent.VK_BACK_SPACE -> joyPad.inputReleased(Input.SELECT);
+
+			case KeyEvent.VK_DOWN -> joyPad.inputReleased(Input.DOWN);
+			case KeyEvent.VK_UP -> joyPad.inputReleased(Input.UP);
+			case KeyEvent.VK_LEFT -> joyPad.inputReleased(Input.LEFT);
+			case KeyEvent.VK_RIGHT -> joyPad.inputReleased(Input.RIGHT);
+		}
 	}
 }
