@@ -81,7 +81,6 @@ public class CPU {
 			}
 		}
 
-		// TODO: figure out HALT behavior with mooneye-gb test ROMs, currently WIP
 		if (isHalted && ((interruptFlag & interruptEnable) != 0)) {
 			setHalted(false);
 		}
