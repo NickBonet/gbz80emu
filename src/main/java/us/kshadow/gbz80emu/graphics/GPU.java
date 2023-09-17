@@ -11,7 +11,7 @@ import static us.kshadow.gbz80emu.constants.MemoryAddresses.INTERRUPT_ENABLE;
 import static us.kshadow.gbz80emu.constants.MemoryAddresses.INTERRUPT_FLAG;
 
 /**
- * GPU - An emulation of the graphical operations the GameBoy performs to draw
+ * GPU - An emulation of the graphical operations the Game Boy performs to draw
  * to its LCD.
  * 
  * @author Nicholas Bonet
@@ -47,7 +47,7 @@ public class GPU {
 	}
 
 	/**
-	 * Draws a horizontal line for the Gameboy display.
+	 * Draws a horizontal line for the Game Boy display.
 	 * 
 	 * @param line
 	 *            - Line to draw. (0-143)

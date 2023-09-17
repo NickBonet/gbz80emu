@@ -53,7 +53,7 @@ public class CPU {
 				mmu.writeByte(INTERRUPT_FLAG, BitUtil.setBit(interruptFlag, 0));
 				ControlFlow.instructPUSH("PC");
 				reg.write("PC", 0x40);
-				cycles += 20; // According to The Cycle Accurate GameBoy Docs
+				cycles += 20; // According to The Cycle Accurate Game Boy Docs
 			}
 			// Timer overflow interrupt
 			else if ((interruptFlag & interruptEnable) == 0x04) {
