@@ -119,7 +119,7 @@ public class SystemTimer {
 	private void incrementDIVRegister(int cycles) {
 		divCycleCounter += cycles;
 		if (divCycleCounter >= 256) {
-			divCycleCounter -= cycles;
+			divCycleCounter -= 256;
 			if (divRegister < 0xFF) {
 				divRegister++;
 			} else {
