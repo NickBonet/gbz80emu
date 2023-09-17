@@ -129,7 +129,7 @@ public class GPU {
 					lineY++;
 					if (lineY > 143) {
 						int interruptEnable = mmu.readByte(INTERRUPT_ENABLE);
-						if (reg.getIME() && BitUtil.checkBitSet(interruptEnable, 0)) {
+						if (BitUtil.checkBitSet(interruptEnable, 0)) {
 							int interruptFlag = mmu.readByte(INTERRUPT_FLAG);
 							interruptFlag = BitUtil.setBit(interruptFlag, 0);
 							mmu.writeByte(INTERRUPT_FLAG, interruptFlag);

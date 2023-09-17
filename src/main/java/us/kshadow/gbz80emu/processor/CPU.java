@@ -63,6 +63,14 @@ public class CPU {
 				reg.write("PC", 0x50);
 				cycles += 20;
 			}
+			// Serial interrupt
+			else if ((interruptFlag & interruptEnable) == 0x08) {
+				reg.toggleIME(false);
+				mmu.writeByte(INTERRUPT_FLAG, BitUtil.setBit(interruptFlag, 3));
+				ControlFlow.instructPUSH("PC");
+				reg.write("PC", 0x58);
+				cycles += 20;
+			}
 			// Joy pad interrupt
 			else if ((interruptFlag & interruptEnable) == 0x10) {
 				reg.toggleIME(false);

@@ -61,7 +61,10 @@ public class SystemTimer {
 		switch (address) {
 			case TIMER_DIV_REGISTER -> {
 				divRegister = 0;
-				timaRegister = 0;
+				divCycleCounter = 0;
+
+				// TIMA's internal cycle counter should be reset on DIV writes
+				timaCycleCounter = 0;
 			}
 			case TIMER_TIMA_REGISTER -> timaRegister = value;
 			case TIMER_TMA_REGISTER -> tmaRegister = value;
@@ -103,14 +106,15 @@ public class SystemTimer {
 	 */
 	public void handleTimerTick(int cycles) {
 		incrementDIVRegister(cycles);
+		timaCycleCounter += cycles;
 
 		// Tick TIMA if TAC allows it.
 		if (checkBitSet(tacRegister, 2)) {
 			switch (tacRegister & 0x3) {
-				case 0x00 -> incrementTIMARegister(cycles, 1024);
-				case 0x01 -> incrementTIMARegister(cycles, 16);
-				case 0x02 -> incrementTIMARegister(cycles, 64);
-				case 0x03 -> incrementTIMARegister(cycles, 256);
+				case 0x00 -> incrementTIMARegister(1024);
+				case 0x01 -> incrementTIMARegister(16);
+				case 0x02 -> incrementTIMARegister(64);
+				case 0x03 -> incrementTIMARegister(256);
 				default -> throw new IllegalStateException("Unexpected TAC value: " + (tacRegister & 0x3));
 			}
 		}
@@ -128,11 +132,9 @@ public class SystemTimer {
 		}
 	}
 
-	private void incrementTIMARegister(int cycles, int freq) {
-		timaCycleCounter += cycles;
-
-		if (timaCycleCounter >= freq) {
-			timaCycleCounter -= freq;
+	private void incrementTIMARegister(int frequency) {
+		if (timaCycleCounter >= frequency) {
+			timaCycleCounter -= frequency;
 
 			if (timaRegister == 0xFF) {
 				timaRegister = tmaRegister;
