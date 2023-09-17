@@ -15,6 +15,8 @@ import static us.kshadow.gbz80emu.util.BitUtil.checkBitSet;
  * DIV and TIMA registers.
  */
 @SuppressWarnings("java:S6548")
+// TODO: figure out proper relation between "internal counter", DIV and TIMA.
+// Currently passing Mooneye-GB tests, failing blargg's again.
 public class SystemTimer {
 
 	private static final SystemTimer instance = new SystemTimer();
