@@ -73,8 +73,7 @@ public class CPU {
 			}
 		}
 
-		// TODO: test HALT implementation further, may need more cycles up above in
-		// interrupt handling as well
+		// TODO: figure out HALT behavior with mooneye-gb test ROMs, currently WIP
 		if (isHalted && ((interruptFlag & interruptEnable) != 0)) {
 			setHalted(false);
 		}
@@ -1023,6 +1022,7 @@ public class CPU {
 			return cycles;
 		} else {
 			// The system clock still runs while halted, 4 cycles for that.
+			cpuCycles += 4;
 			return 4;
 		}
 	}
