@@ -55,12 +55,20 @@ public class CPU {
 				reg.write("PC", 0x40);
 				cycles += 20; // According to The Cycle Accurate GameBoy Docs
 			}
-			// Timer overflow interrupt (or should be)
+			// Timer overflow interrupt
 			else if ((interruptFlag & interruptEnable) == 0x04) {
 				reg.toggleIME(false);
 				mmu.writeByte(INTERRUPT_FLAG, BitUtil.setBit(interruptFlag, 2));
 				ControlFlow.instructPUSH("PC");
 				reg.write("PC", 0x50);
+				cycles += 20;
+			}
+			// Joy pad interrupt
+			else if ((interruptFlag & interruptEnable) == 0x10) {
+				reg.toggleIME(false);
+				mmu.writeByte(INTERRUPT_FLAG, BitUtil.setBit(interruptFlag, 4));
+				ControlFlow.instructPUSH("PC");
+				reg.write("PC", 0x60);
 				cycles += 20;
 			}
 		}

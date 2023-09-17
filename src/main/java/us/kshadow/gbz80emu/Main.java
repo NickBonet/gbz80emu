@@ -51,16 +51,18 @@ public class Main extends JFrame implements KeyListener {
 			}
 			case KeyEvent.VK_PAGE_DOWN -> // save tile set to file
 				emu.dumpTileSetFromVRAM();
-			default -> {
-			}
+			default -> emu.handleJoyPadInput(e.getKeyCode());
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		// Assume joy pad input release for now.
+		emu.handleJoyPadInputReleased(e.getKeyCode());
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
+		// not needed
 	}
 }
