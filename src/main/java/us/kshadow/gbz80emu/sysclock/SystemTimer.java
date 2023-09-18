@@ -108,15 +108,14 @@ public class SystemTimer {
 	 */
 	public void handleTimerTick(int cycles) {
 		incrementDIVRegister(cycles);
-		timaCycleCounter += cycles;
 
 		// Tick TIMA if TAC allows it.
 		if (checkBitSet(tacRegister, 2)) {
 			switch (tacRegister & 0x3) {
-				case 0x00 -> incrementTIMARegister(1024);
-				case 0x01 -> incrementTIMARegister(16);
-				case 0x02 -> incrementTIMARegister(64);
-				case 0x03 -> incrementTIMARegister(256);
+				case 0x00 -> incrementTIMARegister(cycles, 1024);
+				case 0x01 -> incrementTIMARegister(cycles, 16);
+				case 0x02 -> incrementTIMARegister(cycles, 64);
+				case 0x03 -> incrementTIMARegister(cycles, 256);
 				default -> throw new IllegalStateException("Unexpected TAC value: " + (tacRegister & 0x3));
 			}
 		}
@@ -134,7 +133,8 @@ public class SystemTimer {
 		}
 	}
 
-	private void incrementTIMARegister(int frequency) {
+	private void incrementTIMARegister(int cycles, int frequency) {
+		timaCycleCounter += cycles;
 		if (timaCycleCounter >= frequency) {
 			timaCycleCounter -= frequency;
 
