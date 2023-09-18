@@ -53,7 +53,7 @@ public class CPU {
 				mmu.writeByte(INTERRUPT_FLAG, BitUtil.setBit(interruptFlag, 0));
 				ControlFlow.instructPUSH("PC");
 				reg.write("PC", 0x40);
-				cycles += 20; // According to The Cycle Accurate GameBoy Docs
+				cycles += 20; // According to The Cycle Accurate Game Boy Docs
 			}
 			// Timer overflow interrupt
 			else if ((interruptFlag & interruptEnable) == 0x04) {
@@ -61,6 +61,14 @@ public class CPU {
 				mmu.writeByte(INTERRUPT_FLAG, BitUtil.setBit(interruptFlag, 2));
 				ControlFlow.instructPUSH("PC");
 				reg.write("PC", 0x50);
+				cycles += 20;
+			}
+			// Serial interrupt
+			else if ((interruptFlag & interruptEnable) == 0x08) {
+				reg.toggleIME(false);
+				mmu.writeByte(INTERRUPT_FLAG, BitUtil.setBit(interruptFlag, 3));
+				ControlFlow.instructPUSH("PC");
+				reg.write("PC", 0x58);
 				cycles += 20;
 			}
 			// Joy pad interrupt
@@ -73,8 +81,6 @@ public class CPU {
 			}
 		}
 
-		// TODO: test HALT implementation further, may need more cycles up above in
-		// interrupt handling as well
 		if (isHalted && ((interruptFlag & interruptEnable) != 0)) {
 			setHalted(false);
 		}
@@ -1023,6 +1029,7 @@ public class CPU {
 			return cycles;
 		} else {
 			// The system clock still runs while halted, 4 cycles for that.
+			cpuCycles += 4;
 			return 4;
 		}
 	}

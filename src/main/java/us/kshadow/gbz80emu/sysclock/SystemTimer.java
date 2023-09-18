@@ -15,6 +15,8 @@ import static us.kshadow.gbz80emu.util.BitUtil.checkBitSet;
  * DIV and TIMA registers.
  */
 @SuppressWarnings("java:S6548")
+// TODO: figure out proper relation between "internal counter", DIV and TIMA.
+// Currently passing Mooneye-GB tests, failing blargg's again.
 public class SystemTimer {
 
 	private static final SystemTimer instance = new SystemTimer();
@@ -61,7 +63,10 @@ public class SystemTimer {
 		switch (address) {
 			case TIMER_DIV_REGISTER -> {
 				divRegister = 0;
-				timaRegister = 0;
+				divCycleCounter = 0;
+
+				// TIMA's internal cycle counter should be reset on DIV writes
+				timaCycleCounter = 0;
 			}
 			case TIMER_TIMA_REGISTER -> timaRegister = value;
 			case TIMER_TMA_REGISTER -> tmaRegister = value;
@@ -119,7 +124,7 @@ public class SystemTimer {
 	private void incrementDIVRegister(int cycles) {
 		divCycleCounter += cycles;
 		if (divCycleCounter >= 256) {
-			divCycleCounter -= cycles;
+			divCycleCounter -= 256;
 			if (divRegister < 0xFF) {
 				divRegister++;
 			} else {
@@ -128,11 +133,10 @@ public class SystemTimer {
 		}
 	}
 
-	private void incrementTIMARegister(int cycles, int freq) {
+	private void incrementTIMARegister(int cycles, int frequency) {
 		timaCycleCounter += cycles;
-
-		if (timaCycleCounter >= freq) {
-			timaCycleCounter -= freq;
+		if (timaCycleCounter >= frequency) {
+			timaCycleCounter -= frequency;
 
 			if (timaRegister == 0xFF) {
 				timaRegister = tmaRegister;

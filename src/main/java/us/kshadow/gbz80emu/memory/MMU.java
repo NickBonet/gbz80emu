@@ -150,7 +150,8 @@ public class MMU {
 				else if (address == INTERRUPT_ENABLE) {
 					return interruptEnable;
 				} else if (address == INTERRUPT_FLAG) {
-					return interruptFlag;
+					/// High 3 bits of IF are always 1 due to pull-up resistors on hardware.
+					return interruptFlag | 0xE0;
 				}
 
 				// Timer register read

@@ -6,8 +6,8 @@ import us.kshadow.gbz80emu.util.BitUtil;
 
 /**
  * Represents the 8 8-bit registers and the 4 16-bit "virtual" registers
- * implemented in the Gameboy Z80. Also represents the program counter and stack
- * pointer registers.
+ * implemented in the Game Boy Z80. Also represents the program counter and
+ * stack pointer registers.
  * 
  * @author Nicholas Bonet
  */

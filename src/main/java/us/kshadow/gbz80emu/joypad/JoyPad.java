@@ -37,11 +37,11 @@ public class JoyPad {
 	public int getJoyPadRegister() {
 		// interested in action buttons if bit 5 is 0.
 		if (!BitUtil.checkBitSet(controlSelect, 5)) {
-			return controlSelect | actionRegister;
+			return 0xC0 | controlSelect | actionRegister;
 		} else if (!BitUtil.checkBitSet(controlSelect, 4)) {
-			return controlSelect | directionRegister;
+			return 0xC0 | controlSelect | directionRegister;
 		} else {
-			return controlSelect | 0xF;
+			return 0xC0 | controlSelect | 0xF;
 		}
 	}
 
